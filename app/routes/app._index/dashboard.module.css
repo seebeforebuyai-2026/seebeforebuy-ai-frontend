@@ -1,0 +1,241 @@
+/* Dashboard Styles */
+
+.welcomeHero {
+  background: white;
+  padding: 80px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  text-align: center;
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.heroTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 20px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.heroSubtitle {
+  font-size: 18px;
+  color: #6B7280;
+  margin-bottom: 40px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tealButton {
+  background: #329580;
+  color: white;
+  padding: 18px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(50, 149, 128, 0.2);
+}
+
+.tealButton:hover:not(:disabled) {
+  background: #2a7f6d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(50, 149, 128, 0.3);
+}
+
+.tealButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.credentialsCard {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.credentialsCard strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.successSection {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.statsCard {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin: 20px 0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.statItem {
+  padding: 20px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.categorySection {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.categoryTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.categorySubtitle {
+  font-size: 16px;
+  color: #6B7280;
+  margin-bottom: 32px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.categoryItem {
+  border: 2px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.categoryItem:hover {
+  border-color: #329580;
+  background: #F0FDF9;
+}
+
+.categoryItem.selected {
+  border-color: #329580;
+  background: #F0FDF9;
+}
+
+.categoryCheckbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.categoryCheckbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: #329580;
+}
+
+.categoryContent {
+  flex: 1;
+}
+
+.categoryName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.categoryExamples {
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.activationSection {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 900px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.statusBadge.disabled {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.statusBadge.active {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.activationTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.activationSubtitle {
+  font-size: 16px;
+  color: #6B7280;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.statsDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+  margin-top: 40px;
+}

@@ -1,0 +1,1338 @@
+<!-- Try the Look Button and Popup - Updated UI -->
+{% assign current_product = block.settings.product %}
+
+<!-- Main Try the Look Button -->
+<div class="try-the-look-container">
+  <button 
+    class="try-the-look-btn" 
+    onclick="openTryTheLookPopup()"
+    type="button"
+  >
+    <div class="btn-content">
+      <span class="btn-main-text">See Before You Buy</span>
+      <span class="btn-subtitle">AI Preview, No Camera</span>
+    </div>
+  </button>
+</div>
+
+<!-- Popup Modal -->
+<div id="try-the-look-popup" class="popup-overlay" onclick="closeTryTheLookPopup()">
+  <div class="popup-content" onclick="event.stopPropagation()">
+    
+    <!-- Popup Header -->
+    <div class="popup-header">
+      <h2>{{ 'try_the_look.popup_title' | t }}</h2>
+      <button class="close-btn" onclick="closeTryTheLookPopup()" aria-label="Close">&times;</button>
+    </div>
+    
+    <!-- Product Information -->
+    <div class="product-info">
+      <div class="product-details">
+        {% if current_product.featured_image %}
+          <img 
+            src="{{ current_product.featured_image | image_url: width: 120, height: 120 }}" 
+            alt="{{ current_product.title }}"
+            class="product-image"
+            width="120"
+            height="120"
+          >
+        {% endif %}
+        <div class="product-text">
+          <h3>{{ current_product.title }}</h3>
+          <p class="product-subtitle">Preview how it looks on you</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Upload Section -->
+    <div class="upload-section" id="upload-section">
+      
+      <input 
+        type="file" 
+        id="user-image-input" 
+        accept="image/*"
+        style="display: none;"
+        onchange="handleImageSelect(event)"
+      >
+      
+      <!-- Upload Area -->
+      <div id="upload-area" class="upload-area" onclick="document.getElementById('user-image-input').click()">
+        <div class="upload-icon">📸</div>
+        <h4>{{ 'try_the_look.upload_title' | t }}</h4>
+        <p>{{ 'try_the_look.upload_subtitle' | t }}</p>
+ <button 
+    class="upload-photo-btn-2" 
+  >
+    Upload a Photo
+  </button>
+
+        <p class="no-camera-text">No camera access required</p>
+      </div>
+      
+      <!-- Image Preview -->
+      <div id="image-preview-container" class="preview-container" style="display: none;">
+       <div class="preview-wrapper">
+  <img id="image-preview" src="" alt="Preview" class="preview-image">
+  
+  <!-- Loading Overlay with Progress Bar -->
+  <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <p class="progress-percentage" id="progress-percentage">0%</p>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progress-bar-fill"></div>
+    </div>
+  </div>
+  
+  <button 
+    class="remove-image-btn" 
+    onclick="removeImage(event)"
+    type="button"
+    aria-label="Remove image"
+  >
+    ✕
+  </button>
+</div>
+
+      
+      
+        <p class="preview-filename" id="preview-filename"></p>
+      </div>
+      
+      <!-- Generate Button -->
+      <button 
+        id="submit-btn" 
+        class="submit-btn" 
+        onclick="submitTryTheLook()"
+        type="button"
+        disabled
+      >
+        <span class="btn-text">{{ 'try_the_look.submit_button' | t }}</span>
+        <span class="btn-icon">→</span>
+      </button>
+      
+      <!-- Status Message -->
+      <div id="status-message" class="status-message"></div>
+    </div>
+    
+    <!-- Result Section (Hidden by default) -->
+    <div id="result-section" class="result-section" style="display: none;">
+  
+  <div class="result-image-wrapper">
+    
+    <span class="preview-badge">Your Preview</span>
+    
+    <img id="generated-image" src="" alt="Generated result" class="generated-image">
+    
+    <div class="overlay-actions">
+      <button 
+        id="download-btn" 
+        class="overlay-icon-btn"
+        onclick="downloadGeneratedImage()"
+        type="button"
+        title="Download Preview"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+      </button>
+      
+      <button 
+        id="share-btn" 
+        class="overlay-icon-btn"
+        onclick="shareGeneratedImage()"
+        type="button"
+        title="Share Preview"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <button 
+    id="add-to-cart-btn" 
+    class="add-to-cart-btn"
+    onclick="handleAddToCart()"
+    type="button"
+  >
+    Add to Cart
+  </button>
+</div>
+    
+  </div>
+</div>
+
+<!-- CSS Styles - New Color Scheme -->
+<style>
+  /* Container */
+  .try-the-look-container {
+    margin: 20px 0;
+  }
+  
+  /* Try the Look Button - Gradient Theme */
+  .try-the-look-btn {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 60px;
+    box-shadow: 0 2px 8px rgba(50, 149, 128, 0.3);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* Hide initially to prevent flash */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  
+  .try-the-look-btn:hover {
+    background: linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(50, 149, 128, 0.4);
+  }
+  
+  .btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  
+  .btn-main-text {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  
+  .btn-subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.9;
+    line-height: 1.2;
+  }
+  
+  .try-the-look-btn:active {
+    transform: translateY(0);
+  }
+  
+  @media (min-width: 768px) {
+    .try-the-look-btn {
+      width: auto;
+      min-width: 240px;
+    }
+  }
+  
+  /* Popup Overlay */
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  
+  /* Popup Content */
+  .popup-content {
+    background: #FFFFFF;
+    border-radius: 8px;
+    max-width: 100%;
+    width: 100%;
+    min-height: auto;
+    max-height: calc(100vh - 52px);
+    overflow-y: auto;
+    position: relative;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(17, 24, 39, 0.3);
+  }
+  
+  /* Animation only when popup is active */
+  .popup-overlay.active .popup-content {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @media (min-width: 768px) {
+    .popup-overlay {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .popup-content {
+      max-width: 540px;
+      width: 90%;
+      margin: 0;
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Popup Header */
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #E5E7EB;
+    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .popup-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+  }
+  
+  /* Close Button */
+  .close-btn {
+    background: #F6F6F7;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6D7175;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-weight: 300;
+  }
+  
+  .close-btn:hover {
+    background: #E5E7EB;
+    color: #111827;
+  }
+  
+  /* Product Info */
+  .product-info {
+    padding: 16px 20px;
+    background: #f1eff2;
+  }
+  
+  .product-details {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+  }
+  
+  .product-image {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid #E5E7EB;
+  }
+  
+  .product-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+  }
+  
+  .product-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #6D7175;
+  }
+  
+  /* Upload Section */
+  .upload-section {
+    padding: 20px;
+  }
+  
+  /* Upload Area */
+  .upload-area {
+    border: 2px dashed #E5E7EB;
+    border-radius: 12px;
+    padding: 10px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #F6F6F7;
+    margin-bottom: 12px;
+  }
+  
+  .upload-area:hover {
+    border-color: #008060;
+    background: #f0fdf9;
+  }
+  
+  .upload-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+  
+  .upload-area h4 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .upload-area p {
+    margin: 0;
+    font-size: 14px;
+    color: #6D7175;
+  }
+  
+  /* Preview Container */
+  .preview-container {
+    margin-bottom: 16px;
+  }
+  
+  .preview-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  /* Loading Overlay on Image */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  box-sizing: border-box; 
+  border: 4px solid rgba(255, 255, 255, 0.3) !important;
+  border-top: 4px solid #ffffff !important;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+  display: block !important; 
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+.progress-bar-container {
+  width: 80%;
+  max-width: 300px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  display: block; 
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100% !important; 
+  background-color: #ffffff !important; 
+  border-radius: 8px;
+  width: 0%;
+  transition: width 0.5s ease-out;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  display: block !important; 
+  min-height: 100%;
+}
+
+.progress-percentage {
+  position: absolute;
+  bottom: 50%;
+  right: 10%;
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  padding-right: 2px;
+  padding-bottom:2px;
+  white-space: nowrap;
+}
+
+  .preview-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+  }
+  
+  .remove-image-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 18px;
+    background: rgba(17, 24, 39, 0.8);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+  
+  .remove-image-btn:hover {
+    background: #dc3545;
+    transform: scale(1.1);
+  }
+  
+  .preview-filename {
+    margin: 12px 0 0 0;
+    font-size: 13px;
+    color: #6D7175;
+    text-align: center;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 128, 96, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .submit-btn:hover:not(:disabled) {
+    background: #006e52;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 128, 96, 0.3);
+  }
+  
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  .submit-btn:disabled {
+    background: #E5E7EB;
+    color: #6D7175;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+  }
+  
+  .btn-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  .submit-btn:hover:not(:disabled) .btn-icon {
+    transform: translateX(4px);
+  }
+  
+  /* Status Message */
+  .status-message {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    font-weight: 500;
+  }
+  
+  .status-message.success {
+    display: block;
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  
+  .status-message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  
+ /* Result Section Container */
+.result-section {
+  padding: 24px;
+  background: #FFFFFF;
+}
+
+/* Wrapper to handle positioning over the image */
+.result-image-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid #E5E7EB;
+  /* Ensure image fits strictly */
+  display: flex; 
+  justify-content: center;
+  background-color: #f9fafb;
+}
+  
+  /* The Image itself */
+.generated-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  display: block;
+  /* Removed border and radius here as wrapper handles it */
+  border: none;
+  margin: 0;
+}
+  
+
+/* Top Left Badge Style */
+.preview-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+  backdrop-filter: blur(4px);
+  color: #ffffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  pointer-events: none; /* Allows clicking through if needed */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+/* Bottom Left Actions Container */
+.overlay-actions {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+/* Circular Overlay Buttons */
+.overlay-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0,0,0,0.05);
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.overlay-icon-btn:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+  color: #329580;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.overlay-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.overlay-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+  
+  
+  /* Add to Cart Button */
+  .add-to-cart-btn {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 128, 96, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #237e6aff 0%, #1b474dff 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 128, 96, 0.3);
+  }
+  
+  .add-to-cart-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Show popup */
+  .popup-overlay.active {
+    display: block !important;
+  }
+  
+  @media (min-width: 768px) {
+    .popup-overlay.active {
+      display: flex !important;
+    }
+  }
+  .no-camera-text {
+  margin: 0;
+  font-size: 13px;
+  color: #b2b7bfff;
+  font-weight: 500;
+}
+
+.upload-photo-btn-2 {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto 12px auto;
+  display: block;
+}
+
+.upload-photo-btn-2:hover {
+  background: linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%);
+  transform: translateY(-1px);
+}
+</style>
+
+<!-- JavaScript -->
+<script>
+  let selectedImageFile = null;
+  let shopSettings = null; // Store fetched settings
+  
+  // Generate UUID v4 for session ID
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+  // Get or create session ID
+  function getSessionId() {
+    let sessionId = localStorage.getItem('sbb_session_id');
+    if (!sessionId) {
+      sessionId = generateUUID();
+      localStorage.setItem('sbb_session_id', sessionId);
+      console.log('🆔 New session ID created:', sessionId);
+    } else {
+      console.log('🆔 Existing session ID:', sessionId);
+    }
+    return sessionId;
+  }
+  
+  // Fetch and apply shop settings
+  async function fetchAndApplySettings() {
+    const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
+    
+    try {
+      console.log('⚙️  Fetching shop settings...');
+      const response = await fetch(`http://localhost:5000/api/settings/${shopDomain}`);
+      const data = await response.json();
+      
+      if (data.success && data.settings) {
+        shopSettings = data.settings;
+        console.log('✅ Settings loaded:', shopSettings);
+        applySettings(shopSettings);
+      } else {
+        console.log('⚠️  No custom settings found, using defaults');
+      }
+    } catch (error) {
+      console.error('❌ Error fetching settings:', error);
+      console.log('⚠️  Using default styles');
+    } finally {
+      // Remove loading state - show button
+      const button = document.querySelector('.try-the-look-btn');
+      if (button) {
+        button.style.opacity = '1';
+        button.style.visibility = 'visible';
+      }
+    }
+  }
+  
+  // Apply settings to button and popup
+  function applySettings(settings) {
+    if (!settings) return;
+    
+    // Apply button settings
+    const button = document.querySelector('.try-the-look-btn');
+    if (button && settings.button) {
+      const btnContent = button.querySelector('.btn-content');
+      const btnMainText = button.querySelector('.btn-main-text');
+      
+      // Update button text
+      if (btnMainText && settings.button.text) {
+        btnMainText.textContent = settings.button.text;
+      }
+      
+      // Apply button styles
+      button.style.background = `linear-gradient(135deg, ${settings.button.bg_color} 0%, ${adjustColor(settings.button.bg_color, -20)} 100%)`;
+      button.style.color = settings.button.text_color;
+      button.style.borderRadius = `${settings.button.border_radius}px`;
+      
+      // Apply button size
+      if (settings.button.size === 'small') {
+        button.style.padding = '12px 20px';
+        button.style.fontSize = '14px';
+        button.style.minHeight = '50px';
+      } else if (settings.button.size === 'large') {
+        button.style.padding = '20px 28px';
+        button.style.fontSize = '18px';
+        button.style.minHeight = '70px';
+      }
+      // medium is default, no changes needed
+      
+      console.log('✅ Button styles applied');
+    }
+    
+    // Apply popup settings
+    const popupHeader = document.querySelector('.popup-header h2');
+    const uploadBtn = document.querySelector('.upload-photo-btn-2');
+    const submitBtn = document.getElementById('submit-btn');
+    const popupContent = document.querySelector('.popup-content');
+    
+    if (settings.popup) {
+      // Update popup title
+      if (popupHeader && settings.popup.title) {
+        popupHeader.textContent = settings.popup.title;
+      }
+      
+      // Update upload button text
+      if (uploadBtn && settings.popup.upload_button_text) {
+        uploadBtn.textContent = settings.popup.upload_button_text;
+      }
+      
+      // Update generate button text
+      if (submitBtn && settings.popup.generate_button_text) {
+        const btnText = submitBtn.querySelector('.btn-text');
+        if (btnText) {
+          btnText.textContent = settings.popup.generate_button_text;
+        }
+      }
+      
+      // Apply popup background and text color
+      if (popupContent) {
+        popupContent.style.backgroundColor = settings.popup.bg_color;
+        popupContent.style.color = settings.popup.text_color;
+        popupContent.style.borderRadius = `${settings.popup.border_radius}px`;
+      }
+      
+      console.log('✅ Popup styles applied');
+    }
+    
+    // Apply add_to_cart_button settings
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    if (addToCartBtn && settings.add_to_cart_button) {
+      // Update button text
+      if (settings.add_to_cart_button.text) {
+        addToCartBtn.textContent = settings.add_to_cart_button.text;
+      }
+      
+      // Apply button styles
+      addToCartBtn.style.background = `linear-gradient(135deg, ${settings.add_to_cart_button.bg_color} 0%, ${adjustColor(settings.add_to_cart_button.bg_color, -20)} 100%)`;
+      addToCartBtn.style.color = settings.add_to_cart_button.text_color;
+      addToCartBtn.style.borderRadius = `${settings.add_to_cart_button.border_radius}px`;
+      
+      // Apply button size
+      if (settings.add_to_cart_button.size === 'small') {
+        addToCartBtn.style.padding = '12px 20px';
+        addToCartBtn.style.fontSize = '14px';
+      } else if (settings.add_to_cart_button.size === 'large') {
+        addToCartBtn.style.padding = '20px 32px';
+        addToCartBtn.style.fontSize = '18px';
+      }
+      // medium is default (16px 24px)
+      
+      console.log('✅ Add to Cart button styles applied');
+    }
+  }
+  
+  // Helper function to darken/lighten color for gradient
+  function adjustColor(color, percent) {
+    const num = parseInt(color.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+      (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+      (B < 255 ? B < 1 ? 0 : B : 255))
+      .toString(16).slice(1);
+  }
+  
+  // Ensure popup is hidden on page load and fetch settings
+  document.addEventListener('DOMContentLoaded', function() {
+    const popup = document.getElementById('try-the-look-popup');
+    if (popup) {
+      popup.classList.remove('active');
+      popup.style.display = 'none';
+    }
+    
+    // Initialize session ID on page load
+    getSessionId();
+    
+    // Fetch and apply settings immediately
+    fetchAndApplySettings();
+  });
+  
+  // Also fetch settings as soon as script loads (before DOMContentLoaded)
+  (function() {
+    if (document.readyState === 'loading') {
+      // Wait for DOM
+      document.addEventListener('DOMContentLoaded', function() {
+        fetchAndApplySettings();
+      });
+    } else {
+      // DOM already loaded
+      fetchAndApplySettings();
+    }
+  })();
+  
+  function openTryTheLookPopup() {
+    const popup = document.getElementById('try-the-look-popup');
+    popup.style.display = 'block';
+    popup.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    resetForm();
+  }
+  
+  function closeTryTheLookPopup() {
+    const popup = document.getElementById('try-the-look-popup');
+    popup.classList.remove('active');
+    popup.style.display = 'none';
+    document.body.style.overflow = '';
+    resetForm();
+  }
+  
+  function handleImageSelect(event) {
+    const file = event.target.files[0];
+    
+    if (file && file.type.startsWith('image/')) {
+      selectedImageFile = file;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('image-preview');
+        const container = document.getElementById('image-preview-container');
+        const filename = document.getElementById('preview-filename');
+        const uploadArea = document.getElementById('upload-area');
+        
+        preview.src = e.target.result;
+        filename.textContent = file.name;
+        container.style.display = 'block';
+        uploadArea.style.display = 'none';
+        
+        document.getElementById('submit-btn').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  
+ function removeImage(event) {
+  if (event) event.stopPropagation();
+  
+  selectedImageFile = null;
+  document.getElementById('image-preview-container').style.display = 'none';
+  document.getElementById('image-preview').src = '';
+  document.getElementById('preview-filename').textContent = '';
+  document.getElementById('user-image-input').value = '';
+  document.getElementById('upload-area').style.display = 'block';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('loading-overlay').style.display = 'none';
+  
+  // Reset progress bar
+  const progressBarFill = document.getElementById('progress-bar-fill');
+  const progressPercentage = document.getElementById('progress-percentage');
+  if (progressBarFill) progressBarFill.style.width = '0%';
+  if (progressPercentage) progressPercentage.textContent = '0%';
+  
+  hideStatus();
+}
+
+  
+async function submitTryTheLook() {
+  if (!selectedImageFile) {
+    showStatus('Please select an image first', 'error');
+    return;
+  }
+  
+  // Show loading overlay on the uploaded image
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const submitBtn = document.getElementById('submit-btn');
+  const removeBtn = document.querySelector('.remove-image-btn');
+  const progressBarFill = document.getElementById('progress-bar-fill');
+  const progressPercentage = document.getElementById('progress-percentage');
+  
+  loadingOverlay.style.display = 'flex';
+  submitBtn.disabled = true;
+  submitBtn.style.display = 'none';
+  if (removeBtn) removeBtn.style.display = 'none';
+  
+  // Animate progress bar
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    if (progress < 90) {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90;
+      progressBarFill.style.width = progress + '%';
+      progressPercentage.textContent = Math.round(progress) + '%';
+    }
+  }, 500);
+  
+  try {
+    const productTitle = document.querySelector('.product-text h3')?.textContent || 'Unknown Product';
+    const productImageUrl = document.querySelector('.product-image')?.src || '';
+    const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
+    
+    // Get session ID
+    const sessionId = getSessionId();
+    
+    const formData = new FormData();
+    formData.append('userImage', selectedImageFile);
+    formData.append('shop_domain', shopDomain);
+    formData.append('product_name', productTitle);
+    formData.append('session_id', sessionId);  // Add session ID
+    if (productImageUrl) {
+      formData.append('product_image_url', productImageUrl);
+    }
+    
+    const response = await fetch('http://localhost:5000/api/generate-image', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    // Complete progress bar
+    clearInterval(progressInterval);
+    progressBarFill.style.width = '100%';
+    progressPercentage.textContent = '100%';
+    
+    if (data.success) {
+      // Wait a moment to show 100% completion, then show image immediately
+      setTimeout(() => {
+        // Hide loading overlay and upload section
+        loadingOverlay.style.display = 'none';
+        document.getElementById('upload-section').style.display = 'none';
+        
+        // Show generated image immediately (no delay)
+        const resultSection = document.getElementById('result-section');
+        const generatedImage = document.getElementById('generated-image');
+        
+        generatedImage.src = data.generated_image_url;
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+      
+    } else if (data.error === 'limit_reached') {
+      loadingOverlay.style.display = 'none';
+      submitBtn.style.display = 'flex';
+      if (removeBtn) removeBtn.style.display = 'flex';
+      submitBtn.disabled = false;
+      progressBarFill.style.width = '0%';
+      progressPercentage.textContent = '0%';
+      showStatus('⚠️ Free limit reached (15 images). Please contact store owner to upgrade.', 'error');
+      
+    } else {
+      loadingOverlay.style.display = 'none';
+      submitBtn.style.display = 'flex';
+      if (removeBtn) removeBtn.style.display = 'flex';
+      submitBtn.disabled = false;
+      progressBarFill.style.width = '0%';
+      progressPercentage.textContent = '0%';
+      showStatus('Error: ' + data.message, 'error');
+    }
+    
+  } catch (error) {
+    console.error('Generation error:', error);
+    clearInterval(progressInterval);
+    loadingOverlay.style.display = 'none';
+    submitBtn.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = 'flex';
+    submitBtn.disabled = false;
+    progressBarFill.style.width = '0%';
+    progressPercentage.textContent = '0%';
+    showStatus('Failed to generate image. Please try again.', 'error');
+  }
+}
+
+  
+  function showStatus(message, type) {
+    const statusDiv = document.getElementById('status-message');
+    statusDiv.textContent = message;
+    statusDiv.className = 'status-message ' + type;
+  }
+  
+  function hideStatus() {
+    const statusDiv = document.getElementById('status-message');
+    statusDiv.style.display = 'none';
+    statusDiv.className = 'status-message';
+  }
+  
+  /*
+  function displayGeneratedImage(imageUrl) {
+    const resultSection = document.getElementById('result-section');
+    const generatedImage = document.getElementById('generated-image');
+    
+    generatedImage.src = imageUrl;
+    generatedImage.onload = function() {
+      resultSection.style.display = 'block';
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+  }
+  */
+  
+  async function downloadGeneratedImage() {
+    const generatedImage = document.getElementById('generated-image');
+    const imageUrl = generatedImage.src;
+    
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'see-before-buy-preview.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Unable to download image. Please try right-clicking and saving the image.');
+    }
+  }
+  
+  async function shareGeneratedImage() {
+    const generatedImage = document.getElementById('generated-image');
+    const imageUrl = generatedImage.src;
+    
+    // Check if Web Share API is supported
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'See Before You Buy - AI Preview',
+          text: 'Check out how this looks on me!',
+          url: imageUrl
+        });
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Share error:', error);
+          copyToClipboard(imageUrl);
+        }
+      }
+    } else {
+      // Fallback: Copy link to clipboard
+      copyToClipboard(imageUrl);
+    }
+  }
+  
+  function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      alert('Image link copied to clipboard!');
+    } catch (error) {
+      console.error('Copy error:', error);
+      alert('Unable to copy link. URL: ' + text);
+    }
+    document.body.removeChild(textarea);
+  }
+  
+  async function handleAddToCart() {
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    const originalText = addToCartBtn.textContent;
+    addToCartBtn.disabled = true;
+    addToCartBtn.textContent = 'Adding...';
+    
+    try {
+      const variantId = getProductVariantId();
+      
+      if (!variantId) {
+        showStatus('Error: Could not add to cart', 'error');
+        addToCartBtn.disabled = false;
+        addToCartBtn.textContent = originalText;
+        return;
+      }
+      
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: 1,
+          properties: {
+            '_sbb_try_on': 'true',
+            '_sbb_session_id': getSessionId()
+          }
+        })
+      });
+      
+      if (!response.ok) throw new Error('Cart API error');
+      
+      addToCartBtn.textContent = '✓ Added';
+      
+      // Track add to cart event
+      const productTitle = document.querySelector('.product-text h3')?.textContent || 'Unknown Product';
+      const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
+      
+      try {
+        await fetch('http://localhost:5000/api/track-usage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            shop_domain: shopDomain,
+            event_type: 'add_to_cart',
+            product_name: productTitle
+          })
+        });
+        console.log('✅ Add to cart event tracked');
+      } catch (trackError) {
+        console.error('❌ Failed to track add to cart:', trackError);
+        // Don't block the user flow if tracking fails
+      }
+      
+      setTimeout(() => {
+        closeTryTheLookPopup();
+        window.location.href = '/cart';
+      }, 800);
+      
+    } catch (error) {
+      showStatus('Error adding to cart. Please try again.', 'error');
+      addToCartBtn.textContent = originalText;
+      addToCartBtn.disabled = false;
+    }
+  }
+  
+  function getProductVariantId() {
+    const variantInput = document.querySelector('form[action*="/cart/add"] input[name="id"]');
+    if (variantInput) return variantInput.value;
+    
+    const variantSelect = document.querySelector('select[name="id"]');
+    if (variantSelect) return variantSelect.value;
+    
+    if (window.ShopifyAnalytics?.meta?.product?.variants?.[0]?.id) {
+      return window.ShopifyAnalytics.meta.product.variants[0].id;
+    }
+    
+    return null;
+  }
+  
+  function resetForm() {
+    removeImage();
+    hideStatus();
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('upload-section').style.display = 'block';
+    document.getElementById('submit-btn').style.display = 'flex';
+  }
+  
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeTryTheLookPopup();
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Try the Look",
+  "target": "section",
+  "settings": [
+    { 
+      "type": "product", 
+      "id": "product", 
+      "label": "Product", 
+      "autofill": true 
+    }
+  ]
+}
+{% endschema %}

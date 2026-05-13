@@ -1,0 +1,11 @@
+{
+  "try_the_look": {
+    "button_text": "Try the Look",
+    "popup_title": "See Before You Buy",
+    "upload_title": "Upload a Photo",
+    "upload_subtitle": "See this item on yourself. Works on any device",
+    "submit_button": "Generate Preview",
+    "processing": "Processing...",
+    "success": "Success!"
+  }
+}
