@@ -104,7 +104,13 @@ export default function Settings() {
       generate_button_text: "Generate Preview",
       bg_color: "#FFFFFF",
       text_color: "#000000",
-      border_radius: 12
+      border_radius: 12,
+      header_bg_color: "#329580",
+      upload_area_bg_color: "#F6F6F7",
+      upload_btn_bg_color: "#329580",
+      upload_btn_text_color: "#FFFFFF",
+      generate_btn_bg_color: "#329580",
+      generate_btn_text_color: "#FFFFFF"
     },
     add_to_cart_button: {
       text: "Add to Cart",
@@ -460,6 +466,9 @@ export default function Settings() {
                   Customize the popup modal that appears when customers click the button.
                 </p>
 
+                {/* ── HEADER ── */}
+                <h3 className={styles.subSectionTitle}>Header</h3>
+
                 {/* Popup Title */}
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Popup Title</label>
@@ -472,29 +481,29 @@ export default function Settings() {
                   />
                 </div>
 
-                {/* Upload Button Text */}
+                {/* Header Background Color */}
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Upload Button Text</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.popup.upload_button_text}
-                    onChange={(e) => updatePopupSetting('upload_button_text', e.target.value)}
-                    placeholder="Upload Your Photo"
-                  />
+                  <label className={styles.label}>Header Background Color</label>
+                  <div className={styles.colorInput}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={settings.popup.header_bg_color}
+                      onChange={(e) => updatePopupSetting('header_bg_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={settings.popup.header_bg_color}
+                      onChange={(e) => updatePopupSetting('header_bg_color', e.target.value)}
+                      placeholder="#329580"
+                    />
+                  </div>
                 </div>
 
-                {/* Generate Button Text */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Generate Button Text</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.popup.generate_button_text}
-                    onChange={(e) => updatePopupSetting('generate_button_text', e.target.value)}
-                    placeholder="Generate Preview"
-                  />
-                </div>
+                {/* ── POPUP BODY ── */}
+                <div className={styles.subSectionDivider} />
+                <h3 className={styles.subSectionTitle}>Popup Body</h3>
 
                 {/* Background Color */}
                 <div className={styles.formGroup}>
@@ -549,6 +558,142 @@ export default function Settings() {
                     value={settings.popup.border_radius}
                     onChange={(e) => updatePopupSetting('border_radius', parseInt(e.target.value))}
                   />
+                </div>
+
+                {/* ── UPLOAD AREA ── */}
+                <div className={styles.subSectionDivider} />
+                <h3 className={styles.subSectionTitle}>Upload Area</h3>
+
+                {/* Upload Area Background */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Upload Area Background Color</label>
+                  <div className={styles.colorInput}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={settings.popup.upload_area_bg_color}
+                      onChange={(e) => updatePopupSetting('upload_area_bg_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={settings.popup.upload_area_bg_color}
+                      onChange={(e) => updatePopupSetting('upload_area_bg_color', e.target.value)}
+                      placeholder="#F6F6F7"
+                    />
+                  </div>
+                </div>
+
+                {/* ── UPLOAD BUTTON ── */}
+                <div className={styles.subSectionDivider} />
+                <h3 className={styles.subSectionTitle}>Upload Photo Button</h3>
+
+                {/* Upload Button Text */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Upload Button Text</label>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={settings.popup.upload_button_text}
+                    onChange={(e) => updatePopupSetting('upload_button_text', e.target.value)}
+                    placeholder="Upload Your Photo"
+                  />
+                </div>
+
+                {/* Upload Button Background */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Upload Button Background Color</label>
+                  <div className={styles.colorInput}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={settings.popup.upload_btn_bg_color}
+                      onChange={(e) => updatePopupSetting('upload_btn_bg_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={settings.popup.upload_btn_bg_color}
+                      onChange={(e) => updatePopupSetting('upload_btn_bg_color', e.target.value)}
+                      placeholder="#329580"
+                    />
+                  </div>
+                </div>
+
+                {/* Upload Button Text Color */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Upload Button Text Color</label>
+                  <div className={styles.colorInput}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={settings.popup.upload_btn_text_color}
+                      onChange={(e) => updatePopupSetting('upload_btn_text_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={settings.popup.upload_btn_text_color}
+                      onChange={(e) => updatePopupSetting('upload_btn_text_color', e.target.value)}
+                      placeholder="#FFFFFF"
+                    />
+                  </div>
+                </div>
+
+                {/* ── GENERATE BUTTON ── */}
+                <div className={styles.subSectionDivider} />
+                <h3 className={styles.subSectionTitle}>Generate Preview Button</h3>
+
+                {/* Generate Button Text */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Generate Button Text</label>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={settings.popup.generate_button_text}
+                    onChange={(e) => updatePopupSetting('generate_button_text', e.target.value)}
+                    placeholder="Generate Preview"
+                  />
+                </div>
+
+                {/* Generate Button Background */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Generate Button Background Color</label>
+                  <div className={styles.colorInput}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={settings.popup.generate_btn_bg_color}
+                      onChange={(e) => updatePopupSetting('generate_btn_bg_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={settings.popup.generate_btn_bg_color}
+                      onChange={(e) => updatePopupSetting('generate_btn_bg_color', e.target.value)}
+                      placeholder="#329580"
+                    />
+                  </div>
+                </div>
+
+                {/* Generate Button Text Color */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Generate Button Text Color</label>
+                  <div className={styles.colorInput}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={settings.popup.generate_btn_text_color}
+                      onChange={(e) => updatePopupSetting('generate_btn_text_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={settings.popup.generate_btn_text_color}
+                      onChange={(e) => updatePopupSetting('generate_btn_text_color', e.target.value)}
+                      placeholder="#FFFFFF"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -623,17 +768,56 @@ export default function Settings() {
                     backgroundColor: settings.popup.bg_color,
                     color: settings.popup.text_color,
                     borderRadius: `${settings.popup.border_radius}px`,
+                    overflow: 'hidden',
+                    padding: 0,
                   }}
                 >
-                  <h4 style={{ color: settings.popup.text_color }}>{settings.popup.title}</h4>
-                  <div className={styles.previewPopupContent}>
-                    <div className={styles.previewUploadArea}>
-                      <p>📷 Upload Area</p>
+                  {/* Header */}
+                  <div style={{
+                    background: `linear-gradient(135deg, ${settings.popup.header_bg_color} 0%, ${settings.popup.header_bg_color}cc 100%)`,
+                    padding: '16px 20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>{settings.popup.title}</span>
+                    <span style={{ color: '#fff', fontSize: '20px', cursor: 'pointer' }}>×</span>
+                  </div>
+                  {/* Body */}
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{
+                      background: settings.popup.upload_area_bg_color,
+                      border: '2px dashed #D1D5DB',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      textAlign: 'center',
+                      color: settings.popup.text_color,
+                      fontSize: '13px',
+                    }}>
+                      📸 Upload Area
                     </div>
-                    <button className={styles.previewPopupButton}>
+                    <button style={{
+                      background: settings.popup.upload_btn_bg_color,
+                      color: settings.popup.upload_btn_text_color,
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '10px',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                    }}>
                       {settings.popup.upload_button_text}
                     </button>
-                    <button className={styles.previewPopupButton}>
+                    <button style={{
+                      background: settings.popup.generate_btn_bg_color,
+                      color: settings.popup.generate_btn_text_color,
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '10px',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                    }}>
                       {settings.popup.generate_button_text}
                     </button>
                   </div>

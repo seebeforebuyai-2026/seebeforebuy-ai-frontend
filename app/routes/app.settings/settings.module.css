@@ -333,3 +333,16 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+/* Sub-section headers inside a tab */
+.subSectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 16px 0;
+}
+
+.subSectionDivider {
+  border-top: 1px solid #E5E7EB;
+  margin: 24px 0;
+}

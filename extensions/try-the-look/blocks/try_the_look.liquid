@@ -1,6 +1,38 @@
 <!-- Try the Look Button and Popup - Updated UI -->
 {% assign current_product = block.settings.product %}
 
+{% comment %} Dynamic category detection based on product title, type, tags, and collections {% endcomment %}
+{% assign product_category = 'apparel' %}
+{% capture search_string %}{{ current_product.title }} | {{ current_product.type }} | {{ current_product.tags | join: ' ' }}{% endcapture %}
+{% for collection in current_product.collections %}
+  {% capture search_string %}{{ search_string }} | {{ collection.title }}{% endcapture %}
+{% endfor %}
+{% assign search_string = search_string | downcase %}
+
+{% if search_string contains 'kurti' or search_string contains 'kurta' or search_string contains 'tunic' or search_string contains 'salwar' or search_string contains 'kameez' or search_string contains 'anarkali' %}
+  {% assign product_category = 'kurti' %}
+{% elsif search_string contains 'saree' or search_string contains 'sari' or search_string contains 'lehenga' or search_string contains 'choli' %}
+  {% assign product_category = 'saree' %}
+{% elsif search_string contains 't-shirt' or search_string contains 'tshirt' or search_string contains 't shirt' or search_string contains 'tee' or search_string contains 'polo' %}
+  {% assign product_category = 't_shirt' %}
+{% elsif search_string contains 'shirt' or search_string contains 'blouse' or search_string contains 'button-up' or search_string contains 'button-down' %}
+  {% assign product_category = 'shirt' %}
+{% elsif search_string contains 'suit' or search_string contains 'blazer' or search_string contains 'tuxedo' or search_string contains 'waistcoat' %}
+  {% assign product_category = 'suit' %}
+{% elsif search_string contains 'streetwear' or search_string contains 'hoodie' or search_string contains 'sweatshirt' or search_string contains 'cargo' or search_string contains 'jogger' %}
+  {% assign product_category = 'streetwear' %}
+{% elsif search_string contains 'jewel' or search_string contains 'ring' or search_string contains 'necklace' or search_string contains 'earring' or search_string contains 'bracelet' or search_string contains 'bangle' or search_string contains 'pendant' %}
+  {% assign product_category = 'jewellery' %}
+{% elsif search_string contains 'watch' or search_string contains 'smartwatch' %}
+  {% assign product_category = 'watch' %}
+{% elsif search_string contains 'shoe' or search_string contains 'boot' or search_string contains 'sneaker' or search_string contains 'sandal' or search_string contains 'heel' or search_string contains 'footwear' or search_string contains 'loafer' or search_string contains 'trainer' %}
+  {% assign product_category = 'shoes' %}
+{% elsif search_string contains 'bag' or search_string contains 'purse' or search_string contains 'handbag' or search_string contains 'wallet' or search_string contains 'sunglasses' or search_string contains 'glasses' or search_string contains 'hat' or search_string contains 'cap' or search_string contains 'scarf' or search_string contains 'belt' %}
+  {% assign product_category = 'accessories' %}
+{% else %}
+  {% assign product_category = 'apparel' %}
+{% endif %}
+
 <!-- Main Try the Look Button -->
 <div class="try-the-look-container">
   <button 
@@ -55,18 +87,21 @@
         onchange="handleImageSelect(event)"
       >
       
+      <!-- Hidden camera input (not needed separately) -->
+      
       <!-- Upload Area -->
       <div id="upload-area" class="upload-area" onclick="document.getElementById('user-image-input').click()">
         <div class="upload-icon">📸</div>
         <h4>{{ 'try_the_look.upload_title' | t }}</h4>
         <p>{{ 'try_the_look.upload_subtitle' | t }}</p>
- <button 
-    class="upload-photo-btn-2" 
-  >
-    Upload a Photo
-  </button>
-
-        <p class="no-camera-text">No camera access required</p>
+        <button 
+          class="upload-photo-btn-2"
+          type="button"
+          onclick="event.stopPropagation(); document.getElementById('user-image-input').click()"
+        >
+          Upload a Photo
+        </button>
+        <p class="no-camera-text">Choose from gallery or take a photo</p>
       </div>
       
       <!-- Image Preview -->
@@ -76,9 +111,11 @@
   
   <!-- Loading Overlay with Progress Bar -->
   <div id="loading-overlay" class="loading-overlay" style="display: none;">
-    <p class="progress-percentage" id="progress-percentage">0%</p>
-    <div class="progress-bar-container">
-      <div class="progress-bar-fill" id="progress-bar-fill"></div>
+    <div class="progress-block">
+      <p class="progress-percentage" id="progress-percentage">0%</p>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
     </div>
   </div>
   
@@ -181,10 +218,10 @@
     padding: 16px 24px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
-    color: white;
+    background: var(--sbb-btn-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
+    color: var(--sbb-btn-color, white);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--sbb-btn-radius, 8px);
     cursor: pointer;
     transition: all 0.3s ease;
     min-height: 60px;
@@ -201,7 +238,7 @@
   }
   
   .try-the-look-btn:hover {
-    background: linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%);
+    filter: brightness(0.88);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(50, 149, 128, 0.4);
   }
@@ -240,61 +277,56 @@
   /* Popup Overlay */
   .popup-overlay {
     display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     background-color: rgba(17, 24, 39, 0.7);
     backdrop-filter: blur(4px);
-    z-index: 10000;
-    padding: 16px;
+    z-index: 2147483647 !important;
+    padding: 0;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden;
+    margin: 0 !important;
   }
   
-  /* Popup Content */
+  /* Popup Content - Mobile: bottom sheet */
   .popup-content {
     background: #FFFFFF;
-    border-radius: 8px;
+    border-radius: 16px 16px 0 0;
     max-width: 100%;
     width: 100%;
-    min-height: auto;
-    max-height: calc(100vh - 52px);
+    height: 92vh;
+    max-height: 92vh;
     overflow-y: auto;
     position: relative;
-    margin: 0 auto;
-    box-shadow: 0 20px 60px rgba(17, 24, 39, 0.3);
+    box-shadow: 0 -4px 24px rgba(17, 24, 39, 0.15);
+    -webkit-overflow-scrolling: touch;
+    margin: 0;
   }
   
   /* Animation only when popup is active */
   .popup-overlay.active .popup-content {
-    animation: slideUp 0.3s ease-out;
+    animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   }
   
   @media (min-width: 768px) {
-    .popup-overlay {
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
     .popup-content {
       max-width: 540px;
       width: 90%;
-      margin: 0;
+      height: auto;
+      border-radius: 12px;
+      max-height: 90vh;
     }
   }
   
   @keyframes slideUp {
     from {
       transform: translateY(100%);
-      opacity: 0;
     }
     to {
       transform: translateY(0);
-      opacity: 1;
     }
   }
   
@@ -305,7 +337,7 @@
     align-items: center;
     padding: 24px;
     border-bottom: 1px solid #E5E7EB;
-    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    background: var(--sbb-header-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
     border-radius: 8px 8px 0 0;
   }
   
@@ -391,7 +423,7 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #F6F6F7;
+    background: var(--sbb-upload-area-bg, #F6F6F7);
     margin-bottom: 12px;
   }
   
@@ -442,8 +474,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 20px;
   z-index: 10;
+  box-sizing: border-box;
+}
+
+/* Wrapper that keeps % and bar together, tightly stacked */
+.progress-block {
+  width: 80%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .loader-spinner {
@@ -465,13 +509,11 @@
 
 
 .progress-bar-container {
-  width: 80%;
-  max-width: 300px;
+  width: 100%;
   height: 10px;
   background: rgba(0, 0, 0, 0.4);
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 12px;
   border: 2px solid rgba(255, 255, 255, 0.6);
   display: block; 
   position: relative;
@@ -489,16 +531,12 @@
 }
 
 .progress-percentage {
-  position: absolute;
-  bottom: 50%;
-  right: 10%;
-  margin-bottom: 6px;
   color: #ffffff;
   font-size: 16px;
   font-weight: 700;
-  padding-right: 2px;
-  padding-bottom:2px;
+  margin: 0;
   white-space: nowrap;
+  text-align: center;
 }
 
   .preview-image {
@@ -547,8 +585,8 @@
     padding: 16px 24px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
-    color: white;
+    background: var(--sbb-generate-btn-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
+    color: var(--sbb-generate-btn-color, white);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -648,7 +686,7 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+  background: var(--sbb-header-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
   backdrop-filter: blur(4px);
   color: #ffffffff;
   padding: 6px 12px;
@@ -712,10 +750,10 @@
     padding: 16px 24px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%);
-    color: white;
+    background: var(--sbb-atc-btn-bg, linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%));
+    color: var(--sbb-atc-btn-color, white);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--sbb-atc-btn-radius, 8px);
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 128, 96, 0.2);
@@ -726,7 +764,7 @@
   }
   
   .add-to-cart-btn:hover {
-    background: linear-gradient(135deg, #237e6aff 0%, #1b474dff 100%);
+    filter: brightness(0.88);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 128, 96, 0.3);
   }
@@ -737,12 +775,16 @@
   
   /* Show popup */
   .popup-overlay.active {
-    display: block !important;
+    display: flex !important;
+    align-items: flex-end;
+    justify-content: center;
   }
   
   @media (min-width: 768px) {
     .popup-overlay.active {
       display: flex !important;
+      align-items: center;
+      justify-content: center;
     }
   }
   .no-camera-text {
@@ -758,8 +800,8 @@
   padding: 14px 24px;
   font-size: 15px;
   font-weight: 600;
-  background: linear-gradient(135deg, #329580 0%, #245b62 100%);
-  color: white;
+  background: var(--sbb-upload-btn-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
+  color: var(--sbb-upload-btn-color, white);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -769,7 +811,7 @@
 }
 
 .upload-photo-btn-2:hover {
-  background: linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%);
+  filter: brightness(0.9);
   transform: translateY(-1px);
 }
 </style>
@@ -807,7 +849,7 @@
     
     try {
       console.log('⚙️  Fetching shop settings...');
-      const response = await fetch(`http://localhost:5000/api/settings/${shopDomain}`);
+      const response = await fetch(`https://seebeforebuy.in/api/settings/${shopDomain}`);
       const data = await response.json();
       
       if (data.success && data.settings) {
@@ -833,97 +875,107 @@
   // Apply settings to button and popup
   function applySettings(settings) {
     if (!settings) return;
-    
-    // Apply button settings
-    const button = document.querySelector('.try-the-look-btn');
-    if (button && settings.button) {
-      const btnContent = button.querySelector('.btn-content');
-      const btnMainText = button.querySelector('.btn-main-text');
-      
-      // Update button text
-      if (btnMainText && settings.button.text) {
-        btnMainText.textContent = settings.button.text;
+
+    const root = document.documentElement;
+
+    // ── MAIN BUTTON ──────────────────────────────────────────────
+    if (settings.button) {
+      const bg = settings.button.bg_color || '#329580';
+      const bgDark = adjustColor(bg, -20);
+      root.style.setProperty('--sbb-btn-bg', `linear-gradient(135deg, ${bg} 0%, ${bgDark} 100%)`);
+      root.style.setProperty('--sbb-btn-color', settings.button.text_color || '#FFFFFF');
+      root.style.setProperty('--sbb-btn-radius', `${settings.button.border_radius ?? 8}px`);
+
+      const button = document.querySelector('.try-the-look-btn');
+      if (button) {
+        const btnMainText = button.querySelector('.btn-main-text');
+        if (btnMainText && settings.button.text) {
+          btnMainText.textContent = settings.button.text;
+        }
+        // size overrides
+        if (settings.button.size === 'small') {
+          button.style.padding = '12px 20px';
+          button.style.fontSize = '14px';
+          button.style.minHeight = '50px';
+        } else if (settings.button.size === 'large') {
+          button.style.padding = '20px 28px';
+          button.style.fontSize = '18px';
+          button.style.minHeight = '70px';
+        }
       }
-      
-      // Apply button styles
-      button.style.background = `linear-gradient(135deg, ${settings.button.bg_color} 0%, ${adjustColor(settings.button.bg_color, -20)} 100%)`;
-      button.style.color = settings.button.text_color;
-      button.style.borderRadius = `${settings.button.border_radius}px`;
-      
-      // Apply button size
-      if (settings.button.size === 'small') {
-        button.style.padding = '12px 20px';
-        button.style.fontSize = '14px';
-        button.style.minHeight = '50px';
-      } else if (settings.button.size === 'large') {
-        button.style.padding = '20px 28px';
-        button.style.fontSize = '18px';
-        button.style.minHeight = '70px';
-      }
-      // medium is default, no changes needed
-      
-      console.log('✅ Button styles applied');
     }
-    
-    // Apply popup settings
-    const popupHeader = document.querySelector('.popup-header h2');
-    const uploadBtn = document.querySelector('.upload-photo-btn-2');
-    const submitBtn = document.getElementById('submit-btn');
-    const popupContent = document.querySelector('.popup-content');
-    
+
+    // ── POPUP ────────────────────────────────────────────────────
     if (settings.popup) {
-      // Update popup title
-      if (popupHeader && settings.popup.title) {
-        popupHeader.textContent = settings.popup.title;
+      // Header
+      const headerBg = settings.popup.header_bg_color || '#329580';
+      const headerBgDark = adjustColor(headerBg, -20);
+      root.style.setProperty('--sbb-header-bg', `linear-gradient(135deg, ${headerBg} 0%, ${headerBgDark} 100%)`);
+
+      // Upload area
+      root.style.setProperty('--sbb-upload-area-bg', settings.popup.upload_area_bg_color || '#F6F6F7');
+
+      // Upload button
+      const upBg = settings.popup.upload_btn_bg_color || '#329580';
+      const upBgDark = adjustColor(upBg, -20);
+      root.style.setProperty('--sbb-upload-btn-bg', `linear-gradient(135deg, ${upBg} 0%, ${upBgDark} 100%)`);
+      root.style.setProperty('--sbb-upload-btn-color', settings.popup.upload_btn_text_color || '#FFFFFF');
+
+      // Generate button
+      const genBg = settings.popup.generate_btn_bg_color || '#329580';
+      const genBgDark = adjustColor(genBg, -20);
+      root.style.setProperty('--sbb-generate-btn-bg', `linear-gradient(135deg, ${genBg} 0%, ${genBgDark} 100%)`);
+      root.style.setProperty('--sbb-generate-btn-color', settings.popup.generate_btn_text_color || '#FFFFFF');
+
+      // Popup content background / text / radius
+      const popupContent = document.querySelector('.popup-content');
+      if (popupContent) {
+        if (settings.popup.bg_color) popupContent.style.backgroundColor = settings.popup.bg_color;
+        if (settings.popup.text_color) popupContent.style.color = settings.popup.text_color;
+        if (settings.popup.border_radius !== undefined) {
+          popupContent.style.borderRadius = `${settings.popup.border_radius}px`;
+        }
       }
-      
-      // Update upload button text
+
+      // Text fields (title, button labels)
+      const popupHeaderTitle = document.querySelector('.popup-header h2');
+      if (popupHeaderTitle && settings.popup.title) {
+        popupHeaderTitle.textContent = settings.popup.title;
+      }
+
+      const uploadBtn = document.querySelector('.upload-photo-btn-2');
       if (uploadBtn && settings.popup.upload_button_text) {
         uploadBtn.textContent = settings.popup.upload_button_text;
       }
-      
-      // Update generate button text
+
+      const submitBtn = document.getElementById('submit-btn');
       if (submitBtn && settings.popup.generate_button_text) {
         const btnText = submitBtn.querySelector('.btn-text');
-        if (btnText) {
-          btnText.textContent = settings.popup.generate_button_text;
+        if (btnText) btnText.textContent = settings.popup.generate_button_text;
+      }
+    }
+
+    // ── ADD TO CART BUTTON ───────────────────────────────────────
+    if (settings.add_to_cart_button) {
+      const atcBg = settings.add_to_cart_button.bg_color || '#2a7f6d';
+      const atcBgDark = adjustColor(atcBg, -20);
+      root.style.setProperty('--sbb-atc-btn-bg', `linear-gradient(135deg, ${atcBg} 0%, ${atcBgDark} 100%)`);
+      root.style.setProperty('--sbb-atc-btn-color', settings.add_to_cart_button.text_color || '#FFFFFF');
+      root.style.setProperty('--sbb-atc-btn-radius', `${settings.add_to_cart_button.border_radius ?? 8}px`);
+
+      const addToCartBtn = document.getElementById('add-to-cart-btn');
+      if (addToCartBtn) {
+        if (settings.add_to_cart_button.text) {
+          addToCartBtn.textContent = settings.add_to_cart_button.text;
+        }
+        if (settings.add_to_cart_button.size === 'small') {
+          addToCartBtn.style.padding = '12px 20px';
+          addToCartBtn.style.fontSize = '14px';
+        } else if (settings.add_to_cart_button.size === 'large') {
+          addToCartBtn.style.padding = '20px 32px';
+          addToCartBtn.style.fontSize = '18px';
         }
       }
-      
-      // Apply popup background and text color
-      if (popupContent) {
-        popupContent.style.backgroundColor = settings.popup.bg_color;
-        popupContent.style.color = settings.popup.text_color;
-        popupContent.style.borderRadius = `${settings.popup.border_radius}px`;
-      }
-      
-      console.log('✅ Popup styles applied');
-    }
-    
-    // Apply add_to_cart_button settings
-    const addToCartBtn = document.getElementById('add-to-cart-btn');
-    if (addToCartBtn && settings.add_to_cart_button) {
-      // Update button text
-      if (settings.add_to_cart_button.text) {
-        addToCartBtn.textContent = settings.add_to_cart_button.text;
-      }
-      
-      // Apply button styles
-      addToCartBtn.style.background = `linear-gradient(135deg, ${settings.add_to_cart_button.bg_color} 0%, ${adjustColor(settings.add_to_cart_button.bg_color, -20)} 100%)`;
-      addToCartBtn.style.color = settings.add_to_cart_button.text_color;
-      addToCartBtn.style.borderRadius = `${settings.add_to_cart_button.border_radius}px`;
-      
-      // Apply button size
-      if (settings.add_to_cart_button.size === 'small') {
-        addToCartBtn.style.padding = '12px 20px';
-        addToCartBtn.style.fontSize = '14px';
-      } else if (settings.add_to_cart_button.size === 'large') {
-        addToCartBtn.style.padding = '20px 32px';
-        addToCartBtn.style.fontSize = '18px';
-      }
-      // medium is default (16px 24px)
-      
-      console.log('✅ Add to Cart button styles applied');
     }
   }
   
@@ -970,6 +1022,12 @@
   
   function openTryTheLookPopup() {
     const popup = document.getElementById('try-the-look-popup');
+    
+    // Move popup to body to escape any theme container restrictions
+    if (popup.parentElement !== document.body) {
+      document.body.appendChild(popup);
+    }
+    
     popup.style.display = 'block';
     popup.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -1071,12 +1129,13 @@ async function submitTryTheLook() {
     formData.append('userImage', selectedImageFile);
     formData.append('shop_domain', shopDomain);
     formData.append('product_name', productTitle);
-    formData.append('session_id', sessionId);  // Add session ID
+    formData.append('session_id', sessionId);
+    formData.append('product_category', '{{ product_category }}');  // Dynamic per-product category
     if (productImageUrl) {
       formData.append('product_image_url', productImageUrl);
     }
     
-    const response = await fetch('http://localhost:5000/api/generate-image', {
+    const response = await fetch('https://seebeforebuy.in/api/generate-image', {
       method: 'POST',
       body: formData
     });
@@ -1167,19 +1226,19 @@ async function submitTryTheLook() {
     const imageUrl = generatedImage.src;
     
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      // Use backend proxy to avoid CORS issues on direct S3 download
+      const proxyUrl = `https://seebeforebuy.in/api/download-image?url=${encodeURIComponent(imageUrl)}`;
       const a = document.createElement('a');
-      a.href = url;
+      a.href = proxyUrl;
       a.download = 'see-before-buy-preview.png';
+      a.target = '_blank';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download error:', error);
-      alert('Unable to download image. Please try right-clicking and saving the image.');
+      // Fallback - open image in new tab
+      window.open(imageUrl, '_blank');
     }
   }
   
@@ -1264,7 +1323,7 @@ async function submitTryTheLook() {
       const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
       
       try {
-        await fetch('http://localhost:5000/api/track-usage', {
+        await fetch('https://seebeforebuy.in/api/track-usage', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
