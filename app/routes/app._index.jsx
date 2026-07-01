@@ -553,78 +553,134 @@ export default function Index() {
           </p>
           
           <div className={styles.categoryList}>
-            <div 
-              className={`${styles.categoryItem} ${selectedCategory === 'apparel' ? styles.selected : ''}`}
-              onClick={() => selectCategory('apparel')}
-            >
+            {/* Apparel */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'apparel' ? styles.selected : ''}`} onClick={() => selectCategory('apparel')}>
               <div className={styles.categoryCheckbox}>
-                <input 
-                  type="radio" 
-                  name="category"
-                  checked={selectedCategory === 'apparel'}
-                  onChange={() => selectCategory('apparel')}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <input type="radio" name="category" checked={selectedCategory === 'apparel'} onChange={() => selectCategory('apparel')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>Apparel</div>
-                  <div className={styles.categoryExamples}>T-shirts, Shirts, Hoodies, Dresses, Jackets</div>
+                  <div className={styles.categoryName}>👕 Apparel</div>
+                  <div className={styles.categoryExamples}>General clothing — dresses, jackets, coats</div>
                 </div>
               </div>
             </div>
-            
-            <div 
-              className={`${styles.categoryItem} ${selectedCategory === 'jewellery' ? styles.selected : ''}`}
-              onClick={() => selectCategory('jewellery')}
-            >
+
+            {/* Kurti */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'kurti' ? styles.selected : ''}`} onClick={() => selectCategory('kurti')}>
               <div className={styles.categoryCheckbox}>
-                <input 
-                  type="radio" 
-                  name="category"
-                  checked={selectedCategory === 'jewellery'}
-                  onChange={() => selectCategory('jewellery')}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <input type="radio" name="category" checked={selectedCategory === 'kurti'} onChange={() => selectCategory('kurti')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>Jewellery</div>
-                  <div className={styles.categoryExamples}>Rings, Earrings, Necklaces, Bracelets</div>
+                  <div className={styles.categoryName}>🥻 Kurti / Kurta</div>
+                  <div className={styles.categoryExamples}>Kurtis, Kurtas, Salwar Kameez, Anarkali, Tunics</div>
                 </div>
               </div>
             </div>
-            
-            <div 
-              className={`${styles.categoryItem} ${selectedCategory === 'footwear' ? styles.selected : ''}`}
-              onClick={() => selectCategory('footwear')}
-            >
+
+            {/* Saree */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'saree' ? styles.selected : ''}`} onClick={() => selectCategory('saree')}>
               <div className={styles.categoryCheckbox}>
-                <input 
-                  type="radio" 
-                  name="category"
-                  checked={selectedCategory === 'footwear'}
-                  onChange={() => selectCategory('footwear')}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <input type="radio" name="category" checked={selectedCategory === 'saree'} onChange={() => selectCategory('saree')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>Footwear</div>
-                  <div className={styles.categoryExamples}>Shoes, Sneakers, Boots, Sandals</div>
+                  <div className={styles.categoryName}>🥻 Saree / Lehenga</div>
+                  <div className={styles.categoryExamples}>Sarees, Lehengas, Cholis, Ethnic drapes</div>
                 </div>
               </div>
             </div>
-            
-            <div 
-              className={`${styles.categoryItem} ${selectedCategory === 'accessories' ? styles.selected : ''}`}
-              onClick={() => selectCategory('accessories')}
-            >
+
+            {/* T-Shirt */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 't_shirt' ? styles.selected : ''}`} onClick={() => selectCategory('t_shirt')}>
               <div className={styles.categoryCheckbox}>
-                <input 
-                  type="radio" 
-                  name="category"
-                  checked={selectedCategory === 'accessories'}
-                  onChange={() => selectCategory('accessories')}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <input type="radio" name="category" checked={selectedCategory === 't_shirt'} onChange={() => selectCategory('t_shirt')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>Accessories</div>
-                  <div className={styles.categoryExamples}>Hats, Bags, Watches, Belts, Sunglasses</div>
+                  <div className={styles.categoryName}>👕 T-Shirt / Polo</div>
+                  <div className={styles.categoryExamples}>T-shirts, Polos, Graphic tees, Crop tops</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Shirt */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'shirt' ? styles.selected : ''}`} onClick={() => selectCategory('shirt')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'shirt'} onChange={() => selectCategory('shirt')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>👔 Shirt / Blouse</div>
+                  <div className={styles.categoryExamples}>Button-up shirts, Formal shirts, Blouses</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Suit */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'suit' ? styles.selected : ''}`} onClick={() => selectCategory('suit')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'suit'} onChange={() => selectCategory('suit')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>🤵 Suit / Blazer</div>
+                  <div className={styles.categoryExamples}>Suits, Blazers, Waistcoats, Tuxedos</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Streetwear */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'streetwear' ? styles.selected : ''}`} onClick={() => selectCategory('streetwear')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'streetwear'} onChange={() => selectCategory('streetwear')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>🧥 Streetwear</div>
+                  <div className={styles.categoryExamples}>Hoodies, Sweatshirts, Cargo pants, Joggers</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Watch */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'watch' ? styles.selected : ''}`} onClick={() => selectCategory('watch')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'watch'} onChange={() => selectCategory('watch')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>⌚ Watch</div>
+                  <div className={styles.categoryExamples}>Wristwatches, Smartwatches, Luxury timepieces</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Shoes */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'shoes' ? styles.selected : ''}`} onClick={() => selectCategory('shoes')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'shoes'} onChange={() => selectCategory('shoes')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>👟 Shoes / Sneakers</div>
+                  <div className={styles.categoryExamples}>Sneakers, Boots, Heels, Loafers, Trainers</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Jewellery */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'jewellery' ? styles.selected : ''}`} onClick={() => selectCategory('jewellery')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'jewellery'} onChange={() => selectCategory('jewellery')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>💍 Jewellery</div>
+                  <div className={styles.categoryExamples}>Rings, Earrings, Necklaces, Bracelets, Bangles</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footwear */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'footwear' ? styles.selected : ''}`} onClick={() => selectCategory('footwear')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'footwear'} onChange={() => selectCategory('footwear')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>👞 Footwear</div>
+                  <div className={styles.categoryExamples}>Sandals, Formal shoes, Sports shoes, Flats</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Accessories */}
+            <div className={`${styles.categoryItem} ${selectedCategory === 'accessories' ? styles.selected : ''}`} onClick={() => selectCategory('accessories')}>
+              <div className={styles.categoryCheckbox}>
+                <input type="radio" name="category" checked={selectedCategory === 'accessories'} onChange={() => selectCategory('accessories')} onClick={(e) => e.stopPropagation()} />
+                <div className={styles.categoryContent}>
+                  <div className={styles.categoryName}>👜 Accessories</div>
+                  <div className={styles.categoryExamples}>Bags, Hats, Belts, Sunglasses, Scarves</div>
                 </div>
               </div>
             </div>
