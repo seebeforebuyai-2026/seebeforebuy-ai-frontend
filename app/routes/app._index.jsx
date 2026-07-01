@@ -558,7 +558,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'apparel'} onChange={() => selectCategory('apparel')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>👕 Apparel</div>
+                  <div className={styles.categoryName}> Apparel</div>
                   <div className={styles.categoryExamples}>General clothing — dresses, jackets, coats</div>
                 </div>
               </div>
@@ -569,7 +569,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'kurti'} onChange={() => selectCategory('kurti')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>🥻 Kurti / Kurta</div>
+                  <div className={styles.categoryName}> Kurti / Kurta</div>
                   <div className={styles.categoryExamples}>Kurtis, Kurtas, Salwar Kameez, Anarkali, Tunics</div>
                 </div>
               </div>
@@ -580,7 +580,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'saree'} onChange={() => selectCategory('saree')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>🥻 Saree / Lehenga</div>
+                  <div className={styles.categoryName}> Saree / Lehenga</div>
                   <div className={styles.categoryExamples}>Sarees, Lehengas, Cholis, Ethnic drapes</div>
                 </div>
               </div>
@@ -591,7 +591,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 't_shirt'} onChange={() => selectCategory('t_shirt')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>👕 T-Shirt / Polo</div>
+                  <div className={styles.categoryName}> T-Shirt / Polo</div>
                   <div className={styles.categoryExamples}>T-shirts, Polos, Graphic tees, Crop tops</div>
                 </div>
               </div>
@@ -602,7 +602,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'shirt'} onChange={() => selectCategory('shirt')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>👔 Shirt / Blouse</div>
+                  <div className={styles.categoryName}> Shirt / Blouse</div>
                   <div className={styles.categoryExamples}>Button-up shirts, Formal shirts, Blouses</div>
                 </div>
               </div>
@@ -613,7 +613,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'suit'} onChange={() => selectCategory('suit')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>🤵 Suit / Blazer</div>
+                  <div className={styles.categoryName}> Suit / Blazer</div>
                   <div className={styles.categoryExamples}>Suits, Blazers, Waistcoats, Tuxedos</div>
                 </div>
               </div>
@@ -624,7 +624,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'streetwear'} onChange={() => selectCategory('streetwear')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>🧥 Streetwear</div>
+                  <div className={styles.categoryName}> Streetwear</div>
                   <div className={styles.categoryExamples}>Hoodies, Sweatshirts, Cargo pants, Joggers</div>
                 </div>
               </div>
@@ -635,7 +635,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'watch'} onChange={() => selectCategory('watch')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>⌚ Watch</div>
+                  <div className={styles.categoryName}> Watch</div>
                   <div className={styles.categoryExamples}>Wristwatches, Smartwatches, Luxury timepieces</div>
                 </div>
               </div>
@@ -646,7 +646,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'shoes'} onChange={() => selectCategory('shoes')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>👟 Shoes / Sneakers</div>
+                  <div className={styles.categoryName}>Shoes / Sneakers</div>
                   <div className={styles.categoryExamples}>Sneakers, Boots, Heels, Loafers, Trainers</div>
                 </div>
               </div>
@@ -657,7 +657,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'jewellery'} onChange={() => selectCategory('jewellery')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>💍 Jewellery</div>
+                  <div className={styles.categoryName}> Jewellery</div>
                   <div className={styles.categoryExamples}>Rings, Earrings, Necklaces, Bracelets, Bangles</div>
                 </div>
               </div>
@@ -668,7 +668,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'footwear'} onChange={() => selectCategory('footwear')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>👞 Footwear</div>
+                  <div className={styles.categoryName}> Footwear</div>
                   <div className={styles.categoryExamples}>Sandals, Formal shoes, Sports shoes, Flats</div>
                 </div>
               </div>
@@ -679,7 +679,7 @@ export default function Index() {
               <div className={styles.categoryCheckbox}>
                 <input type="radio" name="category" checked={selectedCategory === 'accessories'} onChange={() => selectCategory('accessories')} onClick={(e) => e.stopPropagation()} />
                 <div className={styles.categoryContent}>
-                  <div className={styles.categoryName}>👜 Accessories</div>
+                  <div className={styles.categoryName}> Accessories</div>
                   <div className={styles.categoryExamples}>Bags, Hats, Belts, Sunglasses, Scarves</div>
                 </div>
               </div>
@@ -749,7 +749,7 @@ export default function Index() {
                 
                 <div className={styles.statItem}>
                   <div className={styles.statLabel}>Images Used</div>
-                  <div className={styles.statValue}>0/15</div>
+                  <div className={styles.statValue}>0/50</div>
                 </div>
                 
                 <div className={styles.statItem}>
@@ -894,7 +894,7 @@ export default function Index() {
               <div className={styles.statItem}>
                 <div className={styles.statLabel}>Images Used</div>
                 <div className={styles.statValue}>
-                  {loaderData.usage?.used || 0}/{loaderData.usage?.limit || 15}
+                  {loaderData.usage?.used || 0}/{loaderData.usage?.limit || 50}
                 </div>
               </div>
              
@@ -1023,7 +1023,7 @@ export default function Index() {
                 <div className={styles.statItem}>
                   <div className={styles.statLabel}>Images Used</div>
                   <div className={styles.statValue}>
-                    {loaderData.usage?.used || 0}/{loaderData.usage?.limit || 15}
+                    {loaderData.usage?.used || 0}/{loaderData.usage?.limit || 50}
                   </div>
                 </div>
                 

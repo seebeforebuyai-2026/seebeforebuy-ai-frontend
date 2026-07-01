@@ -42,7 +42,7 @@
   >
     <div class="btn-content">
       <span class="btn-main-text">See Before You Buy</span>
-      <span class="btn-subtitle">AI Preview, No Camera</span>
+      <span class="btn-subtitle">AI Preview</span>
     </div>
   </button>
 </div>
@@ -1170,7 +1170,7 @@ async function submitTryTheLook() {
       submitBtn.disabled = false;
       progressBarFill.style.width = '0%';
       progressPercentage.textContent = '0%';
-      showStatus('⚠️ Free limit reached (15 images). Please contact store owner to upgrade.', 'error');
+      showStatus('⚠️ Free limit reached (50 images). Please contact store owner to upgrade.', 'error');
       
     } else {
       loadingOverlay.style.display = 'none';
