@@ -200,6 +200,11 @@
   >
     Add to Cart
   </button>
+
+  {{- /* Hidden inputs: Liquid injects the correct variant ID and product title */ -}}
+  {% assign sbb_variant = current_product.selected_or_first_available_variant %}
+  <input type="hidden" id="sbb-variant-id" value="{{ sbb_variant.id }}">
+  <input type="hidden" id="sbb-product-title" value="{{ current_product.title | escape }}">
 </div>
     
   </div>
@@ -1293,19 +1298,22 @@ async function submitTryTheLook() {
       const variantId = getProductVariantId();
       
       if (!variantId) {
-        showStatus('Error: Could not add to cart', 'error');
+        showStatus('Error: Could not find product variant. Please add to cart from the product page.', 'error');
         addToCartBtn.disabled = false;
         addToCartBtn.textContent = originalText;
         return;
       }
+
+      console.log('🛒 Adding to cart, variantId:', variantId);
       
       const response = await fetch('/cart/add.js', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({
-          id: variantId,
+          id: parseInt(variantId, 10),
           quantity: 1,
           properties: {
             '_sbb_try_on': 'true',
@@ -1313,56 +1321,83 @@ async function submitTryTheLook() {
           }
         })
       });
+
+      const responseData = await response.json();
+      console.log('🛒 Cart response:', responseData);
       
-      if (!response.ok) throw new Error('Cart API error');
-      
-      addToCartBtn.textContent = '✓ Added';
-      
-      // Track add to cart event
-      const productTitle = document.querySelector('.product-text h3')?.textContent || 'Unknown Product';
-      const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
-      
-      try {
-        await fetch('https://seebeforebuy.in/api/track-usage', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            shop_domain: shopDomain,
-            event_type: 'add_to_cart',
-            product_name: productTitle
-          })
-        });
-        console.log('✅ Add to cart event tracked');
-      } catch (trackError) {
-        console.error('❌ Failed to track add to cart:', trackError);
-        // Don't block the user flow if tracking fails
+      if (!response.ok) {
+        throw new Error(responseData.description || responseData.message || 'Cart API error');
       }
+      
+      addToCartBtn.textContent = '✓ Added to Cart!';
+      addToCartBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
+
+      // Dispatch cart update events for theme cart drawer/header
+      document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+      document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
+      if (window.Shopify && window.Shopify.onCartUpdate) window.Shopify.onCartUpdate();
+
+      // Track add to cart event (fire-and-forget)
+      const productTitle = document.getElementById('sbb-product-title')?.value || 'Unknown Product';
+      const shopDomain = window.Shopify?.shop || '';
+      fetch('https://seebeforebuy.in/api/track-usage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shop_domain: shopDomain, event_type: 'add_to_cart', product_name: productTitle })
+      }).catch(() => {});
       
       setTimeout(() => {
         closeTryTheLookPopup();
         window.location.href = '/cart';
-      }, 800);
+      }, 900);
       
     } catch (error) {
-      showStatus('Error adding to cart. Please try again.', 'error');
+      console.error('❌ Add to cart error:', error);
+      showStatus('Error: ' + (error.message || 'Could not add to cart. Please try again.'), 'error');
       addToCartBtn.textContent = originalText;
+      addToCartBtn.style.background = '';
       addToCartBtn.disabled = false;
     }
   }
   
   function getProductVariantId() {
-    const variantInput = document.querySelector('form[action*="/cart/add"] input[name="id"]');
-    if (variantInput) return variantInput.value;
-    
-    const variantSelect = document.querySelector('select[name="id"]');
-    if (variantSelect) return variantSelect.value;
-    
-    if (window.ShopifyAnalytics?.meta?.product?.variants?.[0]?.id) {
-      return window.ShopifyAnalytics.meta.product.variants[0].id;
+    // 1. Best source: Liquid-rendered hidden input (most reliable)
+    const liquidVariant = document.getElementById('sbb-variant-id');
+    if (liquidVariant && liquidVariant.value) {
+      console.log('✅ Variant from Liquid:', liquidVariant.value);
+      return liquidVariant.value;
     }
-    
+
+    // 2. Currently selected variant from theme's variant picker
+    const selectedVariantInput = document.querySelector('input[name="id"]:not([type="hidden"]), select[name="id"]');
+    if (selectedVariantInput && selectedVariantInput.value) {
+      console.log('✅ Variant from theme picker:', selectedVariantInput.value);
+      return selectedVariantInput.value;
+    }
+
+    // 3. Hidden input inside add-to-cart form
+    const formVariantInput = document.querySelector('form[action*="/cart/add"] input[name="id"]');
+    if (formVariantInput && formVariantInput.value) {
+      console.log('✅ Variant from form input:', formVariantInput.value);
+      return formVariantInput.value;
+    }
+
+    // 4. Shopify Analytics global object
+    const analyticsVariant = window.ShopifyAnalytics?.meta?.selectedVariantId
+      || window.ShopifyAnalytics?.meta?.product?.variants?.[0]?.id;
+    if (analyticsVariant) {
+      console.log('✅ Variant from ShopifyAnalytics:', analyticsVariant);
+      return analyticsVariant;
+    }
+
+    // 5. meta[name="selected_variant_id"] tag (some themes set this)
+    const metaVariant = document.querySelector('meta[name="selected_variant_id"]');
+    if (metaVariant && metaVariant.content) {
+      console.log('✅ Variant from meta tag:', metaVariant.content);
+      return metaVariant.content;
+    }
+
+    console.warn('⚠️ Could not find variant ID');
     return null;
   }
   
