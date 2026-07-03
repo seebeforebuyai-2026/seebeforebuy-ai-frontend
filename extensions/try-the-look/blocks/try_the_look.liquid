@@ -107,7 +107,7 @@
       <!-- Image Preview -->
       <div id="image-preview-container" class="preview-container" style="display: none;">
        <div class="preview-wrapper">
-  <img id="image-preview" src="" alt="Preview" class="preview-image">
+  <img id="image-preview" src="" alt="Preview" class="preview-image" width="600" height="600">
   
   <!-- Loading Overlay with Progress Bar -->
   <div id="loading-overlay" class="loading-overlay" style="display: none;">
@@ -157,7 +157,7 @@
     
     <span class="preview-badge">Your Preview</span>
     
-    <img id="generated-image" src="" alt="Generated result" class="generated-image">
+    <img id="generated-image" src="" alt="Generated result" class="generated-image" width="600" height="800">
     
     <div class="overlay-actions">
       <button 
@@ -201,7 +201,7 @@
     Add to Cart
   </button>
 
-  {{- /* Hidden inputs: Liquid injects the correct variant ID and product title */ -}}
+  {% comment %} Hidden inputs: Liquid injects the correct variant ID and product title {% endcomment %}
   {% assign sbb_variant = current_product.selected_or_first_available_variant %}
   <input type="hidden" id="sbb-variant-id" value="{{ sbb_variant.id }}">
   <input type="hidden" id="sbb-product-title" value="{{ current_product.title | escape }}">
