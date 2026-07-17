@@ -936,43 +936,43 @@ export default function Index() {
           {/* Predicted Impact Section */}
           <div className={styles.statsCard} style={{ marginTop: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#000000ff', margin: 0 }}>
                 Performance Impact
               </h3>
               <span style={{ background: '#EDE9FE', color: '#329580', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
                 your revenue 
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: '#6B7280', marginBottom: '20px' }}>
+            <p style={{ fontSize: '13px', color: '#000000ff', marginBottom: '20px' }}>
               it can be late to update due to high traffic   
             </p>
             <div className={styles.statsGrid}>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Orders via App <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(8% of store)</span></div>
+                <div className={styles.statLabel}>Orders</div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
                   {loaderData.predicted?.orders_via_app ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Revenue via App <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(8% of store)</span></div>
+                <div className={styles.statLabel}>Revenue</div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
                   ₹{loaderData.predicted?.revenue_via_app?.toFixed(2) ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Unique Users <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(orders ÷ 2%)</span></div>
+                <div className={styles.statLabel}>Unique Users </div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
                   {loaderData.predicted?.unique_users ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Try-Ons Generated <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(users × 1.7)</span></div>
+                <div className={styles.statLabel}>Try-Ons Generated </div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
                   {loaderData.predicted?.try_ons_generated ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Revenue per Try-On <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(revenue ÷ try-ons)</span></div>
+                <div className={styles.statLabel}>Revenue per Try-On </div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
                   ₹{loaderData.predicted?.revenue_per_try_on ?? '—'}
                 </div>
