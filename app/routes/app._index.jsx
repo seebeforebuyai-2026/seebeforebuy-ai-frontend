@@ -66,6 +66,16 @@ export const loader = async ({ request }) => {
     const response = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
     const data = await response.json();
 
+    // Fetch predicted impact in parallel
+    let predicted = null;
+    try {
+      const predRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}/predicted-impact`);
+      if (predRes.ok) {
+        const predData = await predRes.json();
+        predicted = predData.predicted || null;
+      }
+    } catch { /* non-critical */ }
+
     console.log('📦 Shop status response:', JSON.stringify(data, null, 2));
 
     // Auto-sync orders if needed (> 1 hour since last sync)
@@ -103,7 +113,8 @@ export const loader = async ({ request }) => {
       stats: data.stats || null,
       metrics: data.metrics || null,
       top_products: data.top_products || [],
-      accountExists: data.accountExists || false, // Use backend's accountExists flag
+      predicted: predicted,
+      accountExists: data.accountExists || false,
     };
   } catch (error) {
     console.error('❌ Error checking shop status:', error);
@@ -120,6 +131,7 @@ export const loader = async ({ request }) => {
       stats: null,
       metrics: null,
       top_products: [],
+      predicted: null,
       accountExists: false,
     };
   }
@@ -921,6 +933,54 @@ export default function Index() {
           </div>
 
         
+          {/* Predicted Impact Section */}
+          <div className={styles.statsCard} style={{ marginTop: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>
+                🔮 Predicted Impact after 6 Months
+              </h3>
+              <span style={{ background: '#EDE9FE', color: '#5B21B6', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
+                Based on last 24h store orders
+              </span>
+            </div>
+            <p style={{ fontSize: '13px', color: '#6B7280', marginBottom: '20px' }}>
+              Based on your store's daily orders, here's what See Before Buy AI could deliver at full scale.
+              8% of store orders/revenue attributed to the app · 2% conversion rate · 1.7× try-on multiplier.
+            </p>
+            <div className={styles.statsGrid}>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #8B5CF6' }}>
+                <div className={styles.statLabel}>Orders via App <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(8% of store)</span></div>
+                <div className={styles.statValue} style={{ color: '#7C3AED' }}>
+                  {loaderData.predicted?.orders_via_app ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #8B5CF6' }}>
+                <div className={styles.statLabel}>Revenue via App <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(8% of store)</span></div>
+                <div className={styles.statValue} style={{ color: '#7C3AED' }}>
+                  ₹{loaderData.predicted?.revenue_via_app?.toFixed(2) ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #8B5CF6' }}>
+                <div className={styles.statLabel}>Unique Users <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(orders ÷ 2%)</span></div>
+                <div className={styles.statValue} style={{ color: '#7C3AED' }}>
+                  {loaderData.predicted?.unique_users ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #8B5CF6' }}>
+                <div className={styles.statLabel}>Try-Ons Generated <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(users × 1.7)</span></div>
+                <div className={styles.statValue} style={{ color: '#7C3AED' }}>
+                  {loaderData.predicted?.try_ons_generated ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #8B5CF6' }}>
+                <div className={styles.statLabel}>Revenue per Try-On <span style={{ fontSize: '11px', color: '#9CA3AF' }}>(revenue ÷ try-ons)</span></div>
+                <div className={styles.statValue} style={{ color: '#7C3AED' }}>
+                  ₹{loaderData.predicted?.revenue_per_try_on ?? '—'}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Top Products Table */}
           {loaderData.top_products && loaderData.top_products.length > 0 && (
             <div className={styles.statsCard} style={{ marginTop: '20px' }}>
