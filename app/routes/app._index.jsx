@@ -797,7 +797,7 @@ export default function Index() {
               </div>
             </div>
             
-            <div className={styles.statsGrid}>
+            {/* <div className={styles.statsGrid}>
 
                <div className={styles.statItem}>
                 <div className={styles.statLabel}>Try-On Generated</div>
@@ -810,11 +810,7 @@ export default function Index() {
               </div>
 
               
-              {/* <div className={styles.statItem}>
-                <div className={styles.statLabel}>Images Generated</div>
-                <div className={styles.statValue}>{loaderData.stats?.total_images_generated || 0}</div>
-              </div> */}
-
+              
               
               
               
@@ -830,7 +826,8 @@ export default function Index() {
               </div>
 
 
-            </div>
+            </div> */}
+            
           </div>
 
   {/* Revenue Metrics Section - NEW */}
@@ -842,7 +839,7 @@ export default function Index() {
 
                 </h3>
                 <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
-                  Last synced: {getTimeSinceSync()} • Total orders: {totalOrdersSynced}
+                  Last synced: {getTimeSinceSync()}
                 </p>
               </div>
               <button
@@ -855,7 +852,7 @@ export default function Index() {
               </button>
             </div>
             
-            <div className={styles.statsGrid}>
+            {/* <div className={styles.statsGrid}>
               <div className={styles.statItem}>
                 <div className={styles.statLabel}>Total Revenue</div>
                 <div className={styles.statValue} style={{ color: '#10B981' }}>
@@ -880,7 +877,61 @@ export default function Index() {
                 <div className={styles.statValue}>{loaderData.metrics?.avg_try_on_per_product || 0}</div>
               </div>
 
+            </div> */}
+
+
+  {/* Predicted Impact Section */}
+          <div className={styles.statsCard} style={{ marginTop: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+              {/* <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#000000ff', margin: 0 }}>
+                Performance Metrics
+
+              </h3> */}
+              {/* <span style={{ background: '#EDE9FE', color: '#329580', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
+                Revenue
+              </span> */}
             </div>
+            {/* <p style={{ fontSize: '13px', color: '#000000ff', marginBottom: '20px' }}>
+              Track your AI try-on performance
+
+ 
+            </p> */}
+            <div className={styles.statsGrid}>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
+                <div className={styles.statLabel}>Orders</div>
+                <div className={styles.statValue} style={{ color: '#329580' }}>
+                  {loaderData.predicted?.orders_via_app ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
+                <div className={styles.statLabel}>Revenue</div>
+                <div className={styles.statValue} style={{ color: '#329580' }}>
+                  ₹{loaderData.predicted?.revenue_via_app?.toFixed(2) ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
+                <div className={styles.statLabel}>Unique Users </div>
+                <div className={styles.statValue} style={{ color: '#329580' }}>
+                  {loaderData.predicted?.unique_users ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
+                <div className={styles.statLabel}>Try-Ons Generated </div>
+                <div className={styles.statValue} style={{ color: '#329580' }}>
+                  {loaderData.predicted?.try_ons_generated ?? '—'}
+                </div>
+              </div>
+              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
+                <div className={styles.statLabel}>Revenue per Try-On </div>
+                <div className={styles.statValue} style={{ color: '#329580' }}>
+                  ₹{loaderData.predicted?.revenue_per_try_on ?? '—'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
           </div>
 
 
@@ -933,58 +984,10 @@ export default function Index() {
           </div>
 
         
-          {/* Predicted Impact Section */}
-          <div className={styles.statsCard} style={{ marginTop: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#000000ff', margin: 0 }}>
-                Performance Metrics
-
-              </h3>
-              <span style={{ background: '#EDE9FE', color: '#329580', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
-                Revenue
-              </span>
-            </div>
-            <p style={{ fontSize: '13px', color: '#000000ff', marginBottom: '20px' }}>
-              Track your AI try-on performance
-
- 
-            </p>
-            <div className={styles.statsGrid}>
-              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Orders</div>
-                <div className={styles.statValue} style={{ color: '#329580' }}>
-                  {loaderData.predicted?.orders_via_app ?? '—'}
-                </div>
-              </div>
-              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Revenue</div>
-                <div className={styles.statValue} style={{ color: '#329580' }}>
-                  ₹{loaderData.predicted?.revenue_via_app?.toFixed(2) ?? '—'}
-                </div>
-              </div>
-              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Unique Users </div>
-                <div className={styles.statValue} style={{ color: '#329580' }}>
-                  {loaderData.predicted?.unique_users ?? '—'}
-                </div>
-              </div>
-              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Try-Ons Generated </div>
-                <div className={styles.statValue} style={{ color: '#329580' }}>
-                  {loaderData.predicted?.try_ons_generated ?? '—'}
-                </div>
-              </div>
-              <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
-                <div className={styles.statLabel}>Revenue per Try-On </div>
-                <div className={styles.statValue} style={{ color: '#329580' }}>
-                  ₹{loaderData.predicted?.revenue_per_try_on ?? '—'}
-                </div>
-              </div>
-            </div>
-          </div>
+        
 
           {/* Top Products Table */}
-          {loaderData.top_products && loaderData.top_products.length > 0 && (
+          {/* {loaderData.top_products && loaderData.top_products.length > 0 && (
             <div className={styles.statsCard} style={{ marginTop: '20px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#111827' }}>
                 🏆 Top 5 Products
@@ -1029,7 +1032,7 @@ export default function Index() {
                 </table>
               </div>
             </div>
-          )}
+          )} */}
         </>
       )}
 
