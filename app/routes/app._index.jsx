@@ -937,14 +937,17 @@ export default function Index() {
           <div className={styles.statsCard} style={{ marginTop: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#000000ff', margin: 0 }}>
-                Performance Impact
+                Performance Metrics
+
               </h3>
               <span style={{ background: '#EDE9FE', color: '#329580', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
-                your revenue 
+                Revenue
               </span>
             </div>
             <p style={{ fontSize: '13px', color: '#000000ff', marginBottom: '20px' }}>
-              it can be late to update due to high traffic   
+              Track your AI try-on performance
+
+ 
             </p>
             <div className={styles.statsGrid}>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
