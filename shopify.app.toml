@@ -32,5 +32,8 @@ use_legacy_install_flow = false
 [auth]
 redirect_urls = [ 
   "https://seebeforebuy.in/auth/callback",
-  "https://seebeforebuy.in/auth"
+  "https://seebeforebuy.in/auth/callback/",
+  "https://seebeforebuy.in/auth",
+  "https://seebeforebuy.in/api/auth",
+  "https://seebeforebuy.in/api/auth/callback"
 ]
