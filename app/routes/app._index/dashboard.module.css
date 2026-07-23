@@ -239,3 +239,49 @@
   pointer-events: none;
   margin-top: 40px;
 }
+
+/* ── Date Range Selector ── */
+.dateRangeBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.dateRangeLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-right: 4px;
+}
+
+.dateRangeBtn {
+  padding: 7px 18px;
+  border-radius: 20px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dateRangeBtn:hover {
+  border-color: #329580;
+  color: #329580;
+}
+
+.dateRangeBtnActive {
+  background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+.dateRangeNote {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-left: 4px;
+}

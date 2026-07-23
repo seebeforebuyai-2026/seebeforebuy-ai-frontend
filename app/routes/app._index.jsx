@@ -391,6 +391,9 @@ export default function Index() {
   const [showCategorySelection, setShowCategorySelection] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(''); // Single category (not array)
   const [showActivation, setShowActivation] = useState(false);
+  const [selectedDays, setSelectedDays] = useState(30); // date range: 7, 30, 90
+  const [rangeMetrics, setRangeMetrics] = useState(null); // metrics for selected range
+  const [isLoadingRange, setIsLoadingRange] = useState(false);
 
   const isCreatingAccount = fetcher.state === "submitting";
   const isSavingCategories = fetcher.state === "submitting" && fetcher.formData?.get('actionType') === 'saveCategories';
@@ -425,6 +428,40 @@ export default function Index() {
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
   };
+
+  // Function to fetch predicted impact for a given day range
+  const fetchRangeMetrics = async (days) => {
+    const backendUrl = 'https://seebeforebuy.in';
+    const shopDomain = loaderData.shop.domain;
+    setIsLoadingRange(true);
+    try {
+      const res = await fetch(
+        `${backendUrl}/api/shop-status/${shopDomain}/predicted-impact?days=${days}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setRangeMetrics(data.predicted || null);
+      }
+    } catch (e) {
+      console.error('Range metrics fetch error:', e);
+    } finally {
+      setIsLoadingRange(false);
+    }
+  };
+
+  // Handle date range selection
+  const handleDateRange = (days) => {
+    setSelectedDays(days);
+    fetchRangeMetrics(days);
+  };
+
+  // Load range metrics on mount when app is active
+  useEffect(() => {
+    if (loaderData.accountExists && loaderData.shopStatus?.app_status === 'active') {
+      fetchRangeMetrics(selectedDays);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaderData.accountExists, loaderData.shopStatus?.app_status]);
 
   // Show success message when account is created
   useEffect(() => {
@@ -797,7 +834,7 @@ export default function Index() {
               </div>
             </div>
             
-            {/* <div className={styles.statsGrid}>
+             <div className={styles.statsGrid}>
 
                <div className={styles.statItem}>
                 <div className={styles.statLabel}>Try-On Generated</div>
@@ -826,17 +863,33 @@ export default function Index() {
               </div>
 
 
-            </div> */}
+            </div> 
             
           </div>
 
   {/* Revenue Metrics Section - NEW */}
           <div className={styles.statsCard} style={{ marginTop: '20px' }}>
+            {/* Date Range Selector */}
+            <div className={styles.dateRangeBar}>
+              <span className={styles.dateRangeLabel}>📅 Period:</span>
+              {[7, 30, 90].map((d) => (
+                <button
+                  key={d}
+                  className={`${styles.dateRangeBtn} ${selectedDays === d ? styles.dateRangeBtnActive : ''}`}
+                  onClick={() => handleDateRange(d)}
+                >
+                  Last {d} Days
+                </button>
+              ))}
+              <span className={styles.dateRangeNote}>
+                {isLoadingRange ? 'Loading...' : `Showing last ${selectedDays} days`}
+              </span>
+            </div>
+
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <div>
                 <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '4px', color: '#111827' }}>
                   Performance Metrics
-
                 </h3>
                 <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
                   Last synced: {getTimeSinceSync()}
@@ -852,7 +905,7 @@ export default function Index() {
               </button>
             </div>
             
-            {/* <div className={styles.statsGrid}>
+             <div className={styles.statsGrid}>
               <div className={styles.statItem}>
                 <div className={styles.statLabel}>Total Revenue</div>
                 <div className={styles.statValue} style={{ color: '#10B981' }}>
@@ -877,63 +930,65 @@ export default function Index() {
                 <div className={styles.statValue}>{loaderData.metrics?.avg_try_on_per_product || 0}</div>
               </div>
 
-            </div> */}
+            </div> 
 
 
-  {/* Predicted Impact Section */}
+  {/* Predicted Impact Section 
           <div className={styles.statsCard} style={{ marginTop: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
-              {/* <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#000000ff', margin: 0 }}>
+               <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#000000ff', margin: 0 }}>
                 Performance Metrics
 
-              </h3> */}
-              {/* <span style={{ background: '#EDE9FE', color: '#329580', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
+              </h3>
+               <span style={{ background: '#EDE9FE', color: '#329580', fontSize: '12px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px' }}>
                 Revenue
-              </span> */}
+              </span> 
             </div>
-            {/* <p style={{ fontSize: '13px', color: '#000000ff', marginBottom: '20px' }}>
+             <p style={{ fontSize: '13px', color: '#000000ff', marginBottom: '20px' }}>
               Track your AI try-on performance
 
  
-            </p> */}
+            </p> 
             <div className={styles.statsGrid}>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
                 <div className={styles.statLabel}>Orders</div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
-                  {loaderData.predicted?.orders_via_app ?? '—'}
+                  {(rangeMetrics ?? loaderData.predicted)?.orders_via_app ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
                 <div className={styles.statLabel}>Revenue</div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
-                  ₹{loaderData.predicted?.revenue_via_app?.toFixed(2) ?? '—'}
+                  {(rangeMetrics ?? loaderData.predicted)?.revenue_via_app != null
+                    ? `₹${Number((rangeMetrics ?? loaderData.predicted).revenue_via_app).toFixed(2)}`
+                    : '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
                 <div className={styles.statLabel}>Unique Users </div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
-                  {loaderData.predicted?.unique_users ?? '—'}
+                  {(rangeMetrics ?? loaderData.predicted)?.unique_users ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
                 <div className={styles.statLabel}>Try-Ons Generated </div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
-                  {loaderData.predicted?.try_ons_generated ?? '—'}
+                  {(rangeMetrics ?? loaderData.predicted)?.try_ons_generated ?? '—'}
                 </div>
               </div>
               <div className={styles.statItem} style={{ borderTop: '3px solid #329580' }}>
                 <div className={styles.statLabel}>Revenue per Try-On </div>
                 <div className={styles.statValue} style={{ color: '#329580' }}>
-                  ₹{loaderData.predicted?.revenue_per_try_on ?? '—'}
+                  {(rangeMetrics ?? loaderData.predicted)?.revenue_per_try_on != null
+                    ? `₹${(rangeMetrics ?? loaderData.predicted).revenue_per_try_on}`
+                    : '—'}
                 </div>
               </div>
             </div>
           </div>
-
-
-
+          
+          */}
           </div>
-
 
           {/* New Metrics Section - Row 1 */}
           <div className={styles.statsCard} style={{ marginTop: '20px' }}>
@@ -942,12 +997,11 @@ export default function Index() {
             </h3>
             
             <div className={styles.statsGrid}>
-              {/* <div className={styles.statItem}>
+               <div className={styles.statItem}>
                 <div className={styles.statLabel}>Try-On Generated</div>
                 <div className={styles.statValue}>{loaderData.metrics?.try_on_generated || 0}</div>
-              </div> */}
+              </div> 
               
-
               
               <div className={styles.statItem}>
                 <div className={styles.statLabel}>Plan</div>
@@ -962,11 +1016,11 @@ export default function Index() {
               </div>
              
               
-              {/* <div className={styles.statItem}>
+              <div className={styles.statItem}>
                 <div className={styles.statLabel}>Add to Cart Count</div>
                 <div className={styles.statValue}>{loaderData.metrics?.add_to_cart_count || 0}</div>
               </div>
-               */}
+               
             
               
               <div className={styles.statItem}>
@@ -987,7 +1041,7 @@ export default function Index() {
         
 
           {/* Top Products Table */}
-          {/* {loaderData.top_products && loaderData.top_products.length > 0 && (
+          {loaderData.top_products && loaderData.top_products.length > 0 && (
             <div className={styles.statsCard} style={{ marginTop: '20px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#111827' }}>
                 🏆 Top 5 Products
@@ -1032,7 +1086,7 @@ export default function Index() {
                 </table>
               </div>
             </div>
-          )} */}
+          )} 
         </>
       )}
 
