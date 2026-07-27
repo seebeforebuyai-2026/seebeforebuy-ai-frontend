@@ -207,7 +207,8 @@ export default function Settings() {
   return (
     <s-page heading="Settings">
       <div className={styles.settingsContainer}>
-        
+
+       
         {/* Tabs */}
         <div className={styles.tabs}>
           <button
@@ -826,7 +827,21 @@ export default function Settings() {
             )}
           </div>
         </div>
+
+
       </div>
+
+       <div style={{ textAlign: "center", marginTop: "32px" }}>
+        <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
+          How to Add the Try-On Block to Your Product Pages
+        </h3>
+        <video
+          src="https://cdn.shopify.com/videos/c/o/v/8d3ec3a22a01482ca376ea8d8b7b6b0b.mp4"
+          controls
+          style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
+        />
+      </div>
+        
     </s-page>
   );
 }

@@ -675,6 +675,24 @@ export default function Index() {
       )}
 
       {/* Category Selection - After Account Creation OR if no category selected */}
+      {/* instruction guide video  */}
+
+      {
+        (showCategorySelection ||
+
+          <div style={{ textAlign: "center", marginTop: "32px" }}>
+        <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
+          How to Add the Try-On Block to Your Product Pages
+        </h3>
+        <video
+          src="https://cdn.shopify.com/videos/c/o/v/b873ca4b7cee4fef84dae899af3d05c9.mp4"
+          controls
+          style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
+        />
+      </div>
+        )
+      }
+
       {(showCategorySelection ||
         (loaderData.accountExists && !hasCategory && !isActive)) && (
         <div className={styles.categorySection}>
@@ -798,6 +816,27 @@ export default function Index() {
           </div>
         </div>
       )}
+
+
+
+
+
+
+      {/* instruction guide video  */}
+
+      { showActivation && !isActive && (
+      <div style={{ textAlign: "center", marginTop: "32px" }}>
+        <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
+          How to Add the Try-On Block to Your Product Pages
+        </h3>
+        <video
+          src="https://cdn.shopify.com/videos/c/o/v/8d3ec3a22a01482ca376ea8d8b7b6b0b.mp4"
+          controls
+          style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
+        />
+      </div>
+      )}
+
 
       {/* Activation Section - After Categories Saved */}
       {showActivation && !isActive && (
