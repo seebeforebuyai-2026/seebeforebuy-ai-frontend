@@ -1,832 +1,466 @@
-<!-- Try the Look Button and Popup - Updated UI -->
+﻿<!-- Try the Look Button and Popup -->
 {% assign current_product = block.settings.product %}
+{% assign default_variant = current_product.selected_or_first_available_variant %}
 
-{% comment %} Dynamic category detection based on product title, type, tags, and collections {% endcomment %}
-{% assign product_category = 'apparel' %}
-{% capture search_string %}{{ current_product.title }} | {{ current_product.type }} | {{ current_product.tags | join: ' ' }}{% endcapture %}
-{% for collection in current_product.collections %}
-  {% capture search_string %}{{ search_string }} | {{ collection.title }}{% endcapture %}
-{% endfor %}
-{% assign search_string = search_string | downcase %}
+{% if current_product %}
+  {% comment %} Dynamic category detection based on product title, type, tags, and collections {% endcomment %}
+  {% assign product_category = "apparel" %}
+  {% capture search_string %}{{ current_product.title }} | {{ current_product.type }} | {{ current_product.tags | join: ' ' }}{% endcapture %}
+  {% for collection in current_product.collections %}
+    {% capture search_string %}{{ search_string }} | {{ collection.title }}{% endcapture %}
+  {% endfor %}
+  {% assign search_string = search_string | downcase %}
 
-{% if search_string contains 'kurti' or search_string contains 'kurta' or search_string contains 'tunic' or search_string contains 'salwar' or search_string contains 'kameez' or search_string contains 'anarkali' %}
-  {% assign product_category = 'kurti' %}
-{% elsif search_string contains 'saree' or search_string contains 'sari' or search_string contains 'lehenga' or search_string contains 'choli' %}
-  {% assign product_category = 'saree' %}
-{% elsif search_string contains 't-shirt' or search_string contains 'tshirt' or search_string contains 't shirt' or search_string contains 'tee' or search_string contains 'polo' %}
-  {% assign product_category = 't_shirt' %}
-{% elsif search_string contains 'shirt' or search_string contains 'blouse' or search_string contains 'button-up' or search_string contains 'button-down' %}
-  {% assign product_category = 'shirt' %}
-{% elsif search_string contains 'suit' or search_string contains 'blazer' or search_string contains 'tuxedo' or search_string contains 'waistcoat' %}
-  {% assign product_category = 'suit' %}
-{% elsif search_string contains 'streetwear' or search_string contains 'hoodie' or search_string contains 'sweatshirt' or search_string contains 'cargo' or search_string contains 'jogger' %}
-  {% assign product_category = 'streetwear' %}
-{% elsif search_string contains 'jewel' or search_string contains 'ring' or search_string contains 'necklace' or search_string contains 'earring' or search_string contains 'bracelet' or search_string contains 'bangle' or search_string contains 'pendant' %}
-  {% assign product_category = 'jewellery' %}
-{% elsif search_string contains 'watch' or search_string contains 'smartwatch' %}
-  {% assign product_category = 'watch' %}
-{% elsif search_string contains 'shoe' or search_string contains 'boot' or search_string contains 'sneaker' or search_string contains 'sandal' or search_string contains 'heel' or search_string contains 'footwear' or search_string contains 'loafer' or search_string contains 'trainer' %}
-  {% assign product_category = 'shoes' %}
-{% elsif search_string contains 'bag' or search_string contains 'purse' or search_string contains 'handbag' or search_string contains 'wallet' or search_string contains 'sunglasses' or search_string contains 'glasses' or search_string contains 'hat' or search_string contains 'cap' or search_string contains 'scarf' or search_string contains 'belt' %}
-  {% assign product_category = 'accessories' %}
-{% else %}
-  {% assign product_category = 'apparel' %}
+  {% if search_string contains "kurti" or search_string contains "kurta" or search_string contains "tunic" or search_string contains "salwar" or search_string contains "kameez" or search_string contains "anarkali" %}
+    {% assign product_category = "kurti" %}
+  {% elsif search_string contains "saree" or search_string contains "sari" or search_string contains "lehenga" or search_string contains "choli" %}
+    {% assign product_category = "saree" %}
+  {% elsif search_string contains "t-shirt" or search_string contains "tshirt" or search_string contains "t shirt" or search_string contains "tee" or search_string contains "polo" %}
+    {% assign product_category = "t_shirt" %}
+  {% elsif search_string contains "shirt" or search_string contains "blouse" or search_string contains "button-up" or search_string contains "button-down" %}
+    {% assign product_category = "shirt" %}
+  {% elsif search_string contains "suit" or search_string contains "blazer" or search_string contains "tuxedo" or search_string contains "waistcoat" %}
+    {% assign product_category = "suit" %}
+  {% elsif search_string contains "streetwear" or search_string contains "hoodie" or search_string contains "sweatshirt" or search_string contains "cargo" or search_string contains "jogger" %}
+    {% assign product_category = "streetwear" %}
+  {% elsif search_string contains "jewel" or search_string contains "ring" or search_string contains "necklace" or search_string contains "earring" or search_string contains "bracelet" or search_string contains "bangle" or search_string contains "pendant" %}
+    {% assign product_category = "jewellery" %}
+  {% elsif search_string contains "watch" or search_string contains "smartwatch" %}
+    {% assign product_category = "watch" %}
+  {% elsif search_string contains "shoe" or search_string contains "boot" or search_string contains "sneaker" or search_string contains "sandal" or search_string contains "heel" or search_string contains "footwear" or search_string contains "loafer" or search_string contains "trainer" %}
+    {% assign product_category = "shoes" %}
+  {% else %}
+    {% assign product_category = "apparel" %}
+  {% endif %}
 {% endif %}
 
-<!-- Main Try the Look Button -->
-<div class="try-the-look-container">
-  <button 
-    class="try-the-look-btn" 
-    onclick="openTryTheLookPopup()"
-    type="button"
-  >
-    <div class="btn-content">
-      <span class="btn-main-text">See Before You Buy</span>
-      <span class="btn-subtitle">AI Preview</span>
-    </div>
+<div class="vtl-trigger-wrap">
+  <button class="vtl-trigger-btn" onclick="openVTLPopup()" type="button">
+    <svg class="vtl-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+    Try The Look
   </button>
 </div>
 
-<!-- Popup Modal -->
-<div id="try-the-look-popup" class="popup-overlay" onclick="closeTryTheLookPopup()">
-  <div class="popup-content" onclick="event.stopPropagation()">
-    
-    <!-- Popup Header -->
-    <div class="popup-header">
-      <h2>{{ 'try_the_look.popup_title' | t }}</h2>
-      <button class="close-btn" onclick="closeTryTheLookPopup()" aria-label="Close">&times;</button>
+<div id="vtl-popup" class="vtl-overlay" onclick="closeVTLPopup(event)">
+  <div class="vtl-modal" onclick="event.stopPropagation()">
+    <div class="vtl-header">
+      <button class="vtl-header-back" id="vtl-back-btn" onclick="goBackFromResult()" type="button" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="vtl-header-center">
+        <div class="vtl-header-title" id="vtl-header-title">Try The Look</div>
+        <div class="vtl-header-sub" id="vtl-header-sub">See how it looks on you</div>
+      </div>
+      <button class="vtl-header-close" onclick="closeVTLPopupDirect()" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
-    
-    <!-- Product Information -->
-    <div class="product-info">
-      <div class="product-details">
-        {% if current_product.featured_image %}
-          <img 
-            src="{{ current_product.featured_image | image_url: width: 120, height: 120 }}" 
-            alt="{{ current_product.title }}"
-            class="product-image"
-            width="120"
-            height="120"
-          >
+
+    <div class="vtl-screen active" id="vtl-s0">
+      <div class="vtl-product-strip">
+        {% if current_product and current_product.featured_image %}
+          <img src="{{ current_product.featured_image | image_url: width: 160 }}" alt="{{ current_product.title | escape }}" class="vtl-product-thumb" width="64" height="80">
+        {% else %}
+          <div class="vtl-product-thumb-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>
+            </svg>
+          </div>
         {% endif %}
-        <div class="product-text">
-          <h3>{{ current_product.title }}</h3>
-          <p class="product-subtitle">Preview how it looks on you</p>
+        <div class="vtl-product-meta">
+          <div class="vtl-product-name">{{ current_product.title }}</div>
+          <div class="vtl-product-cat">Virtual try-on &middot; <strong style="text-transform:capitalize; color:#008060;">{{ product_category | replace: '_', ' ' }}</strong></div>
+        </div>
+      </div>
+
+      <div class="vtl-ready-label">
+        <div class="vtl-badge">AI Preview</div>
+        <h3 class="vtl-ready-title">See it on you in seconds</h3>
+        <p class="vtl-ready-sub">Upload a clear photo and we’ll create a live preview of how this product looks on you.</p>
+      </div>
+
+      <div class="vtl-upload-card">
+        <input type="file" id="vtl-file-input" accept="image/*" style="display:none;" onchange="handleVTLUpload(event)">
+        <button class="vtl-btn-primary vtl-btn-teal" id="vtl-upload-btn" type="button" onclick="document.getElementById('vtl-file-input').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Choose Your Photo
+        </button>
+        <div class="vtl-upload-hint">PNG or JPG • clear light • full body works best</div>
+      </div>
+
+      <div class="vtl-preview-wrap" id="vtl-preview-wrap" style="display:none;">
+        <div class="vtl-preview-card">
+          <img id="vtl-preview-img" src="" alt="Your photo" class="vtl-preview-img">
+          <button class="vtl-preview-remove" onclick="removeVTLImage(event)" type="button" aria-label="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="vtl-preview-name" id="vtl-preview-name"></div>
+      </div>
+
+      <div class="vtl-generate-actions" id="vtl-generate-actions" style="display:none;">
+        <button class="vtl-btn-primary vtl-btn-teal" id="vtl-generate-btn" type="button" onclick="onGenerateClick()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          Generate Preview
+        </button>
+      </div>
+
+      <div class="vtl-uploading-state" id="vtl-uploading-state" style="display:none;">
+        <div class="vtl-uploading-spinner"></div>
+        <div class="vtl-uploading-text">Preparing your preview...</div>
+      </div>
+
+      <div class="vtl-upload-tips">
+        <div class="vtl-tips-title">Tips for best results</div>
+        <div class="vtl-tips-grid">
+          <div class="vtl-tip-item">Full body photo</div>
+          <div class="vtl-tip-item">Good lighting</div>
+          <div class="vtl-tip-item">Stand straight</div>
+          <div class="vtl-tip-item">Front-facing angle</div>
+        </div>
+      </div>
+
+      <div class="vtl-terms">Your photo is processed securely and used to generate your preview.</div>
+    </div>
+
+    <div class="vtl-screen" id="vtl-s1">
+      <div class="vtl-loading-screen">
+        <div class="vtl-badge vtl-badge-soft">Smart Preview</div>
+        <div class="vtl-cards-visual">
+          <div class="vtl-cv-card vtl-cv-product"><img id="vtl-card-product-img-1" src="" alt="Product" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-card vtl-cv-user"><img id="vtl-card-user-img-1" src="" alt="You" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></div>
+        </div>
+        <div class="vtl-stage-text">
+          <div class="vtl-stage-title" id="vtl-s1-title">Analyzing your photo...</div>
+          <div class="vtl-stage-sub" id="vtl-s1-sub">Checking posture, lighting, and pose</div>
+        </div>
+        <div class="vtl-progress-wrap"><div class="vtl-progress-track"><div class="vtl-progress-fill" id="vtl-prog-fill-1"></div></div><div class="vtl-progress-pct" id="vtl-prog-pct-1">0%</div></div>
+        <div class="vtl-tip-card"><div class="vtl-tip-label">Working on</div><div class="vtl-tip-text" id="vtl-tip-text-1">A better preview is being prepared for you.</div></div>
+      </div>
+    </div>
+
+    <div class="vtl-screen" id="vtl-s2">
+      <div class="vtl-loading-screen">
+        <div class="vtl-badge vtl-badge-soft">Matching product</div>
+        <div class="vtl-cards-visual">
+          <div class="vtl-cv-card vtl-cv-product"><img id="vtl-card-product-img-2" src="" alt="Product" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-card vtl-cv-user"><img id="vtl-card-user-img-2" src="" alt="You" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></div>
+        </div>
+        <div class="vtl-stage-text"><div class="vtl-stage-title">Reading garment details...</div><div class="vtl-stage-sub">Mapping fabric, colour, and structure</div></div>
+        <div class="vtl-progress-wrap"><div class="vtl-progress-track"><div class="vtl-progress-fill" id="vtl-prog-fill-2"></div></div><div class="vtl-progress-pct" id="vtl-prog-pct-2">38%</div></div>
+        <div class="vtl-tip-card"><div class="vtl-tip-label">Tip</div><div class="vtl-tip-text" id="vtl-tip-text-2">Stand straight with arms slightly away from your body.</div></div>
+      </div>
+    </div>
+
+    <div class="vtl-screen" id="vtl-s3">
+      <div class="vtl-loading-screen">
+        <div class="vtl-badge vtl-badge-soft">Placing the look</div>
+        <div class="vtl-cards-visual">
+          <div class="vtl-cv-card vtl-cv-product"><img id="vtl-card-product-img-3" src="" alt="Product" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-card vtl-cv-user"><img id="vtl-card-user-img-3" src="" alt="You" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></div>
+        </div>
+        <div class="vtl-stage-text"><div class="vtl-stage-title">Placing it on you...</div><div class="vtl-stage-sub">Matching lighting, shadows, and fit</div></div>
+        <div class="vtl-progress-wrap"><div class="vtl-progress-track"><div class="vtl-progress-fill" id="vtl-prog-fill-3"></div></div><div class="vtl-progress-pct" id="vtl-prog-pct-3">65%</div></div>
+        <div class="vtl-tip-card"><div class="vtl-tip-label">Tip</div><div class="vtl-tip-text" id="vtl-tip-text-3">Avoid extreme angles — a straight-on mirror selfie works best.</div></div>
+      </div>
+    </div>
+
+    <div class="vtl-screen" id="vtl-s4">
+      <div class="vtl-loading-screen vtl-loading-screen-checklist">
+        <div class="vtl-badge vtl-badge-soft">Finishing up</div>
+        <div class="vtl-cards-visual" style="margin-top:24px;">
+          <div class="vtl-cv-card vtl-cv-product"><img id="vtl-card-product-img-4" src="" alt="Product" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-card vtl-cv-user"><img id="vtl-card-user-img-4" src="" alt="You" class="vtl-cv-card-img"></div>
+          <div class="vtl-cv-sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></div>
+        </div>
+        <div class="vtl-stage-text"><div class="vtl-stage-title">Finalizing the look...</div><div class="vtl-stage-sub">Quality check in progress</div></div>
+        <div class="vtl-progress-wrap"><div class="vtl-progress-track"><div class="vtl-progress-fill" id="vtl-prog-fill-4" style="width:82%"></div></div><div class="vtl-progress-pct" id="vtl-prog-pct-4">82%</div></div>
+        <div class="vtl-checklist">
+          <div class="vtl-check-row" id="vtl-cr1"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Lighting matched</div><div class="vtl-cr-desc">Ambient light blended</div></div><div class="vtl-cr-badge">done</div></div>
+          <div class="vtl-check-row" id="vtl-cr2"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Fabric texture applied</div><div class="vtl-cr-desc">Folds and weight rendered</div></div><div class="vtl-cr-badge">done</div></div>
+          <div class="vtl-check-row" id="vtl-cr3"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Shadow depth set</div><div class="vtl-cr-desc">Natural shadows added</div></div><div class="vtl-cr-badge">done</div></div>
+          <div class="vtl-check-row" id="vtl-cr4"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Face preserved</div><div class="vtl-cr-desc">Confirming face is unchanged</div></div><div class="vtl-cr-badge">done</div></div>
         </div>
       </div>
     </div>
-    
-    <!-- Upload Section -->
-    <div class="upload-section" id="upload-section">
-      
-      <input 
-        type="file" 
-        id="user-image-input" 
-        accept="image/*"
-        style="display: none;"
-        onchange="handleImageSelect(event)"
-      >
-      
-      <!-- Hidden camera input (not needed separately) -->
-      
-      <!-- Upload Area -->
-      <div id="upload-area" class="upload-area" onclick="document.getElementById('user-image-input').click()">
-        <div class="upload-icon">📸</div>
-        <h4>{{ 'try_the_look.upload_title' | t }}</h4>
-        <p>{{ 'try_the_look.upload_subtitle' | t }}</p>
-        <button 
-          class="upload-photo-btn-2"
-          type="button"
-          onclick="event.stopPropagation(); document.getElementById('user-image-input').click()"
-        >
-          Upload a Photo
-        </button>
-        <p class="no-camera-text">Choose from gallery or take a photo</p>
-      </div>
-      
-      <!-- Image Preview -->
-      <div id="image-preview-container" class="preview-container" style="display: none;">
-       <div class="preview-wrapper">
-  <img id="image-preview" src="" alt="Preview" class="preview-image" width="600" height="600">
-  
-  <!-- Loading Overlay with Progress Bar -->
-  <div id="loading-overlay" class="loading-overlay" style="display: none;">
-    <div class="progress-block">
-      <p class="progress-percentage" id="progress-percentage">0%</p>
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="progress-bar-fill"></div>
-      </div>
-    </div>
-  </div>
-  
-  <button 
-    class="remove-image-btn" 
-    onclick="removeImage(event)"
-    type="button"
-    aria-label="Remove image"
-  >
-    ✕
-  </button>
-</div>
 
-      
-      
-        <p class="preview-filename" id="preview-filename"></p>
+    <div class="vtl-screen" id="vtl-s5">
+      <div class="vtl-result-full">
+        <div class="vtl-result-header">
+          <div>
+            <div class="vtl-result-title">Your Try-On</div>
+            <div class="vtl-result-sub" id="vtl-result-timer"></div>
+          </div>
+          <div class="vtl-result-header-close" onclick="closeVTLPopupDirect()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+        </div>
+        <div class="vtl-result-image-area" id="vtl-result-image-area">
+          <img id="vtl-result-image" src="" alt="AI Try-On Result" class="vtl-result-img">
+          <div class="vtl-result-pip" id="vtl-result-pip">
+            {% if current_product and current_product.featured_image %}
+              <img src="{{ current_product.featured_image | image_url: width: 160 }}" alt="{{ current_product.title | escape }}" class="vtl-pip-img">
+            {% endif %}
+          </div>
+        </div>
+        <div class="vtl-result-sheet">
+          <div class="vtl-result-sheet-handle"></div>
+          <div class="vtl-result-product-row">
+            <div class="vtl-rpr-name">{{ current_product.title }}</div>
+          </div>
+          <div class="vtl-result-actions">
+            <button class="vtl-ra-btn-primary" id="vtl-add-to-cart-btn" onclick="addToCart()" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              Add to Cart
+            </button>
+            <a id="vtl-download-btn" class="vtl-ra-btn-icon" href="#" download="my-ai-tryon.png" aria-label="Download" onclick="downloadGeneratedImage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </a>
+            <button class="vtl-ra-btn-icon" onclick="shareResultImage()" type="button" aria-label="Share">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
+          <div class="vtl-result-feedback">
+            <div class="vtl-rf-label">Preview ready</div>
+            <button class="vtl-rf-retry" onclick="resetAndGoBack()" type="button">Try another photo</button>
+          </div>
+        </div>
       </div>
-      
-      <!-- Generate Button -->
-      <button 
-        id="submit-btn" 
-        class="submit-btn" 
-        onclick="submitTryTheLook()"
-        type="button"
-        disabled
-      >
-        <span class="btn-text">{{ 'try_the_look.submit_button' | t }}</span>
-        <span class="btn-icon">→</span>
-      </button>
-      
-      <!-- Status Message -->
-      <div id="status-message" class="status-message"></div>
     </div>
-    
-    <!-- Result Section (Hidden by default) -->
-    <div id="result-section" class="result-section" style="display: none;">
-  
-  <div class="result-image-wrapper">
-    
-    <span class="preview-badge">Your Preview</span>
-    
-    <img id="generated-image" src="" alt="Generated result" class="generated-image" width="600" height="800">
-    
-    <div class="overlay-actions">
-      <button 
-        id="download-btn" 
-        class="overlay-icon-btn"
-        onclick="downloadGeneratedImage()"
-        type="button"
-        title="Download Preview"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-      </button>
-      
-      <button 
-        id="share-btn" 
-        class="overlay-icon-btn"
-        onclick="shareGeneratedImage()"
-        type="button"
-        title="Share Preview"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="18" cy="5" r="3"></circle>
-          <circle cx="6" cy="12" r="3"></circle>
-          <circle cx="18" cy="19" r="3"></circle>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-        </svg>
-      </button>
-    </div>
-  </div>
-  
-  <button 
-    id="add-to-cart-btn" 
-    class="add-to-cart-btn"
-    onclick="handleAddToCart()"
-    type="button"
-  >
-    Add to Cart
-  </button>
 
-  {% comment %} Hidden inputs: Liquid injects the correct variant ID and product title {% endcomment %}
-  {% assign sbb_variant = current_product.selected_or_first_available_variant %}
-  <input type="hidden" id="sbb-variant-id" value="{{ sbb_variant.id }}">
-  <input type="hidden" id="sbb-product-title" value="{{ current_product.title | escape }}">
-</div>
-    
+    <div id="vtl-status" class="vtl-status-msg"></div>
   </div>
 </div>
 
-<!-- CSS Styles - New Color Scheme -->
+<input type="hidden" id="sbb-variant-id" value="{{ default_variant.id }}">
+<input type="hidden" id="sbb-product-title" value="{{ current_product.title | escape }}">
+
 <style>
-  /* Container */
-  .try-the-look-container {
-    margin: 20px 0;
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --vtl-teal: #008060;
+    --vtl-teal-d: #005c45;
+    --vtl-navy: #111827;
+    --vtl-white: #fff;
+    --vtl-mint: #EAF5EF;
+    --vtl-gray: #F6F6F7;
+    --vtl-border: #E5E7EB;
+    --vtl-muted: #6B7280;
+    --vtl-green: #059669;
+    --vtl-green-bg: #D1FAE5;
   }
-  
-  /* Try the Look Button - Gradient Theme */
-  .try-the-look-btn {
-    width: 100%;
-    padding: 16px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    background: var(--sbb-btn-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
-    color: var(--sbb-btn-color, white);
-    border: none;
-    border-radius: var(--sbb-btn-radius, 8px);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-height: 60px;
-    box-shadow: 0 2px 8px rgba(50, 149, 128, 0.3);
-    letter-spacing: 0.3px;
-    display: flex;
+
+  .vtl-trigger-wrap { margin: 20px 0; }
+  .vtl-trigger-btn {
+    width: 100%; padding: 14px 24px; font-family: 'Poppins', -apple-system, sans-serif;
+    font-size: 15px; font-weight: 700; background: #111; color: #fff; border: none;
+    border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .vtl-trigger-btn:hover { background: #222; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+  .vtl-trigger-icon { width: 20px; height: 20px; }
+
+  .vtl-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+    z-index: 9999999 !important; padding: 16px; box-sizing: border-box; align-items: center; justify-content: center;
+  }
+  .vtl-overlay.active { display: flex !important; }
+
+  .vtl-modal {
+    background: #fff; border-radius: 28px; width: 100%; max-width: 440px; position: relative; margin: 0 auto;
+    animation: vtl-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    display: flex; flex-direction: column; max-height: calc(100vh - 40px); overflow: hidden;
+  }
+  @keyframes vtl-slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .vtl-header {
+    display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f0f0f0;
+    background: #fff; flex-shrink: 0; position: relative; z-index: 20;
+  }
+  .vtl-header-back, .vtl-header-close {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--vtl-gray); border: none;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--vtl-navy); transition: all 0.2s;
+  }
+  .vtl-header-back svg, .vtl-header-close svg { width: 16px; height: 16px; }
+  .vtl-header-back { opacity: 0; pointer-events: none; }
+  .vtl-header-back.visible { opacity: 1; pointer-events: all; }
+  .vtl-header-close { color: var(--vtl-muted); }
+  .vtl-header-close:hover { background: #eee; }
+  .vtl-header-center { text-align: center; }
+  .vtl-header-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 15px; font-weight: 800; color: #111; line-height: 1.2; }
+  .vtl-header-sub { font-family: 'Poppins', -apple-system, sans-serif; font-size: 10px; color: var(--vtl-muted); margin-top: 1px; }
+
+  .vtl-screen {
+    position: absolute; top: 68px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: #fff; overflow-y: auto; overflow-x: hidden;
+  }
+  .vtl-screen.active { opacity: 1; pointer-events: all; position: relative; top: auto; }
+
+  .vtl-product-strip { margin: 16px 18px 0; background: #f8f9fa; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; border: 1px solid var(--vtl-border); }
+  .vtl-product-thumb { width: 56px; height: 70px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--vtl-border); }
+  .vtl-product-thumb-placeholder { width: 56px; height: 70px; border-radius: 12px; background: linear-gradient(135deg, #f0f4ff, var(--vtl-mint)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--vtl-border); color: var(--vtl-muted); }
+  .vtl-product-meta { flex: 1; }
+  .vtl-product-name { font-family: 'Poppins', -apple-system, sans-serif; font-size: 13px; font-weight: 700; color: #111; margin-bottom: 3px; line-height: 1.3; }
+  .vtl-product-cat { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; color: var(--vtl-muted); }
+
+  .vtl-ready-label { text-align: center; padding: 24px 18px 0; }
+  .vtl-ready-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 22px; font-weight: 800; color: #111; margin-bottom: 6px; letter-spacing: -0.02em; }
+  .vtl-ready-sub { font-family: 'Poppins', -apple-system, sans-serif; font-size: 12px; color: var(--vtl-muted); line-height: 1.5; }
+  .vtl-badge {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    /* Hide initially to prevent flash */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0,128,96,0.12);
+    color: var(--vtl-teal);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
   }
-  
-  .try-the-look-btn:hover {
-    filter: brightness(0.88);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(50, 149, 128, 0.4);
-  }
-  
-  .btn-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-  
-  .btn-main-text {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-  
-  .btn-subtitle {
-    font-size: 12px;
-    font-weight: 400;
-    opacity: 0.9;
-    line-height: 1.2;
-  }
-  
-  .try-the-look-btn:active {
-    transform: translateY(0);
-  }
-  
-  @media (min-width: 768px) {
-    .try-the-look-btn {
-      width: auto;
-      min-width: 240px;
-    }
-  }
-  
-  /* Popup Overlay */
-  .popup-overlay {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background-color: rgba(17, 24, 39, 0.7);
-    backdrop-filter: blur(4px);
-    z-index: 2147483647 !important;
-    padding: 0;
-    box-sizing: border-box;
-    overflow: hidden;
-    margin: 0 !important;
-  }
-  
-  /* Popup Content - Mobile: bottom sheet */
-  .popup-content {
-    background: #FFFFFF;
-    border-radius: 16px 16px 0 0;
-    max-width: 100%;
-    width: 100%;
-    height: 92vh;
-    max-height: 92vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 -4px 24px rgba(17, 24, 39, 0.15);
-    -webkit-overflow-scrolling: touch;
-    margin: 0;
-  }
-  
-  /* Animation only when popup is active */
-  .popup-overlay.active .popup-content {
-    animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  
-  @media (min-width: 768px) {
-    .popup-content {
-      max-width: 540px;
-      width: 90%;
-      height: auto;
-      border-radius: 12px;
-      max-height: 90vh;
-    }
-  }
-  
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-  
-  /* Popup Header */
-  .popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px;
-    border-bottom: 1px solid #E5E7EB;
-    background: var(--sbb-header-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
-    border-radius: 8px 8px 0 0;
-  }
-  
-  .popup-header h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #ffffff;
-    letter-spacing: -0.3px;
-  }
-  
-  /* Close Button */
-  .close-btn {
-    background: #F6F6F7;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #6D7175;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    font-weight: 300;
-  }
-  
-  .close-btn:hover {
-    background: #E5E7EB;
-    color: #111827;
-  }
-  
-  /* Product Info */
-  .product-info {
-    padding: 16px 20px;
-    background: #f1eff2;
-  }
-  
-  .product-details {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #FFFFFF;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-  }
-  
-  .product-image {
-    width: 75px;
-    height: 75px;
-    object-fit: cover;
-    border-radius: 8px;
-    flex-shrink: 0;
-    border: 1px solid #E5E7EB;
-  }
-  
-  .product-text h3 {
-    margin: 0 0 4px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #111827;
-    line-height: 1.4;
-  }
-  
-  .product-subtitle {
-    margin: 0;
-    font-size: 14px;
-    color: #6D7175;
-  }
-  
-  /* Upload Section */
-  .upload-section {
-    padding: 20px;
-  }
-  
-  /* Upload Area */
-  .upload-area {
-    border: 2px dashed #E5E7EB;
-    border-radius: 12px;
-    padding: 10px 15px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--sbb-upload-area-bg, #F6F6F7);
-    margin-bottom: 12px;
-  }
-  
-  .upload-area:hover {
-    border-color: #008060;
-    background: #f0fdf9;
-  }
-  
-  .upload-icon {
-    font-size: 48px;
-    margin-bottom: 12px;
-  }
-  
-  .upload-area h4 {
-    margin: 0 0 6px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #111827;
-  }
-  
-  .upload-area p {
-    margin: 0;
-    font-size: 14px;
-    color: #6D7175;
-  }
-  
-  /* Preview Container */
-  .preview-container {
+  .vtl-badge-soft {
+    background: #f3f6f8;
+    color: var(--vtl-navy);
     margin-bottom: 16px;
   }
-  
-  .preview-wrapper {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-  }
-  
-  /* Loading Overlay on Image */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 20px;
-  z-index: 10;
-  box-sizing: border-box;
-}
-
-/* Wrapper that keeps % and bar together, tightly stacked */
-.progress-block {
-  width: 80%;
-  max-width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.loader-spinner {
-  width: 50px;
-  height: 50px;
-  box-sizing: border-box; 
-  border: 4px solid rgba(255, 255, 255, 0.3) !important;
-  border-top: 4px solid #ffffff !important;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-  display: block !important; 
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-.progress-bar-container {
-  width: 100%;
-  height: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  display: block; 
-  position: relative;
-}
-
-.progress-bar-fill {
-  height: 100% !important; 
-  background-color: #ffffff !important; 
-  border-radius: 8px;
-  width: 0%;
-  transition: width 0.5s ease-out;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-  display: block !important; 
-  min-height: 100%;
-}
-
-.progress-percentage {
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0;
-  white-space: nowrap;
-  text-align: center;
-}
-
-  .preview-image {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-  }
-  
-  .remove-image-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    font-size: 18px;
-    background: rgba(17, 24, 39, 0.8);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-  }
-  
-  .remove-image-btn:hover {
-    background: #dc3545;
-    transform: scale(1.1);
-  }
-  
-  .preview-filename {
-    margin: 12px 0 0 0;
-    font-size: 13px;
-    color: #6D7175;
+  .vtl-upload-actions { padding: 20px 18px 0; }
+  .vtl-upload-card { padding: 16px 18px 0; }
+  .vtl-upload-hint {
     text-align: center;
+    margin-top: 10px;
+    font-family: 'Poppins', -apple-system, sans-serif;
+    font-size: 11px;
+    color: var(--vtl-muted);
   }
-  
-  /* Submit Button */
-  .submit-btn {
-    width: 100%;
-    padding: 16px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    background: var(--sbb-generate-btn-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
-    color: var(--sbb-generate-btn-color, white);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 128, 96, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  
-  .submit-btn:hover:not(:disabled) {
-    background: #006e52;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 128, 96, 0.3);
-  }
-  
-  .submit-btn:active:not(:disabled) {
-    transform: translateY(0);
-  }
-  
-  .submit-btn:disabled {
-    background: #E5E7EB;
-    color: #6D7175;
-    cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: none;
-  }
-  
-  .btn-icon {
-    font-size: 20px;
-    transition: transform 0.3s ease;
-  }
-  
-  .submit-btn:hover:not(:disabled) .btn-icon {
-    transform: translateX(4px);
-  }
-  
-  /* Status Message */
-  .status-message {
-    margin-top: 16px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    display: none;
-    font-weight: 500;
-  }
-  
-  .status-message.success {
-    display: block;
-    background: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-  
-  .status-message.error {
-    display: block;
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-  }
-  
- /* Result Section Container */
-.result-section {
-  padding: 24px;
-  background: #FFFFFF;
-}
+  .vtl-btn-primary { width: 100%; background: #111; color: #fff; border: none; border-radius: 14px; padding: 15px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .vtl-btn-primary:hover { background: #222; transform: translateY(-1px); }
+  .vtl-btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+  .vtl-btn-teal { background: var(--vtl-teal); box-shadow: 0 4px 14px rgba(0,128,96,0.28); }
+  .vtl-btn-teal:hover { background: var(--vtl-teal-d); }
 
-/* Wrapper to handle positioning over the image */
-.result-image-wrapper {
-  position: relative;
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 16px;
-  border: 1px solid #E5E7EB;
-  /* Ensure image fits strictly */
-  display: flex; 
-  justify-content: center;
-  background-color: #f9fafb;
-}
-  
-  /* The Image itself */
-.generated-image {
-  width: 100%;
-  max-height: 400px;
-  object-fit: contain;
-  display: block;
-  /* Removed border and radius here as wrapper handles it */
-  border: none;
-  margin: 0;
-}
-  
+  .vtl-generate-actions { padding: 16px 18px 0; }
+  .vtl-preview-wrap { padding: 20px 18px 0; }
+  .vtl-preview-card { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: #f0f0f0; }
+  .vtl-preview-img { width: 100%; max-height: 260px; object-fit: cover; display: block; }
+  .vtl-preview-remove { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.7); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+  .vtl-preview-remove:hover { background: #dc3545; }
+  .vtl-preview-name { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; color: var(--vtl-muted); text-align: center; padding: 8px 0 0; }
 
-/* Top Left Badge Style */
-.preview-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: var(--sbb-header-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
-  backdrop-filter: blur(4px);
-  color: #ffffffff;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  pointer-events: none; /* Allows clicking through if needed */
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-/* Bottom Left Actions Container */
-.overlay-actions {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  display: flex;
-  gap: 8px;
-  z-index: 10;
-}
-/* Circular Overlay Buttons */
-.overlay-icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(0,0,0,0.05);
-  color: #111827;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-.overlay-icon-btn:hover {
-  background: #ffffff;
-  transform: scale(1.05);
-  color: #329580;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
+  .vtl-uploading-state { display: flex; flex-direction: column; align-items: center; padding: 36px 18px; }
+  .vtl-uploading-spinner { width: 40px; height: 40px; border: 4px solid rgba(0,128,96,0.15); border-top-color: var(--vtl-teal); border-radius: 50%; animation: vtl-spin 0.8s linear infinite; margin-bottom: 16px; }
+  @keyframes vtl-spin { to { transform: rotate(360deg); } }
+  .vtl-uploading-text { font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #111; }
 
-.overlay-icon-btn:active {
-  transform: scale(0.95);
-}
+  .vtl-upload-tips { padding: 16px 18px; margin-top: auto; }
+  .vtl-tips-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; font-weight: 700; color: var(--vtl-muted); text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .vtl-tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .vtl-tip-item { display: flex; align-items: center; justify-content: center; font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; color: #555; background: #f8f9fa; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--vtl-border); }
+  .vtl-terms { text-align: center; padding: 10px 18px 16px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 10px; color: var(--vtl-muted); line-height: 1.5; }
 
-.overlay-icon-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-  
-  
-  /* Add to Cart Button */
-  .add-to-cart-btn {
-    width: 100%;
-    padding: 16px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    background: var(--sbb-atc-btn-bg, linear-gradient(135deg, #2a7f6d 0%, #1e4a50 100%));
-    color: var(--sbb-atc-btn-color, white);
-    border: none;
-    border-radius: var(--sbb-atc-btn-radius, 8px);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 128, 96, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  
-  .add-to-cart-btn:hover {
-    filter: brightness(0.88);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 128, 96, 0.3);
-  }
-  
-  .add-to-cart-btn:active {
-    transform: translateY(0);
-  }
-  
-  /* Show popup */
-  .popup-overlay.active {
-    display: flex !important;
-    align-items: flex-end;
-    justify-content: center;
-  }
-  
-  @media (min-width: 768px) {
-    .popup-overlay.active {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-  .no-camera-text {
-  margin: 0;
-  font-size: 13px;
-  color: #b2b7bfff;
-  font-weight: 500;
-}
-
-.upload-photo-btn-2 {
-  width: 100%;
-  max-width: 400px;
-  padding: 14px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  background: var(--sbb-upload-btn-bg, linear-gradient(135deg, #329580 0%, #245b62 100%));
-  color: var(--sbb-upload-btn-color, white);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 0 auto 12px auto;
-  display: block;
-}
-
-.upload-photo-btn-2:hover {
-  filter: brightness(0.9);
-  transform: translateY(-1px);
-}
+  .vtl-loading-screen { display: flex; flex-direction: column; align-items: center; background: #fff; padding: 0 24px; }
+  .vtl-cards-visual { margin-top: 40px; display: flex; align-items: center; justify-content: center; gap: 0; position: relative; margin-bottom: 32px; }
+  .vtl-cv-card { width: 100px; height: 130px; border-radius: 18px; overflow: hidden; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,0.1); border: 2.5px solid #fff; background: linear-gradient(135deg, #f8f9ff, #eef4ff); display: flex; align-items: center; justify-content: center; }
+  .vtl-cv-card-img { width: 100%; height: 100%; object-fit: cover; }
+  .vtl-cv-product { transform: rotate(-4deg) translateX(6px); z-index: 1; }
+  .vtl-cv-user { transform: rotate(3deg) translateX(-6px); z-index: 2; border-color: var(--vtl-teal); }
+  .vtl-cv-sync { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 36px; height: 36px; border-radius: 50%; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; z-index: 10; color: var(--vtl-teal); animation: vtl-spin-sync 2s linear infinite; }
+  @keyframes vtl-spin-sync { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  .vtl-stage-text { text-align: center; width: 100%; margin-bottom: 16px; }
+  .vtl-stage-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 17px; font-weight: 800; color: #111; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .vtl-stage-sub { font-family: 'Poppins', -apple-system, sans-serif; font-size: 12px; color: var(--vtl-muted); }
+  .vtl-progress-wrap { width: 100%; margin-bottom: 16px; }
+  .vtl-progress-track { width: 100%; height: 3px; background: #f0f0f0; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .vtl-progress-fill { height: 100%; background: #111; border-radius: 3px; width: 0%; transition: width 0.6s ease; }
+  .vtl-progress-pct { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; font-weight: 700; color: var(--vtl-muted); text-align: center; }
+  .vtl-tip-card { width: 100%; background: #f8f9fa; border-radius: 16px; padding: 16px 20px; margin-top: auto; margin-bottom: 24px; border: 1px solid var(--vtl-border); text-align: center; }
+  .vtl-tip-label { font-family: 'Poppins', -apple-system, sans-serif; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--vtl-muted); margin-bottom: 6px; }
+  .vtl-tip-text { font-family: 'Poppins', -apple-system, sans-serif; font-size: 13px; font-weight: 600; color: #111; line-height: 1.5; transition: opacity 0.3s; }
+  .vtl-loading-screen-checklist { padding: 0 18px; }
+  .vtl-checklist { width: 100%; margin-bottom: 24px; }
+  .vtl-check-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; margin-bottom: 6px; transition: all 0.3s; border: 1px solid transparent; }
+  .vtl-check-row.done { background: var(--vtl-green-bg); border-color: rgba(5,150,105,0.15); }
+  .vtl-check-row.active { background: var(--vtl-mint); border-color: rgba(0,128,96,0.2); }
+  .vtl-check-row.pending { background: #f8f9fa; border-color: var(--vtl-border); }
+  .vtl-cr-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; color: var(--vtl-muted); }
+  .vtl-check-row.done .vtl-cr-icon { background: var(--vtl-green); color: #fff; }
+  .vtl-check-row.active .vtl-cr-icon { background: transparent; border: 2px solid var(--vtl-teal); color: var(--vtl-teal); animation: vtl-ring-spin 1s linear infinite; }
+  .vtl-check-row.pending .vtl-cr-icon { background: var(--vtl-border); color: var(--vtl-muted); }
+  @keyframes vtl-ring-spin { 0% { box-shadow: 2px 0 0 0 var(--vtl-teal); } 25% { box-shadow: 0 2px 0 0 var(--vtl-teal); } 50% { box-shadow: -2px 0 0 0 var(--vtl-teal); } 75% { box-shadow: 0 -2px 0 0 var(--vtl-teal); } 100% { box-shadow: 2px 0 0 0 var(--vtl-teal); } }
+  .vtl-cr-text { flex: 1; }
+  .vtl-cr-label { font-family: 'Poppins', -apple-system, sans-serif; font-size: 12px; font-weight: 700; color: #111; }
+  .vtl-check-row.pending .vtl-cr-label { color: var(--vtl-muted); }
+  .vtl-check-row.done .vtl-cr-label { color: var(--vtl-green); }
+  .vtl-cr-desc { font-family: 'Poppins', -apple-system, sans-serif; font-size: 10px; color: var(--vtl-muted); margin-top: 1px; }
+  .vtl-cr-badge { font-family: 'Poppins', -apple-system, sans-serif; font-size: 9px; font-weight: 700; color: var(--vtl-green); opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+  .vtl-check-row.done .vtl-cr-badge { opacity: 1; }
+  #vtl-s5 { background: #111; }
+  .vtl-result-full { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; }
+  .vtl-result-header { position: absolute; top: 0; left: 0; right: 0; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; z-index: 10; background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%); }
+  .vtl-result-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
+  .vtl-result-sub { font-family: 'Poppins', -apple-system, sans-serif; font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 1px; }
+  .vtl-result-header-close { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; }
+  .vtl-result-image-area { flex: 1; background: linear-gradient(140deg, #1a2840, #0d1a2e); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 320px; }
+  .vtl-result-img { width: 100%; height: 100%; object-fit: contain; display: block; animation: vtl-sharp-reveal 1.5s cubic-bezier(0.25,0,0.2,1) forwards; }
+  @keyframes vtl-sharp-reveal { 0% { filter: blur(18px); opacity: 0.2; transform: scale(1.04); } 50% { filter: blur(6px); opacity: 0.7; } 100% { filter: blur(0px); opacity: 1; transform: scale(1); } }
+  .vtl-result-pip { position: absolute; bottom: 12px; right: 12px; width: 64px; height: 80px; border-radius: 12px; background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); border: 2px solid rgba(255,255,255,0.2); overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .vtl-pip-img { width: 100%; height: 100%; object-fit: cover; }
+  .vtl-result-sheet { background: #fff; border-radius: 24px 24px 0 0; padding: 14px 18px 20px; flex-shrink: 0; }
+  .vtl-result-sheet-handle { width: 36px; height: 3px; background: var(--vtl-border); border-radius: 3px; margin: 0 auto 12px; }
+  .vtl-result-product-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .vtl-rpr-name { font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 800; color: #111; }
+  .vtl-result-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+  .vtl-ra-btn-primary { flex: 1; background: #111; color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+  .vtl-ra-btn-primary:hover { background: #222; }
+  .vtl-ra-btn-icon { width: 44px; height: 44px; background: var(--vtl-gray); border: 1px solid var(--vtl-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--vtl-navy); text-decoration: none; transition: all 0.2s; }
+  .vtl-ra-btn-icon:hover { background: #eee; }
+  .vtl-result-feedback { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .vtl-rf-label { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; color: var(--vtl-muted); font-weight: 500; }
+  .vtl-rf-btns { display: flex; gap: 8px; }
+  .vtl-rf-btn { display: flex; align-items: center; gap: 5px; background: var(--vtl-gray); border: 1.5px solid var(--vtl-border); border-radius: 100px; padding: 6px 14px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; font-weight: 700; color: var(--vtl-navy); cursor: pointer; transition: all 0.2s; }
+  .vtl-rf-btn:hover { border-color: var(--vtl-teal); color: var(--vtl-teal); }
+  .vtl-rf-good:hover { background: var(--vtl-green-bg); border-color: var(--vtl-green); color: var(--vtl-green); }
+  .vtl-rf-retry { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; font-weight: 600; color: var(--vtl-muted); background: none; border: none; cursor: pointer; padding: 4px; }
+  .vtl-rf-retry:hover { color: var(--vtl-navy); }
+  .vtl-status-msg { position: absolute; bottom: 16px; left: 20px; right: 20px; padding: 12px 16px; border-radius: 12px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 13px; font-weight: 500; display: none; z-index: 30; }
+  .vtl-status-msg.success { display: block; background: #d4edda; color: #155724; }
+  .vtl-status-msg.error { display: block; background: #f8d7da; color: #721c24; }
 </style>
 
-<!-- JavaScript -->
 <script>
   let selectedImageFile = null;
-  let shopSettings = null; // Store fetched settings
-  
-  // Generate UUID v4 for session ID
+  let userImageDataURL = null;
+  let generationStartTime = 0;
+  let tipInterval = null;
+  let screenTimers = [];
+  let currentRequestPromise = null;
+
+  const TIPS = [
+    'Use a full body photo for best results',
+    'Stand straight with arms slightly away from your body',
+    'Avoid extreme angles — a straight-on mirror selfie works best',
+    'Good lighting helps the AI match colours accurately',
+    'Make sure your full torso is visible in the photo',
+  ];
+
   function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0;
@@ -834,599 +468,426 @@
       return v.toString(16);
     });
   }
-  
-  // Get or create session ID
+
   function getSessionId() {
     let sessionId = localStorage.getItem('sbb_session_id');
     if (!sessionId) {
       sessionId = generateUUID();
       localStorage.setItem('sbb_session_id', sessionId);
-      console.log('🆔 New session ID created:', sessionId);
-    } else {
-      console.log('🆔 Existing session ID:', sessionId);
     }
     return sessionId;
   }
-  
-  // Fetch and apply shop settings
-  async function fetchAndApplySettings() {
-    const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
-    
-    try {
-      console.log('⚙️  Fetching shop settings...');
-      const response = await fetch(`https://seebeforebuy.in/api/settings/${shopDomain}`);
-      const data = await response.json();
-      
-      if (data.success && data.settings) {
-        shopSettings = data.settings;
-        console.log('✅ Settings loaded:', shopSettings);
-        applySettings(shopSettings);
-      } else {
-        console.log('⚠️  No custom settings found, using defaults');
-      }
-    } catch (error) {
-      console.error('❌ Error fetching settings:', error);
-      console.log('⚠️  Using default styles');
-    } finally {
-      // Remove loading state - show button
-      const button = document.querySelector('.try-the-look-btn');
-      if (button) {
-        button.style.opacity = '1';
-        button.style.visibility = 'visible';
-      }
+
+  function openVTLPopup() {
+    const popup = document.getElementById('vtl-popup');
+    if (popup) {
+      if (popup.parentNode !== document.body) document.body.appendChild(popup);
+      popup.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      resetForm();
     }
   }
-  
-  // Apply settings to button and popup
-  function applySettings(settings) {
-    if (!settings) return;
 
-    const root = document.documentElement;
-
-    // ── MAIN BUTTON ──────────────────────────────────────────────
-    if (settings.button) {
-      const bg = settings.button.bg_color || '#329580';
-      const bgDark = adjustColor(bg, -20);
-      root.style.setProperty('--sbb-btn-bg', `linear-gradient(135deg, ${bg} 0%, ${bgDark} 100%)`);
-      root.style.setProperty('--sbb-btn-color', settings.button.text_color || '#FFFFFF');
-      root.style.setProperty('--sbb-btn-radius', `${settings.button.border_radius ?? 8}px`);
-
-      const button = document.querySelector('.try-the-look-btn');
-      if (button) {
-        const btnMainText = button.querySelector('.btn-main-text');
-        if (btnMainText && settings.button.text) {
-          btnMainText.textContent = settings.button.text;
-        }
-        // size overrides
-        if (settings.button.size === 'small') {
-          button.style.padding = '12px 20px';
-          button.style.fontSize = '14px';
-          button.style.minHeight = '50px';
-        } else if (settings.button.size === 'large') {
-          button.style.padding = '20px 28px';
-          button.style.fontSize = '18px';
-          button.style.minHeight = '70px';
-        }
-      }
-    }
-
-    // ── POPUP ────────────────────────────────────────────────────
-    if (settings.popup) {
-      // Header
-      const headerBg = settings.popup.header_bg_color || '#329580';
-      const headerBgDark = adjustColor(headerBg, -20);
-      root.style.setProperty('--sbb-header-bg', `linear-gradient(135deg, ${headerBg} 0%, ${headerBgDark} 100%)`);
-
-      // Upload area
-      root.style.setProperty('--sbb-upload-area-bg', settings.popup.upload_area_bg_color || '#F6F6F7');
-
-      // Upload button
-      const upBg = settings.popup.upload_btn_bg_color || '#329580';
-      const upBgDark = adjustColor(upBg, -20);
-      root.style.setProperty('--sbb-upload-btn-bg', `linear-gradient(135deg, ${upBg} 0%, ${upBgDark} 100%)`);
-      root.style.setProperty('--sbb-upload-btn-color', settings.popup.upload_btn_text_color || '#FFFFFF');
-
-      // Generate button
-      const genBg = settings.popup.generate_btn_bg_color || '#329580';
-      const genBgDark = adjustColor(genBg, -20);
-      root.style.setProperty('--sbb-generate-btn-bg', `linear-gradient(135deg, ${genBg} 0%, ${genBgDark} 100%)`);
-      root.style.setProperty('--sbb-generate-btn-color', settings.popup.generate_btn_text_color || '#FFFFFF');
-
-      // Popup content background / text / radius
-      const popupContent = document.querySelector('.popup-content');
-      if (popupContent) {
-        if (settings.popup.bg_color) popupContent.style.backgroundColor = settings.popup.bg_color;
-        if (settings.popup.text_color) popupContent.style.color = settings.popup.text_color;
-        if (settings.popup.border_radius !== undefined) {
-          popupContent.style.borderRadius = `${settings.popup.border_radius}px`;
-        }
-      }
-
-      // Text fields (title, button labels)
-      const popupHeaderTitle = document.querySelector('.popup-header h2');
-      if (popupHeaderTitle && settings.popup.title) {
-        popupHeaderTitle.textContent = settings.popup.title;
-      }
-
-      const uploadBtn = document.querySelector('.upload-photo-btn-2');
-      if (uploadBtn && settings.popup.upload_button_text) {
-        uploadBtn.textContent = settings.popup.upload_button_text;
-      }
-
-      const submitBtn = document.getElementById('submit-btn');
-      if (submitBtn && settings.popup.generate_button_text) {
-        const btnText = submitBtn.querySelector('.btn-text');
-        if (btnText) btnText.textContent = settings.popup.generate_button_text;
-      }
-    }
-
-    // ── ADD TO CART BUTTON ───────────────────────────────────────
-    if (settings.add_to_cart_button) {
-      const atcBg = settings.add_to_cart_button.bg_color || '#2a7f6d';
-      const atcBgDark = adjustColor(atcBg, -20);
-      root.style.setProperty('--sbb-atc-btn-bg', `linear-gradient(135deg, ${atcBg} 0%, ${atcBgDark} 100%)`);
-      root.style.setProperty('--sbb-atc-btn-color', settings.add_to_cart_button.text_color || '#FFFFFF');
-      root.style.setProperty('--sbb-atc-btn-radius', `${settings.add_to_cart_button.border_radius ?? 8}px`);
-
-      const addToCartBtn = document.getElementById('add-to-cart-btn');
-      if (addToCartBtn) {
-        if (settings.add_to_cart_button.text) {
-          addToCartBtn.textContent = settings.add_to_cart_button.text;
-        }
-        if (settings.add_to_cart_button.size === 'small') {
-          addToCartBtn.style.padding = '12px 20px';
-          addToCartBtn.style.fontSize = '14px';
-        } else if (settings.add_to_cart_button.size === 'large') {
-          addToCartBtn.style.padding = '20px 32px';
-          addToCartBtn.style.fontSize = '18px';
-        }
-      }
-    }
+  function closeVTLPopup(event) {
+    if (event && event.target && !event.target.classList.contains('vtl-overlay')) return;
+    closeVTLPopupDirect();
   }
-  
-  // Helper function to darken/lighten color for gradient
-  function adjustColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-      (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-      (B < 255 ? B < 1 ? 0 : B : 255))
-      .toString(16).slice(1);
-  }
-  
-  // Ensure popup is hidden on page load and fetch settings
-  document.addEventListener('DOMContentLoaded', function() {
-    const popup = document.getElementById('try-the-look-popup');
+
+  function closeVTLPopupDirect() {
+    const popup = document.getElementById('vtl-popup');
     if (popup) {
       popup.classList.remove('active');
-      popup.style.display = 'none';
+      document.body.style.overflow = '';
+      clearAllTimers();
+      resetForm();
     }
-    
-    // Initialize session ID on page load
-    getSessionId();
-    
-    // Fetch and apply settings immediately
-    fetchAndApplySettings();
-  });
-  
-  // Also fetch settings as soon as script loads (before DOMContentLoaded)
-  (function() {
-    if (document.readyState === 'loading') {
-      // Wait for DOM
-      document.addEventListener('DOMContentLoaded', function() {
-        fetchAndApplySettings();
-      });
-    } else {
-      // DOM already loaded
-      fetchAndApplySettings();
-    }
-  })();
-  
-  function openTryTheLookPopup() {
-    const popup = document.getElementById('try-the-look-popup');
-    
-    // Move popup to body to escape any theme container restrictions
-    if (popup.parentElement !== document.body) {
-      document.body.appendChild(popup);
-    }
-    
-    popup.style.display = 'block';
-    popup.classList.add('active');
-    document.body.style.overflow = 'hidden';
+  }
+
+  function goBackFromResult() {
+    resetAndGoBack();
+  }
+
+  function resetAndGoBack() {
+    clearAllTimers();
     resetForm();
   }
-  
-  function closeTryTheLookPopup() {
-    const popup = document.getElementById('try-the-look-popup');
-    popup.classList.remove('active');
-    popup.style.display = 'none';
-    document.body.style.overflow = '';
-    resetForm();
+
+  function setVTLScreen(n) {
+    document.querySelectorAll('.vtl-screen').forEach((s) => s.classList.remove('active'));
+    const screen = document.getElementById('vtl-s' + n);
+    if (screen) screen.classList.add('active');
+
+    const titles = ['Try The Look', 'Try The Look', 'Try The Look', 'Try The Look', 'Try The Look', 'Your Try-On'];
+    const subs = ['See how it looks on you', 'Analysing your photo...', 'Reading product details...', 'Placing it on you...', 'Finalizing the look...', 'Results'];
+    const titleEl = document.getElementById('vtl-header-title');
+    const subEl = document.getElementById('vtl-header-sub');
+    if (titleEl) titleEl.textContent = titles[n];
+    if (subEl) subEl.textContent = subs[n];
+
+    const backBtn = document.getElementById('vtl-back-btn');
+    if (backBtn) {
+      if (n === 5) backBtn.classList.add('visible');
+      else backBtn.classList.remove('visible');
+    }
+
+    if (n === 1) startTipRotation('vtl-tip-text-1');
+    else if (n === 2) startTipRotation('vtl-tip-text-2');
+    else if (n === 3) startTipRotation('vtl-tip-text-3');
+    else stopTipRotation();
+
+    if (n === 4) runChecklist();
   }
-  
-  function handleImageSelect(event) {
+
+  function handleVTLUpload(event) {
     const file = event.target.files[0];
-    
     if (file && file.type.startsWith('image/')) {
       selectedImageFile = file;
-      
       const reader = new FileReader();
-      reader.onload = function(e) {
-        const preview = document.getElementById('image-preview');
-        const container = document.getElementById('image-preview-container');
-        const filename = document.getElementById('preview-filename');
-        const uploadArea = document.getElementById('upload-area');
-        
-        preview.src = e.target.result;
-        filename.textContent = file.name;
-        container.style.display = 'block';
-        uploadArea.style.display = 'none';
-        
-        document.getElementById('submit-btn').disabled = false;
+      reader.onload = function (e) {
+        userImageDataURL = e.target.result;
+        document.getElementById('vtl-preview-img').src = userImageDataURL;
+        document.getElementById('vtl-preview-name').textContent = file.name;
+        document.getElementById('vtl-preview-wrap').style.display = 'block';
+        document.getElementById('vtl-upload-btn').style.display = 'none';
+        document.getElementById('vtl-generate-actions').style.display = 'block';
+        document.querySelector('.vtl-upload-tips').style.display = 'none';
       };
       reader.readAsDataURL(file);
+    } else {
+      showVTLStatus('Please select a valid image file', 'error');
     }
   }
-  
- function removeImage(event) {
-  if (event) event.stopPropagation();
-  
-  selectedImageFile = null;
-  document.getElementById('image-preview-container').style.display = 'none';
-  document.getElementById('image-preview').src = '';
-  document.getElementById('preview-filename').textContent = '';
-  document.getElementById('user-image-input').value = '';
-  document.getElementById('upload-area').style.display = 'block';
-  document.getElementById('submit-btn').disabled = true;
-  document.getElementById('loading-overlay').style.display = 'none';
-  
-  // Reset progress bar
-  const progressBarFill = document.getElementById('progress-bar-fill');
-  const progressPercentage = document.getElementById('progress-percentage');
-  if (progressBarFill) progressBarFill.style.width = '0%';
-  if (progressPercentage) progressPercentage.textContent = '0%';
-  
-  hideStatus();
-}
 
-  
-async function submitTryTheLook() {
-  if (!selectedImageFile) {
-    showStatus('Please select an image first', 'error');
-    return;
+  function removeVTLImage(event) {
+    if (event) event.stopPropagation();
+    selectedImageFile = null;
+    userImageDataURL = null;
+    currentRequestPromise = null;
+    document.getElementById('vtl-preview-wrap').style.display = 'none';
+    document.getElementById('vtl-preview-img').src = '';
+    document.getElementById('vtl-preview-name').textContent = '';
+    document.getElementById('vtl-file-input').value = '';
+    document.getElementById('vtl-upload-btn').style.display = 'flex';
+    document.getElementById('vtl-generate-actions').style.display = 'none';
+    document.querySelector('.vtl-upload-tips').style.display = 'block';
+    hideVTLStatus();
   }
-  
-  // Show loading overlay on the uploaded image
-  const loadingOverlay = document.getElementById('loading-overlay');
-  const submitBtn = document.getElementById('submit-btn');
-  const removeBtn = document.querySelector('.remove-image-btn');
-  const progressBarFill = document.getElementById('progress-bar-fill');
-  const progressPercentage = document.getElementById('progress-percentage');
-  
-  loadingOverlay.style.display = 'flex';
-  submitBtn.disabled = true;
-  submitBtn.style.display = 'none';
-  if (removeBtn) removeBtn.style.display = 'none';
-  
-  // Animate progress bar
-  let progress = 0;
-  const progressInterval = setInterval(() => {
-    if (progress < 90) {
-      progress += Math.random() * 15;
-      if (progress > 90) progress = 90;
-      progressBarFill.style.width = progress + '%';
-      progressPercentage.textContent = Math.round(progress) + '%';
+
+  function setCardImages() {
+    const productImageUrl = "{{ current_product.featured_image | image_url: width: 300 }}";
+    ['1', '2', '3', '4'].forEach((s) => {
+      const prodImg = document.getElementById('vtl-card-product-img-' + s);
+      const userImg = document.getElementById('vtl-card-user-img-' + s);
+      if (prodImg) prodImg.src = productImageUrl;
+      if (userImg && userImageDataURL) userImg.src = userImageDataURL;
+    });
+  }
+
+  function animateProgress(fillId, pctId, startPct, endPct) {
+    const fill = document.getElementById(fillId);
+    const pct = document.getElementById(pctId);
+    if (!fill) return;
+    let p = startPct;
+    const iv = setInterval(() => {
+      p = Math.min(p + Math.random() * 2.5, endPct);
+      fill.style.width = p + '%';
+      if (pct) pct.textContent = Math.round(p) + '%';
+      if (p >= endPct) clearInterval(iv);
+    }, 400);
+  }
+
+  function startTipRotation(elId) {
+    stopTipRotation();
+    let tipIdx = 0;
+    const tipEl = document.getElementById(elId);
+    if (tipEl) tipEl.textContent = TIPS[0];
+    tipInterval = setInterval(() => {
+      tipIdx = (tipIdx + 1) % TIPS.length;
+      const te = document.getElementById(elId);
+      if (te) {
+        te.style.opacity = '0';
+        setTimeout(() => {
+          te.textContent = TIPS[tipIdx];
+          te.style.opacity = '1';
+        }, 300);
+      }
+    }, 3500);
+  }
+
+  function stopTipRotation() {
+    if (tipInterval) {
+      clearInterval(tipInterval);
+      tipInterval = null;
     }
-  }, 500);
-  
-  try {
-    const productTitle = document.querySelector('.product-text h3')?.textContent || 'Unknown Product';
-    const productImageUrl = document.querySelector('.product-image')?.src || '';
+  }
+
+  function runChecklist() {
+    const rows = ['vtl-cr1', 'vtl-cr2', 'vtl-cr3', 'vtl-cr4'];
+    const fillEl = document.getElementById('vtl-prog-fill-4');
+    const pctEl = document.getElementById('vtl-prog-pct-4');
+
+    rows.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('done', 'active');
+        el.classList.add('pending');
+      }
+    });
+
+    const cr1 = document.getElementById('vtl-cr1');
+    if (cr1) { cr1.classList.remove('pending'); cr1.classList.add('done'); }
+    const cr2 = document.getElementById('vtl-cr2');
+    if (cr2) { cr2.classList.remove('pending'); cr2.classList.add('active'); }
+
+    if (fillEl) fillEl.style.width = '82%';
+    if (pctEl) pctEl.textContent = '82%';
+
+    const delays = [2000, 4000, 6000];
+    delays.forEach((delay, idx) => {
+      const t = setTimeout(() => {
+        const curId = rows[idx + 1];
+        const cur = document.getElementById(curId);
+        if (cur) { cur.classList.remove('active'); cur.classList.add('done'); }
+
+        const nextId = rows[idx + 2];
+        const next = document.getElementById(nextId);
+        if (next) { next.classList.remove('pending'); next.classList.add('active'); }
+
+        const pcts = [88, 93, 97];
+        if (fillEl) fillEl.style.width = pcts[idx] + '%';
+        if (pctEl) pctEl.textContent = pcts[idx] + '%';
+
+        if (idx === delays.length - 1) {
+          const t2 = setTimeout(() => {
+            const last = document.getElementById(rows[3]);
+            if (last) { last.classList.remove('active'); last.classList.add('done'); }
+            if (fillEl) fillEl.style.width = '100%';
+            if (pctEl) pctEl.textContent = '100%';
+          }, 1500);
+          screenTimers.push(t2);
+        }
+      }, delay);
+      screenTimers.push(t);
+    });
+  }
+
+  async function onGenerateClick() {
+    if (!selectedImageFile) {
+      showVTLStatus('Please select an image first', 'error');
+      return;
+    }
+
+    document.getElementById('vtl-preview-wrap').style.display = 'none';
+    document.getElementById('vtl-generate-actions').style.display = 'none';
+    document.getElementById('vtl-uploading-state').style.display = 'flex';
+    document.querySelector('.vtl-ready-label').style.display = 'none';
+    document.querySelector('.vtl-product-strip').style.display = 'none';
+
+    generationStartTime = Date.now();
+    currentRequestPromise = sendGenerationRequest();
+
+    const t1 = setTimeout(() => {
+      document.getElementById('vtl-uploading-state').style.display = 'none';
+      setVTLScreen(1);
+      setCardImages();
+      animateProgress('vtl-prog-fill-1', 'vtl-prog-pct-1', 0, 32);
+    }, 1200);
+    screenTimers.push(t1);
+
+    const t2 = setTimeout(() => setVTLScreen(2), 4500);
+    const t3 = setTimeout(() => setVTLScreen(3), 8000);
+    const t4 = setTimeout(() => setVTLScreen(4), 11500);
+    screenTimers.push(t2, t3, t4);
+
+    try {
+      const result = await currentRequestPromise;
+      clearAllTimers();
+      showResult(result);
+    } catch (error) {
+      clearAllTimers();
+      showVTLStatus('Failed to generate image. Please try again.', 'error');
+      setTimeout(() => {
+        setVTLScreen(0);
+        resetForm();
+      }, 2000);
+    }
+  }
+
+  async function sendGenerationRequest() {
+    const productTitle = "{{ current_product.title | escape }}";
+    const productImageUrl = "{{ current_product.featured_image | image_url: width: 1024 }}";
     const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
-    
-    // Get session ID
     const sessionId = getSessionId();
-    
+    const category = "{{ product_category }}";
+
     const formData = new FormData();
     formData.append('userImage', selectedImageFile);
     formData.append('shop_domain', shopDomain);
     formData.append('product_name', productTitle);
     formData.append('session_id', sessionId);
-    formData.append('product_category', '{{ product_category }}');  // Dynamic per-product category
-    if (productImageUrl) {
-      formData.append('product_image_url', productImageUrl);
-    }
-    
+    formData.append('product_category', category);
+    if (productImageUrl) formData.append('product_image_url', productImageUrl);
+
     const response = await fetch('https://seebeforebuy.in/api/generate-image', {
       method: 'POST',
-      body: formData
+      body: formData,
     });
-    
+
     const data = await response.json();
-    
-    // Complete progress bar
-    clearInterval(progressInterval);
-    progressBarFill.style.width = '100%';
-    progressPercentage.textContent = '100%';
-    
-    if (data.success) {
-      // Wait a moment to show 100% completion, then show image immediately
-      setTimeout(() => {
-        // Hide loading overlay and upload section
-        loadingOverlay.style.display = 'none';
-        document.getElementById('upload-section').style.display = 'none';
-        
-        // Show generated image immediately (no delay)
-        const resultSection = document.getElementById('result-section');
-        const generatedImage = document.getElementById('generated-image');
-        
-        generatedImage.src = data.generated_image_url;
-        resultSection.style.display = 'block';
-        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
-      
-    } else if (data.error === 'limit_reached') {
-      loadingOverlay.style.display = 'none';
-      submitBtn.style.display = 'flex';
-      if (removeBtn) removeBtn.style.display = 'flex';
-      submitBtn.disabled = false;
-      progressBarFill.style.width = '0%';
-      progressPercentage.textContent = '0%';
-      showStatus('⚠️ Free limit reached (50 images). Please contact store owner to upgrade.', 'error');
-      
-    } else {
-      loadingOverlay.style.display = 'none';
-      submitBtn.style.display = 'flex';
-      if (removeBtn) removeBtn.style.display = 'flex';
-      submitBtn.disabled = false;
-      progressBarFill.style.width = '0%';
-      progressPercentage.textContent = '0%';
-      showStatus('Error: ' + data.message, 'error');
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || data.error || 'Image generation failed');
     }
-    
-  } catch (error) {
-    console.error('Generation error:', error);
-    clearInterval(progressInterval);
-    loadingOverlay.style.display = 'none';
-    submitBtn.style.display = 'flex';
-    if (removeBtn) removeBtn.style.display = 'flex';
-    submitBtn.disabled = false;
-    progressBarFill.style.width = '0%';
-    progressPercentage.textContent = '0%';
-    showStatus('Failed to generate image. Please try again.', 'error');
-  }
-}
 
-  
-  function showStatus(message, type) {
-    const statusDiv = document.getElementById('status-message');
-    statusDiv.textContent = message;
-    statusDiv.className = 'status-message ' + type;
+    return data.generated_image_url;
   }
-  
-  function hideStatus() {
-    const statusDiv = document.getElementById('status-message');
-    statusDiv.style.display = 'none';
-    statusDiv.className = 'status-message';
-  }
-  
-  /*
-  function displayGeneratedImage(imageUrl) {
-    const resultSection = document.getElementById('result-section');
-    const generatedImage = document.getElementById('generated-image');
-    
-    generatedImage.src = imageUrl;
-    generatedImage.onload = function() {
-      resultSection.style.display = 'block';
-      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-  }
-  */
-  
-  async function downloadGeneratedImage() {
-    const generatedImage = document.getElementById('generated-image');
-    const imageUrl = generatedImage.src;
-    
-    try {
-      // Use backend proxy to avoid CORS issues on direct S3 download
-      const proxyUrl = `https://seebeforebuy.in/api/download-image?url=${encodeURIComponent(imageUrl)}`;
-      const a = document.createElement('a');
-      a.href = proxyUrl;
-      a.download = 'see-before-buy-preview.png';
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Download error:', error);
-      // Fallback - open image in new tab
-      window.open(imageUrl, '_blank');
-    }
-  }
-  
-  async function shareGeneratedImage() {
-    const generatedImage = document.getElementById('generated-image');
-    const imageUrl = generatedImage.src;
-    
-    // Check if Web Share API is supported
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'See Before You Buy - AI Preview',
-          text: 'Check out how this looks on me!',
-          url: imageUrl
-        });
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Share error:', error);
-          copyToClipboard(imageUrl);
-        }
-      }
-    } else {
-      // Fallback: Copy link to clipboard
-      copyToClipboard(imageUrl);
-    }
-  }
-  
-  function copyToClipboard(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      document.execCommand('copy');
-      alert('Image link copied to clipboard!');
-    } catch (error) {
-      console.error('Copy error:', error);
-      alert('Unable to copy link. URL: ' + text);
-    }
-    document.body.removeChild(textarea);
-  }
-  
-  async function handleAddToCart() {
-    const addToCartBtn = document.getElementById('add-to-cart-btn');
-    const originalText = addToCartBtn.textContent;
-    addToCartBtn.disabled = true;
-    addToCartBtn.textContent = 'Adding...';
-    
-    try {
-      const variantId = getProductVariantId();
-      
-      if (!variantId) {
-        showStatus('Error: Could not find product variant. Please add to cart from the product page.', 'error');
-        addToCartBtn.disabled = false;
-        addToCartBtn.textContent = originalText;
-        return;
-      }
 
-      console.log('🛒 Adding to cart, variantId:', variantId);
-      
+  function showResult(imageUrl) {
+    const elapsed = Math.round((Date.now() - generationStartTime) / 1000);
+    const resultImage = document.getElementById('vtl-result-image');
+    const downloadLink = document.getElementById('vtl-download-btn');
+    if (resultImage) resultImage.src = imageUrl;
+    if (downloadLink) downloadLink.href = imageUrl;
+    const timerEl = document.getElementById('vtl-result-timer');
+    if (timerEl) timerEl.textContent = 'Generated in ' + elapsed + ' seconds';
+    setVTLScreen(5);
+  }
+
+  async function addToCart() {
+    const variantId = "{{ default_variant.id }}";
+    const btn = document.getElementById('vtl-add-to-cart-btn');
+    if (!variantId || !btn) return;
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Adding...';
+
+    try {
       const response = await fetch('/cart/add.js', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: JSON.stringify({
-          id: parseInt(variantId, 10),
-          quantity: 1,
-          properties: {
-            '_sbb_try_on': 'true',
-            '_sbb_session_id': getSessionId()
-          }
-        })
-      });
-
-      const responseData = await response.json();
-      console.log('🛒 Cart response:', responseData);
-      
-      if (!response.ok) {
-        throw new Error(responseData.description || responseData.message || 'Cart API error');
-      }
-      
-      addToCartBtn.textContent = '✓ Added to Cart!';
-      addToCartBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
-
-      // Dispatch cart update events for theme cart drawer/header
-      document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
-      document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
-      if (window.Shopify && window.Shopify.onCartUpdate) window.Shopify.onCartUpdate();
-
-      // Track add to cart event (fire-and-forget)
-      const productTitle = document.getElementById('sbb-product-title')?.value || 'Unknown Product';
-      const shopDomain = window.Shopify?.shop || '';
-      fetch('https://seebeforebuy.in/api/track-usage', {
-        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shop_domain: shopDomain, event_type: 'add_to_cart', product_name: productTitle })
-      }).catch(() => {});
-      
-      setTimeout(() => {
-        closeTryTheLookPopup();
-        window.location.href = '/cart';
-      }, 900);
-      
+        body: JSON.stringify({ items: [{ id: parseInt(variantId, 10), quantity: 1 }] }),
+      });
+      if (!response.ok) throw new Error('Failed');
+      btn.innerHTML = '✓ Added to Cart!';
+      btn.style.background = '#059669';
+      document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
+      setTimeout(() => { window.location.href = '/cart'; }, 1200);
     } catch (error) {
-      console.error('❌ Add to cart error:', error);
-      showStatus('Error: ' + (error.message || 'Could not add to cart. Please try again.'), 'error');
-      addToCartBtn.textContent = originalText;
-      addToCartBtn.style.background = '';
-      addToCartBtn.disabled = false;
+      btn.innerHTML = 'Error';
+      btn.style.background = '#dc3545';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        btn.style.background = '';
+      }, 2000);
     }
   }
-  
-  function getProductVariantId() {
-    // 1. Best source: Liquid-rendered hidden input (most reliable)
-    const liquidVariant = document.getElementById('sbb-variant-id');
-    if (liquidVariant && liquidVariant.value) {
-      console.log('✅ Variant from Liquid:', liquidVariant.value);
-      return liquidVariant.value;
-    }
 
-    // 2. Currently selected variant from theme's variant picker
-    const selectedVariantInput = document.querySelector('input[name="id"]:not([type="hidden"]), select[name="id"]');
-    if (selectedVariantInput && selectedVariantInput.value) {
-      console.log('✅ Variant from theme picker:', selectedVariantInput.value);
-      return selectedVariantInput.value;
-    }
-
-    // 3. Hidden input inside add-to-cart form
-    const formVariantInput = document.querySelector('form[action*="/cart/add"] input[name="id"]');
-    if (formVariantInput && formVariantInput.value) {
-      console.log('✅ Variant from form input:', formVariantInput.value);
-      return formVariantInput.value;
-    }
-
-    // 4. Shopify Analytics global object
-    const analyticsVariant = window.ShopifyAnalytics?.meta?.selectedVariantId
-      || window.ShopifyAnalytics?.meta?.product?.variants?.[0]?.id;
-    if (analyticsVariant) {
-      console.log('✅ Variant from ShopifyAnalytics:', analyticsVariant);
-      return analyticsVariant;
-    }
-
-    // 5. meta[name="selected_variant_id"] tag (some themes set this)
-    const metaVariant = document.querySelector('meta[name="selected_variant_id"]');
-    if (metaVariant && metaVariant.content) {
-      console.log('✅ Variant from meta tag:', metaVariant.content);
-      return metaVariant.content;
-    }
-
-    console.warn('⚠️ Could not find variant ID');
-    return null;
+  async function downloadGeneratedImage() {
+    const generatedImage = document.getElementById('vtl-result-image');
+    if (!generatedImage || !generatedImage.src) return;
+    const proxyUrl = 'https://seebeforebuy.in/api/download-image?url=' + encodeURIComponent(generatedImage.src);
+    const a = document.createElement('a');
+    a.href = proxyUrl;
+    a.download = 'see-before-buy-preview.png';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
-  
+
+  async function shareResultImage() {
+    const generatedImage = document.getElementById('vtl-result-image');
+    if (!generatedImage || !generatedImage.src) {
+      showVTLStatus('No generated try-on to share.', 'error');
+      return;
+    }
+
+    if (navigator.share) {
+      try {
+        const response = await fetch(generatedImage.src);
+        const blob = await response.blob();
+        const file = new File([blob], 'virtual-tryon.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'My Virtual Try-On', text: 'Check out my new look!' });
+        } else {
+          await navigator.share({ title: 'My Virtual Try-On', text: 'Check out my new look!', url: generatedImage.src });
+        }
+      } catch (error) {
+        showVTLStatus('Sharing is unavailable right now.', 'error');
+      }
+    } else {
+      showVTLStatus('Sharing is unavailable on this device.', 'error');
+    }
+  }
+
+  function sendFeedback(type) {
+    const btns = document.querySelectorAll('.vtl-rf-btn');
+    btns.forEach((b) => (b.style.opacity = '0.4'));
+    const sel = type === 'good' ? document.querySelector('.vtl-rf-good') : document.querySelector('.vtl-rf-btn:not(.vtl-rf-good)');
+    if (sel) { sel.style.opacity = '1'; sel.style.borderColor = type === 'good' ? '#059669' : '#dc3545'; }
+    showVTLStatus(type === 'good' ? 'Thanks for your feedback!' : 'Sorry about that. Try with a different photo.', type === 'good' ? 'success' : 'error');
+    setTimeout(hideVTLStatus, 3000);
+  }
+
+  function showVTLStatus(msg, type) {
+    const el = document.getElementById('vtl-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'vtl-status-msg ' + type;
+    el.style.display = 'block';
+  }
+
+  function hideVTLStatus() {
+    const el = document.getElementById('vtl-status');
+    if (el) {
+      el.style.display = 'none';
+      el.className = 'vtl-status-msg';
+    }
+  }
+
+  function clearAllTimers() {
+    screenTimers.forEach((t) => clearTimeout(t));
+    screenTimers = [];
+    stopTipRotation();
+  }
+
   function resetForm() {
-    removeImage();
-    hideStatus();
-    document.getElementById('result-section').style.display = 'none';
-    document.getElementById('upload-section').style.display = 'block';
-    document.getElementById('submit-btn').style.display = 'flex';
+    clearAllTimers();
+    selectedImageFile = null;
+    userImageDataURL = null;
+    currentRequestPromise = null;
+    document.getElementById('vtl-preview-wrap').style.display = 'none';
+    document.getElementById('vtl-preview-img').src = '';
+    document.getElementById('vtl-preview-name').textContent = '';
+    document.getElementById('vtl-file-input').value = '';
+    document.getElementById('vtl-upload-btn').style.display = 'flex';
+    document.getElementById('vtl-generate-actions').style.display = 'none';
+    document.getElementById('vtl-uploading-state').style.display = 'none';
+    document.querySelector('.vtl-ready-label').style.display = '';
+    document.querySelector('.vtl-product-strip').style.display = '';
+    document.querySelector('.vtl-upload-tips').style.display = '';
+    document.getElementById('vtl-result-image').src = '';
+    document.getElementById('vtl-download-btn').href = '#';
+    ['vtl-cr1', 'vtl-cr2', 'vtl-cr3', 'vtl-cr4'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove('done', 'active'); el.classList.add('pending'); }
+    });
+    ['vtl-prog-fill-1', 'vtl-prog-fill-2', 'vtl-prog-fill-3', 'vtl-prog-fill-4'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.width = '0%';
+    });
+    document.querySelectorAll('.vtl-rf-btn').forEach((b) => { b.style.opacity = ''; b.style.borderColor = ''; });
+    setVTLScreen(0);
+    hideVTLStatus();
   }
-  
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closeTryTheLookPopup();
-    }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closeVTLPopupDirect();
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const popup = document.getElementById('vtl-popup');
+    if (popup && popup.parentNode !== document.body) document.body.appendChild(popup);
+    setVTLScreen(0);
   });
 </script>
-
-{% schema %}
-{
-  "name": "Try the Look",
-  "target": "section",
-  "settings": [
-    { 
-      "type": "product", 
-      "id": "product", 
-      "label": "Product", 
-      "autofill": true 
-    }
-  ]
-}
-{% endschema %}
