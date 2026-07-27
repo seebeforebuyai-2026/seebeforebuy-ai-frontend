@@ -36,10 +36,7 @@
 
 <div class="vtl-trigger-wrap">
   <button class="vtl-trigger-btn" onclick="openVTLPopup()" type="button">
-    <svg class="vtl-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-    </svg>
-    Try The Look
+    <span id="vtl-trigger-btn-label">Try The Look</span>
   </button>
 </div>
 
@@ -91,7 +88,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
-          Choose Your Photo
+          <span id="vtl-upload-btn-label">Choose Your Photo</span>
         </button>
         <div class="vtl-upload-hint">PNG or JPG • clear light • full body works best</div>
       </div>
@@ -113,7 +110,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
           </svg>
-          Generate Preview
+          <span id="vtl-generate-btn-label">Generate Preview</span>
         </button>
       </div>
 
@@ -226,7 +223,7 @@
           <div class="vtl-result-actions">
             <button class="vtl-ra-btn-primary" id="vtl-add-to-cart-btn" onclick="addToCart()" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-              Add to Cart
+              <span id="vtl-add-to-cart-btn-label">Add to Cart</span>
             </button>
             <a id="vtl-download-btn" class="vtl-ra-btn-icon" href="#" download="my-ai-tryon.png" aria-label="Download" onclick="downloadGeneratedImage()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -264,16 +261,32 @@
     --vtl-muted: #6B7280;
     --vtl-green: #059669;
     --vtl-green-bg: #D1FAE5;
+    --vtl-trigger-bg: #111;
+    --vtl-trigger-color: #fff;
+    --vtl-trigger-radius: 14px;
+    --vtl-modal-bg: #fff;
+    --vtl-modal-color: #111;
+    --vtl-modal-radius: 28px;
+    --vtl-header-bg: #fff;
+    --vtl-header-color: #111;
+    --vtl-header-sub-color: #6B7280;
+    --vtl-upload-area-bg: #f8f9fa;
+    --vtl-upload-btn-bg: var(--vtl-teal);
+    --vtl-upload-btn-color: #fff;
+    --vtl-generate-btn-bg: var(--vtl-teal);
+    --vtl-generate-btn-color: #fff;
+    --vtl-atc-btn-bg: #111;
+    --vtl-atc-btn-color: #fff;
   }
 
   .vtl-trigger-wrap { margin: 20px 0; }
   .vtl-trigger-btn {
     width: 100%; padding: 14px 24px; font-family: 'Poppins', -apple-system, sans-serif;
-    font-size: 15px; font-weight: 700; background: #111; color: #fff; border: none;
-    border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-size: 15px; font-weight: 700; background: var(--vtl-trigger-bg); color: var(--vtl-trigger-color); border: none;
+    border-radius: var(--vtl-trigger-radius); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
     transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(0,0,0,0.15);
   }
-  .vtl-trigger-btn:hover { background: #222; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+  .vtl-trigger-btn:hover { background: color-mix(in srgb, var(--vtl-trigger-bg) 85%, black); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
   .vtl-trigger-icon { width: 20px; height: 20px; }
 
   .vtl-overlay {
@@ -284,7 +297,7 @@
   .vtl-overlay.active { display: flex !important; }
 
   .vtl-modal {
-    background: #fff; border-radius: 28px; width: 100%; max-width: 440px; position: relative; margin: 0 auto;
+    background: var(--vtl-modal-bg); color: var(--vtl-modal-color); border-radius: var(--vtl-modal-radius); width: 100%; max-width: 440px; position: relative; margin: 0 auto;
     animation: vtl-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     display: flex; flex-direction: column; max-height: calc(100vh - 40px); overflow: hidden;
   }
@@ -292,7 +305,7 @@
 
   .vtl-header {
     display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f0f0f0;
-    background: #fff; flex-shrink: 0; position: relative; z-index: 20;
+    background: var(--vtl-header-bg); color: var(--vtl-header-color); flex-shrink: 0; position: relative; z-index: 20;
   }
   .vtl-header-back, .vtl-header-close {
     width: 34px; height: 34px; border-radius: 50%; background: var(--vtl-gray); border: none;
@@ -304,8 +317,8 @@
   .vtl-header-close { color: var(--vtl-muted); }
   .vtl-header-close:hover { background: #eee; }
   .vtl-header-center { text-align: center; }
-  .vtl-header-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 15px; font-weight: 800; color: #111; line-height: 1.2; }
-  .vtl-header-sub { font-family: 'Poppins', -apple-system, sans-serif; font-size: 10px; color: var(--vtl-muted); margin-top: 1px; }
+  .vtl-header-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 15px; font-weight: 800; color: var(--vtl-header-color); line-height: 1.2; }
+  .vtl-header-sub { font-family: 'Poppins', -apple-system, sans-serif; font-size: 10px; color: var(--vtl-header-sub-color); margin-top: 1px; }
 
   .vtl-screen {
     position: absolute; top: 68px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column;
@@ -351,15 +364,15 @@
     font-size: 11px;
     color: var(--vtl-muted);
   }
-  .vtl-btn-primary { width: 100%; background: #111; color: #fff; border: none; border-radius: 14px; padding: 15px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .vtl-btn-primary:hover { background: #222; transform: translateY(-1px); }
+  .vtl-btn-primary { width: 100%; background: var(--vtl-upload-btn-bg); color: var(--vtl-upload-btn-color); border: none; border-radius: 14px; padding: 15px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .vtl-btn-primary:hover { background: color-mix(in srgb, var(--vtl-upload-btn-bg) 85%, black); transform: translateY(-1px); }
   .vtl-btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-  .vtl-btn-teal { background: var(--vtl-teal); box-shadow: 0 4px 14px rgba(0,128,96,0.28); }
-  .vtl-btn-teal:hover { background: var(--vtl-teal-d); }
+  .vtl-btn-teal { background: var(--vtl-generate-btn-bg); color: var(--vtl-generate-btn-color); box-shadow: 0 4px 14px rgba(0,128,96,0.28); }
+  .vtl-btn-teal:hover { background: color-mix(in srgb, var(--vtl-generate-btn-bg) 85%, black); }
 
   .vtl-generate-actions { padding: 16px 18px 0; }
   .vtl-preview-wrap { padding: 20px 18px 0; }
-  .vtl-preview-card { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: #f0f0f0; }
+  .vtl-preview-card { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: var(--vtl-upload-area-bg); }
   .vtl-preview-img { width: 100%; max-height: 260px; object-fit: cover; display: block; }
   .vtl-preview-remove { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.7); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
   .vtl-preview-remove:hover { background: #dc3545; }
@@ -370,6 +383,7 @@
   @keyframes vtl-spin { to { transform: rotate(360deg); } }
   .vtl-uploading-text { font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #111; }
 
+  .vtl-upload-card { background: var(--vtl-upload-area-bg); border: 1px solid var(--vtl-border); border-radius: 16px; padding: 16px 18px; }
   .vtl-upload-tips { padding: 16px 18px; margin-top: auto; }
   .vtl-tips-title { font-family: 'Poppins', -apple-system, sans-serif; font-size: 11px; font-weight: 700; color: var(--vtl-muted); text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
   .vtl-tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -428,8 +442,8 @@
   .vtl-result-product-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .vtl-rpr-name { font-family: 'Poppins', -apple-system, sans-serif; font-size: 14px; font-weight: 800; color: #111; }
   .vtl-result-actions { display: flex; gap: 8px; margin-bottom: 12px; }
-  .vtl-ra-btn-primary { flex: 1; background: #111; color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
-  .vtl-ra-btn-primary:hover { background: #222; }
+  .vtl-ra-btn-primary { flex: 1; background: var(--vtl-atc-btn-bg); color: var(--vtl-atc-btn-color); border: none; border-radius: 12px; padding: 13px; font-family: 'Poppins', -apple-system, sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+  .vtl-ra-btn-primary:hover { background: color-mix(in srgb, var(--vtl-atc-btn-bg) 85%, black); }
   .vtl-ra-btn-icon { width: 44px; height: 44px; background: var(--vtl-gray); border: 1px solid var(--vtl-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--vtl-navy); text-decoration: none; transition: all 0.2s; }
   .vtl-ra-btn-icon:hover { background: #eee; }
   .vtl-result-feedback { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -885,9 +899,116 @@
     if (event.key === 'Escape') closeVTLPopupDirect();
   });
 
+  function adjustColor(color, percent) {
+    if (!color) return '#329580';
+    const clean = color.replace('#', '');
+    const num = parseInt(clean, 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+  }
+
+  async function fetchAndApplySettings() {
+    const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
+    const backendUrl = 'https://seebeforebuy.in';
+
+    try {
+      const response = await fetch(`${backendUrl}/api/settings/${shopDomain}`);
+      const data = await response.json();
+
+      if (data.success && data.settings) {
+        applySettings(data.settings);
+      }
+    } catch (error) {
+      console.warn('Unable to load Try The Look settings:', error);
+    }
+  }
+
+  function applySettings(settings) {
+    if (!settings) return;
+
+    const root = document.documentElement;
+
+    if (settings.button) {
+      const bg = settings.button.bg_color || '#329580';
+      root.style.setProperty('--vtl-trigger-bg', bg);
+      root.style.setProperty('--vtl-trigger-color', settings.button.text_color || '#FFFFFF');
+      root.style.setProperty('--vtl-trigger-radius', `${settings.button.border_radius ?? 8}px`);
+
+      const triggerBtn = document.querySelector('.vtl-trigger-btn');
+      if (triggerBtn) {
+        const label = triggerBtn.querySelector('#vtl-trigger-btn-label');
+        if (label && settings.button.text) label.textContent = settings.button.text;
+      }
+    }
+
+    if (settings.popup) {
+      const headerBg = settings.popup.header_bg_color || '#329580';
+      root.style.setProperty('--vtl-header-bg', headerBg);
+      root.style.setProperty('--vtl-header-color', '#FFFFFF');
+      root.style.setProperty('--vtl-header-sub-color', 'rgba(255,255,255,0.8)');
+      root.style.setProperty('--vtl-modal-bg', settings.popup.bg_color || '#FFFFFF');
+      root.style.setProperty('--vtl-modal-color', settings.popup.text_color || '#111111');
+      root.style.setProperty('--vtl-modal-radius', `${settings.popup.border_radius ?? 12}px`);
+      root.style.setProperty('--vtl-upload-area-bg', settings.popup.upload_area_bg_color || '#F6F6F7');
+
+      const uploadBg = settings.popup.upload_btn_bg_color || '#329580';
+      root.style.setProperty('--vtl-upload-btn-bg', uploadBg);
+      root.style.setProperty('--vtl-upload-btn-color', settings.popup.upload_btn_text_color || '#FFFFFF');
+
+      const generateBg = settings.popup.generate_btn_bg_color || '#329580';
+      root.style.setProperty('--vtl-generate-btn-bg', generateBg);
+      root.style.setProperty('--vtl-generate-btn-color', settings.popup.generate_btn_text_color || '#FFFFFF');
+
+      const headerTitle = document.querySelector('.vtl-header-title');
+      if (headerTitle && settings.popup.title) headerTitle.textContent = settings.popup.title;
+
+      const uploadBtn = document.getElementById('vtl-upload-btn');
+      if (uploadBtn) {
+        const uploadLabel = document.getElementById('vtl-upload-btn-label');
+        if (uploadLabel && settings.popup.upload_button_text) uploadLabel.textContent = settings.popup.upload_button_text;
+      }
+
+      const generateBtn = document.getElementById('vtl-generate-btn');
+      if (generateBtn) {
+        const generateLabel = document.getElementById('vtl-generate-btn-label');
+        if (generateLabel && settings.popup.generate_button_text) generateLabel.textContent = settings.popup.generate_button_text;
+      }
+    }
+
+    if (settings.add_to_cart_button) {
+      const atcBg = settings.add_to_cart_button.bg_color || '#2a7f6d';
+      root.style.setProperty('--vtl-atc-btn-bg', atcBg);
+      root.style.setProperty('--vtl-atc-btn-color', settings.add_to_cart_button.text_color || '#FFFFFF');
+      const addToCartBtn = document.getElementById('vtl-add-to-cart-btn');
+      if (addToCartBtn) {
+        const label = document.getElementById('vtl-add-to-cart-btn-label');
+        if (label && settings.add_to_cart_button.text) label.textContent = settings.add_to_cart_button.text;
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     const popup = document.getElementById('vtl-popup');
     if (popup && popup.parentNode !== document.body) document.body.appendChild(popup);
     setVTLScreen(0);
+    fetchAndApplySettings();
   });
 </script>
+
+{% schema %}
+{
+  "name": "Try the Look",
+  "target": "section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "autofill": true
+    }
+  ]
+}
+{% endschema %}
