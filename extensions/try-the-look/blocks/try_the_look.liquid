@@ -729,6 +729,7 @@
 
   async function sendGenerationRequest() {
     const productTitle = "{{ current_product.title | escape }}";
+    const productDescription = "{{ current_product.description | strip_html | escape }}";
     const productImageUrl = "{{ current_product.featured_image | image_url: width: 1024 }}";
     const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
     const sessionId = getSessionId();
@@ -738,6 +739,8 @@
     formData.append('userImage', selectedImageFile);
     formData.append('shop_domain', shopDomain);
     formData.append('product_name', productTitle);
+    formData.append('product_title', productTitle);
+    formData.append('product_description', productDescription);
     formData.append('session_id', sessionId);
     formData.append('product_category', category);
     if (productImageUrl) formData.append('product_image_url', productImageUrl);
