@@ -993,6 +993,18 @@
     }
   }
 
+  window.openVTLPopup = openVTLPopup;
+  window.closeVTLPopup = closeVTLPopup;
+  window.closeVTLPopupDirect = closeVTLPopupDirect;
+  window.goBackFromResult = goBackFromResult;
+  window.handleVTLUpload = handleVTLUpload;
+  window.removeVTLImage = removeVTLImage;
+  window.onGenerateClick = onGenerateClick;
+  window.addToCart = addToCart;
+  window.downloadGeneratedImage = downloadGeneratedImage;
+  window.shareResultImage = shareResultImage;
+  window.resetAndGoBack = resetAndGoBack;
+
   document.addEventListener('DOMContentLoaded', function () {
     const popup = document.getElementById('vtl-popup');
     if (popup && popup.parentNode !== document.body) document.body.appendChild(popup);
