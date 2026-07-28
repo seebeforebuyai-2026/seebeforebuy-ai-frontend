@@ -711,7 +711,7 @@ export default function Index() {
             {[
               {
                 value: "indo_western",
-                label: "🪷 Indo Western",
+                label: " Indo Western",
                 examples:
                   "Jacket kurti, fusion dress, dhoti pant, crop top lehenga, draped dress",
                 subcategories: [
@@ -727,7 +727,7 @@ export default function Index() {
               },
               {
                 value: "party_wear",
-                label: "✨ Party Wear",
+                label: " Party Wear",
                 examples:
                   "Cocktail dress, evening gown, party saree, designer lehenga",
                 subcategories: [
@@ -739,7 +739,7 @@ export default function Index() {
               },
               {
                 value: "winter_wear",
-                label: "🧥 Winter Wear",
+                label: " Winter Wear",
                 examples:
                   "Puffer jacket, hoodie, sweater, leather jacket, parka, poncho",
                 subcategories: [
@@ -756,7 +756,7 @@ export default function Index() {
               },
               {
                 value: "casual",
-                label: "👕 Casual Wear",
+                label: " Casual Wear",
                 examples: "T-shirts, shirts, kurtis, sarees",
                 subcategories: [
                   ["tshirt", "T-Shirt / Polo / Graphic Tee"],
@@ -767,13 +767,13 @@ export default function Index() {
               },
               {
                 value: "watch",
-                label: "⌚ Watches",
+                label: " Watches",
                 examples: "Wristwatches, smartwatches, luxury timepieces",
                 subcategories: [],
               },
               {
                 value: "jewellery",
-                label: "💍 Jewellery",
+                label: " Jewellery",
                 examples: "Rings, necklaces, earrings, bangles",
                 subcategories: [
                   ["ring", "Ring"],
