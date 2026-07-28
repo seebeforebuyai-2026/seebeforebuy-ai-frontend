@@ -427,6 +427,16 @@
         document.getElementById('vtl-generate-actions').style.display = 'block';
         var tips = document.querySelector('.vtl-upload-tips');
         if (tips) tips.style.display = 'none';
+
+        // ── SILENT PRE-FIRE: start API request immediately in background ──
+        // User sees preview + Generate button, but request is already running.
+        // onGenerateClick will just attach to this existing promise.
+        generationStartTime = Date.now();
+        currentRequestPromise = sendGenerationRequest();
+        currentRequestPromise.catch(function() {
+          // If silent request failed, null it so onGenerateClick retries
+          currentRequestPromise = null;
+        });
       };
       reader.readAsDataURL(file);
     } else {
@@ -453,6 +463,8 @@
   // ─── Generate flow ───────────────────────────────────────
   function onGenerateClick() {
     if (!selectedImageFile) { showVTLStatus('Please select an image first', 'error'); return; }
+
+    // Hide upload screen elements
     document.getElementById('vtl-preview-wrap').style.display = 'none';
     document.getElementById('vtl-generate-actions').style.display = 'none';
     document.getElementById('vtl-uploading-state').style.display = 'flex';
@@ -460,8 +472,16 @@
     var productStrip = document.querySelector('.vtl-product-strip');
     if (readyLabel) readyLabel.style.display = 'none';
     if (productStrip) productStrip.style.display = 'none';
-    generationStartTime = Date.now();
-    currentRequestPromise = sendGenerationRequest();
+
+    // ── Reuse the silent pre-fired promise if it exists, otherwise fire now ──
+    if (!currentRequestPromise) {
+      generationStartTime = Date.now();
+      currentRequestPromise = sendGenerationRequest();
+    }
+    // generationStartTime was already set in handleVTLUpload — elapsed will be accurate
+
+    var activePromise = currentRequestPromise;
+
     var t1 = setTimeout(function() {
       document.getElementById('vtl-uploading-state').style.display = 'none';
       setVTLScreen(1); setCardImages();
@@ -472,7 +492,8 @@
     var t3 = setTimeout(function() { setVTLScreen(3); }, 8000);
     var t4 = setTimeout(function() { setVTLScreen(4); }, 11500);
     screenTimers.push(t2, t3, t4);
-    currentRequestPromise.then(function(result) {
+
+    activePromise.then(function(result) {
       clearAllTimers(); showResult(result);
     }).catch(function(error) {
       clearAllTimers();
