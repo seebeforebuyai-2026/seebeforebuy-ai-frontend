@@ -836,7 +836,7 @@ export default function Settings() {
           How to Add the Try-On Block to Your Product Pages
         </h3>
         <video
-          src="https://cdn.shopify.com/videos/c/o/v/8d3ec3a22a01482ca376ea8d8b7b6b0b.mp4"
+          src="https://cdn.shopify.com/videos/c/o/v/a071b075afb8477b94f7cf9c9d232957.mp4"
           controls
           style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
         />

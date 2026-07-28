@@ -240,12 +240,13 @@
     --vtl-header-color: #111;
     --vtl-header-sub-color: #6B7280;
     --vtl-upload-area-bg: #f8f9fa;
-    --vtl-upload-btn-bg: var(--vtl-teal);
+    --vtl-upload-btn-bg: #008060;
     --vtl-upload-btn-color: #fff;
-    --vtl-generate-btn-bg: var(--vtl-teal);
+    --vtl-generate-btn-bg: #008060;
     --vtl-generate-btn-color: #fff;
     --vtl-atc-btn-bg: #111;
     --vtl-atc-btn-color: #fff;
+    --vtl-atc-btn-radius: 12px;
   }
 
   .vtl-trigger-wrap { margin: 20px 0; }
@@ -429,7 +430,7 @@
 </style>
 
 <!-- SBB Prompts — loaded before main script -->
-<script src="{{ 'prompts.js' | asset_url }}" defer></script>
+<script src="{{ 'prompts.js' | asset_url }}"></script>
 
 <script>
   // ── Shop categories fetched from backend at init ──
@@ -476,6 +477,8 @@
       resetForm();
     }
   }
+  // Assign immediately so onclick="openVTLPopup()" works as soon as script parses
+  window.openVTLPopup = openVTLPopup;
 
   function closeVTLPopup(event) {
     if (event && event.target && !event.target.classList.contains('vtl-overlay')) return;
@@ -709,8 +712,7 @@
     const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
     const sessionId = getSessionId();
 
-    // ── NEW: detect prompt using prompts.js ──────────────────────────────────
-    // Wait for prompts.js to be available (defer loaded)
+    // ── Detect prompt using prompts.js ──────────────────────────────────────
     const promptText = (window.SBB_PROMPTS && window.SBB_PROMPTS.detectPrompt)
       ? window.SBB_PROMPTS.detectPrompt(productTitle, productDescription, sbbShopCategories)
       : null; // fallback to backend-side prompt if JS not loaded yet
@@ -939,65 +941,45 @@
 
   function applySettings(settings) {
     if (!settings) return;
-
     const root = document.documentElement;
 
+    // ── Trigger button ──────────────────────────────────────
     if (settings.button) {
-      const bg = settings.button.bg_color || '#329580';
-      root.style.setProperty('--vtl-trigger-bg', bg);
-      root.style.setProperty('--vtl-trigger-color', settings.button.text_color || '#FFFFFF');
-      root.style.setProperty('--vtl-trigger-radius', `${settings.button.border_radius ?? 8}px`);
-
-      const triggerBtn = document.querySelector('.vtl-trigger-btn');
-      if (triggerBtn) {
-        const label = triggerBtn.querySelector('#vtl-trigger-btn-label');
-        if (label && settings.button.text) label.textContent = settings.button.text;
-      }
+      root.style.setProperty('--vtl-trigger-bg', settings.button.bg_color || '#111');
+      root.style.setProperty('--vtl-trigger-color', settings.button.text_color || '#fff');
+      root.style.setProperty('--vtl-trigger-radius', `${settings.button.border_radius ?? 14}px`);
+      const label = document.getElementById('vtl-trigger-btn-label');
+      if (label && settings.button.text) label.textContent = settings.button.text;
     }
 
+    // ── Popup & header ──────────────────────────────────────
     if (settings.popup) {
-      const headerBg = settings.popup.header_bg_color || '#329580';
-      root.style.setProperty('--vtl-header-bg', headerBg);
-      root.style.setProperty('--vtl-header-color', '#FFFFFF');
-      root.style.setProperty('--vtl-header-sub-color', 'rgba(255,255,255,0.8)');
-      root.style.setProperty('--vtl-modal-bg', settings.popup.bg_color || '#FFFFFF');
-      root.style.setProperty('--vtl-modal-color', settings.popup.text_color || '#111111');
-      root.style.setProperty('--vtl-modal-radius', `${settings.popup.border_radius ?? 12}px`);
-      root.style.setProperty('--vtl-upload-area-bg', settings.popup.upload_area_bg_color || '#F6F6F7');
+      root.style.setProperty('--vtl-header-bg', settings.popup.header_bg_color || '#fff');
+      root.style.setProperty('--vtl-header-color', settings.popup.header_bg_color ? '#fff' : '#111');
+      root.style.setProperty('--vtl-modal-bg', settings.popup.bg_color || '#fff');
+      root.style.setProperty('--vtl-modal-color', settings.popup.text_color || '#111');
+      root.style.setProperty('--vtl-modal-radius', `${settings.popup.border_radius ?? 28}px`);
+      root.style.setProperty('--vtl-upload-area-bg', settings.popup.upload_area_bg_color || '#f8f9fa');
+      root.style.setProperty('--vtl-upload-btn-bg', settings.popup.upload_btn_bg_color || '#008060');
+      root.style.setProperty('--vtl-upload-btn-color', settings.popup.upload_btn_text_color || '#fff');
+      root.style.setProperty('--vtl-generate-btn-bg', settings.popup.generate_btn_bg_color || '#008060');
+      root.style.setProperty('--vtl-generate-btn-color', settings.popup.generate_btn_text_color || '#fff');
 
-      const uploadBg = settings.popup.upload_btn_bg_color || '#329580';
-      root.style.setProperty('--vtl-upload-btn-bg', uploadBg);
-      root.style.setProperty('--vtl-upload-btn-color', settings.popup.upload_btn_text_color || '#FFFFFF');
-
-      const generateBg = settings.popup.generate_btn_bg_color || '#329580';
-      root.style.setProperty('--vtl-generate-btn-bg', generateBg);
-      root.style.setProperty('--vtl-generate-btn-color', settings.popup.generate_btn_text_color || '#FFFFFF');
-
-      const headerTitle = document.querySelector('.vtl-header-title');
+      const headerTitle = document.getElementById('vtl-header-title');
       if (headerTitle && settings.popup.title) headerTitle.textContent = settings.popup.title;
-
-      const uploadBtn = document.getElementById('vtl-upload-btn');
-      if (uploadBtn) {
-        const uploadLabel = document.getElementById('vtl-upload-btn-label');
-        if (uploadLabel && settings.popup.upload_button_text) uploadLabel.textContent = settings.popup.upload_button_text;
-      }
-
-      const generateBtn = document.getElementById('vtl-generate-btn');
-      if (generateBtn) {
-        const generateLabel = document.getElementById('vtl-generate-btn-label');
-        if (generateLabel && settings.popup.generate_button_text) generateLabel.textContent = settings.popup.generate_button_text;
-      }
+      const uploadLabel = document.getElementById('vtl-upload-btn-label');
+      if (uploadLabel && settings.popup.upload_button_text) uploadLabel.textContent = settings.popup.upload_button_text;
+      const generateLabel = document.getElementById('vtl-generate-btn-label');
+      if (generateLabel && settings.popup.generate_button_text) generateLabel.textContent = settings.popup.generate_button_text;
     }
 
+    // ── Add to Cart button ──────────────────────────────────
     if (settings.add_to_cart_button) {
-      const atcBg = settings.add_to_cart_button.bg_color || '#2a7f6d';
-      root.style.setProperty('--vtl-atc-btn-bg', atcBg);
-      root.style.setProperty('--vtl-atc-btn-color', settings.add_to_cart_button.text_color || '#FFFFFF');
-      const addToCartBtn = document.getElementById('vtl-add-to-cart-btn');
-      if (addToCartBtn) {
-        const label = document.getElementById('vtl-add-to-cart-btn-label');
-        if (label && settings.add_to_cart_button.text) label.textContent = settings.add_to_cart_button.text;
-      }
+      root.style.setProperty('--vtl-atc-btn-bg', settings.add_to_cart_button.bg_color || '#111');
+      root.style.setProperty('--vtl-atc-btn-color', settings.add_to_cart_button.text_color || '#fff');
+      root.style.setProperty('--vtl-atc-btn-radius', `${settings.add_to_cart_button.border_radius ?? 12}px`);
+      const atcLabel = document.getElementById('vtl-add-to-cart-btn-label');
+      if (atcLabel && settings.add_to_cart_button.text) atcLabel.textContent = settings.add_to_cart_button.text;
     }
   }
 
@@ -1017,6 +999,7 @@
     const popup = document.getElementById('vtl-popup');
     if (popup && popup.parentNode !== document.body) document.body.appendChild(popup);
     setVTLScreen(0);
+    // Fetch settings AFTER popup is in body so element lookups work
     fetchAndApplySettings();
   });
 </script>
