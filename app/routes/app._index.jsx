@@ -675,23 +675,6 @@ export default function Index() {
       )}
 
       {/* Category Selection - After Account Creation OR if no category selected */}
-      {/* instruction guide video  */}
-
-      {
-        (showCategorySelection ||
-
-          <div style={{ textAlign: "center", marginTop: "32px" }}>
-        <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
-          How to Add the Try-On Block to Your Product Pages
-        </h3>
-        <video
-          src="https://cdn.shopify.com/videos/c/o/v/b873ca4b7cee4fef84dae899af3d05c9.mp4"
-          controls
-          style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
-        />
-      </div>
-        )
-      }
 
       {(showCategorySelection ||
         (loaderData.accountExists && !hasCategory && !isActive)) && (
@@ -700,37 +683,78 @@ export default function Index() {
             Select Your Product Categories
           </h2>
           <p className={styles.categorySubtitle}>
-            Choose the main categories that describe your store. You can also
-            add subcategories to make prompts more precise.
+            Choose the main categories that describe your store. Selecting the right categories ensures the AI uses the most accurate prompt for each product.
           </p>
 
           <div className={styles.categoryList}>
             {[
               {
-                value: "party_dresses",
-                label: "Party Dresses",
-                examples: "Evening gowns, cocktail dresses",
+                value: "indo_western",
+                label: "🪷 Indo Western",
+                examples: "Jacket kurti, fusion dress, dhoti pant, crop top lehenga, draped dress",
                 subcategories: [
-                  ["cocktail_dress", "Cocktail Dress"],
-                  ["evening_gown", "Evening Gown"],
+                  ["jacket_kurti",     "Jacket Kurti / Cape Kurti"],
+                  ["indo_western_gown","Indo Western Gown"],
+                  ["fusion_dress",     "Fusion Dress (Block Print, Ikat, Ajrakh)"],
+                  ["dhoti_pant",       "Dhoti Pant"],
+                  ["crop_top_lehenga", "Crop Top with Lehenga"],
+                  ["jacket_lehenga",   "Jacket Lehenga / Cape Lehenga"],
+                  ["kurti_jeans",      "Kurti with Jeans"],
+                  ["draped_dress",     "Draped / Saree-Style Dress"],
                 ],
               },
               {
-                value: "indo_western",
-                label: "Indo Western",
-                examples: "Kurti jackets, dhoti pants",
+                value: "party_wear",
+                label: "✨ Party Wear",
+                examples: "Cocktail dress, evening gown, party saree, designer lehenga",
                 subcategories: [
-                  ["jacket_kurti", "Jacket Kurti"],
-                  ["dhoti_pant", "Dhoti Pant"],
+                  ["cocktail_dress",    "Cocktail Dress"],
+                  ["evening_gown",      "Evening Gown / Ball Gown"],
+                  ["party_saree",       "Party Saree (Shimmer / Net / Organza)"],
+                  ["designer_lehenga",  "Designer / Bridal Lehenga"],
                 ],
               },
               {
                 value: "winter_wear",
-                label: "Winter Wear",
-                examples: "Ponchos, parkas",
+                label: "🧥 Winter Wear",
+                examples: "Puffer jacket, hoodie, sweater, leather jacket, parka, poncho",
                 subcategories: [
-                  ["poncho", "Poncho"],
-                  ["parka_jacket", "Parka Jacket"],
+                  ["puffer_jacket",  "Puffer / Quilted Jacket"],
+                  ["hoodie",         "Hoodie"],
+                  ["sweater",        "Sweater / Knit Jumper"],
+                  ["sweatshirt",     "Sweatshirt / Crew Neck"],
+                  ["leather_jacket", "Leather / Biker Jacket"],
+                  ["denim_jacket",   "Denim Jacket"],
+                  ["parka",          "Parka Jacket"],
+                  ["poncho",         "Poncho"],
+                  ["general_jacket", "General / Casual Jacket"],
+                ],
+              },
+              {
+                value: "casual",
+                label: "👕 Casual Wear",
+                examples: "T-shirts, shirts, kurtis, sarees",
+                subcategories: [
+                  ["tshirt",  "T-Shirt / Polo / Graphic Tee"],
+                  ["shirt",   "Shirt / Blouse / Button-Up"],
+                  ["kurti",   "Kurti / Kurta / Salwar Kameez"],
+                  ["saree",   "Saree (Cotton / Silk / Daily Wear)"],
+                ],
+              },
+              {
+                value: "watch",
+                label: "⌚ Watches",
+                examples: "Wristwatches, smartwatches, luxury timepieces",
+                subcategories: [],
+              },
+              {
+                value: "jewellery",
+                label: "💍 Jewellery",
+                examples: "Rings, necklaces, earrings, bangles",
+                subcategories: [
+                  ["ring",     "Ring"],
+                  ["necklace", "Necklace / Pendant / Chain"],
+                  ["earring",  "Earrings (Studs, Jhumka, Drops)"],
                 ],
               },
             ].map((option) => {

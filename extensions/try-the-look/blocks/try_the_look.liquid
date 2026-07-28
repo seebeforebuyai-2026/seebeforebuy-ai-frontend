@@ -3,37 +3,6 @@
 {% assign default_variant = current_product.selected_or_first_available_variant %}
 
 {% if current_product %}
-  {% comment %} Dynamic category detection based on product title, type, tags, and collections {% endcomment %}
-  {% assign product_category = "apparel" %}
-  {% capture search_string %}{{ current_product.title }} | {{ current_product.type }} | {{ current_product.tags | join: ' ' }}{% endcapture %}
-  {% for collection in current_product.collections %}
-    {% capture search_string %}{{ search_string }} | {{ collection.title }}{% endcapture %}
-  {% endfor %}
-  {% assign search_string = search_string | downcase %}
-
-  {% if search_string contains "kurti" or search_string contains "kurta" or search_string contains "tunic" or search_string contains "salwar" or search_string contains "kameez" or search_string contains "anarkali" %}
-    {% assign product_category = "kurti" %}
-  {% elsif search_string contains "saree" or search_string contains "sari" or search_string contains "lehenga" or search_string contains "choli" %}
-    {% assign product_category = "saree" %}
-  {% elsif search_string contains "t-shirt" or search_string contains "tshirt" or search_string contains "t shirt" or search_string contains "tee" or search_string contains "polo" %}
-    {% assign product_category = "t_shirt" %}
-  {% elsif search_string contains "shirt" or search_string contains "blouse" or search_string contains "button-up" or search_string contains "button-down" %}
-    {% assign product_category = "shirt" %}
-  {% elsif search_string contains "suit" or search_string contains "blazer" or search_string contains "tuxedo" or search_string contains "waistcoat" %}
-    {% assign product_category = "suit" %}
-  {% elsif search_string contains "streetwear" or search_string contains "hoodie" or search_string contains "sweatshirt" or search_string contains "cargo" or search_string contains "jogger" %}
-    {% assign product_category = "streetwear" %}
-  {% elsif search_string contains "jewel" or search_string contains "ring" or search_string contains "necklace" or search_string contains "earring" or search_string contains "bracelet" or search_string contains "bangle" or search_string contains "pendant" %}
-    {% assign product_category = "jewellery" %}
-  {% elsif search_string contains "watch" or search_string contains "smartwatch" %}
-    {% assign product_category = "watch" %}
-  {% elsif search_string contains "shoe" or search_string contains "boot" or search_string contains "sneaker" or search_string contains "sandal" or search_string contains "heel" or search_string contains "footwear" or search_string contains "loafer" or search_string contains "trainer" %}
-    {% assign product_category = "shoes" %}
-  {% else %}
-    {% assign product_category = "apparel" %}
-  {% endif %}
-{% endif %}
-
 <div class="vtl-trigger-wrap">
   <button class="vtl-trigger-btn" onclick="openVTLPopup()" type="button">
     <span id="vtl-trigger-btn-label">Try The Look</span>
@@ -72,7 +41,7 @@
         {% endif %}
         <div class="vtl-product-meta">
           <div class="vtl-product-name">{{ current_product.title }}</div>
-          <div class="vtl-product-cat">Virtual try-on &middot; <strong style="text-transform:capitalize; color:#008060;">{{ product_category | replace: '_', ' ' }}</strong></div>
+          <div class="vtl-product-cat">Virtual try-on &middot; <strong id="vtl-product-cat-label" style="text-transform:capitalize; color:#008060;">AI Try-On</strong></div>
         </div>
       </div>
 
@@ -459,7 +428,13 @@
   .vtl-status-msg.error { display: block; background: #f8d7da; color: #721c24; }
 </style>
 
+<!-- SBB Prompts — loaded before main script -->
+<script src="{{ 'prompts.js' | asset_url }}" defer></script>
+
 <script>
+  // ── Shop categories fetched from backend at init ──
+  let sbbShopCategories = []; // filled by fetchAndApplySettings
+
   let selectedImageFile = null;
   let userImageDataURL = null;
   let generationStartTime = 0;
@@ -733,7 +708,12 @@
     const productImageUrl = "{{ current_product.featured_image | image_url: width: 1024 }}";
     const shopDomain = window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
     const sessionId = getSessionId();
-    const category = "{{ product_category }}";
+
+    // ── NEW: detect prompt using prompts.js ──────────────────────────────────
+    // Wait for prompts.js to be available (defer loaded)
+    const promptText = (window.SBB_PROMPTS && window.SBB_PROMPTS.detectPrompt)
+      ? window.SBB_PROMPTS.detectPrompt(productTitle, productDescription, sbbShopCategories)
+      : null; // fallback to backend-side prompt if JS not loaded yet
 
     const formData = new FormData();
     formData.append('userImage', selectedImageFile);
@@ -742,7 +722,7 @@
     formData.append('product_title', productTitle);
     formData.append('product_description', productDescription);
     formData.append('session_id', sessionId);
-    formData.append('product_category', category);
+    if (promptText) formData.append('custom_prompt', promptText); // send detected prompt
     if (productImageUrl) formData.append('product_image_url', productImageUrl);
 
     const response = await fetch('https://seebeforebuy.in/api/generate-image', {
@@ -918,14 +898,42 @@
     const backendUrl = 'https://seebeforebuy.in';
 
     try {
-      const response = await fetch(`${backendUrl}/api/settings/${shopDomain}`);
-      const data = await response.json();
+      // Fetch settings and shop categories in parallel
+      const [settingsRes, shopRes] = await Promise.all([
+        fetch(`${backendUrl}/api/settings/${shopDomain}`),
+        fetch(`${backendUrl}/api/shop-status/${shopDomain}`),
+      ]);
 
-      if (data.success && data.settings) {
-        applySettings(data.settings);
+      // Apply UI settings
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        if (settingsData.success && settingsData.settings) {
+          applySettings(settingsData.settings);
+        }
+      }
+
+      // Store shop's selected main categories for prompt detection
+      if (shopRes.ok) {
+        const shopData = await shopRes.json();
+        const cats = shopData.shopStatus?.product_categories;
+        if (Array.isArray(cats) && cats.length > 0) {
+          // product_categories is stored as [{main_category: "indo_western"}, ...]
+          // or as a flat array of strings — handle both
+          sbbShopCategories = cats.map(c =>
+            typeof c === 'string' ? c : (c.main_category || c)
+          ).filter(Boolean);
+        }
+        // Update the product category label in the popup
+        if (sbbShopCategories.length > 0 && window.SBB_PROMPTS) {
+          const firstCat = window.SBB_PROMPTS.PROMPT_CONFIG[sbbShopCategories[0]];
+          if (firstCat && firstCat.label) {
+            const catLabel = document.getElementById('vtl-product-cat-label');
+            if (catLabel) catLabel.textContent = firstCat.label;
+          }
+        }
       }
     } catch (error) {
-      console.warn('Unable to load Try The Look settings:', error);
+      console.warn('Unable to load SBB settings:', error);
     }
   }
 
@@ -1012,6 +1020,8 @@
     fetchAndApplySettings();
   });
 </script>
+
+{% endif %}
 
 {% schema %}
 {
