@@ -591,16 +591,18 @@ export default function Index() {
     fetcher.submit({ actionType: "createAccount" }, { method: "POST" });
   };
 
-  const toggleCategory = (mainCategory) => {
+  const toggleCategory = (mainCategory, allSubcategories = []) => {
     setSelectedCategories((current) => {
       const exists = current.find(
         (entry) => entry.main_category === mainCategory,
       );
       if (exists) {
+        // Deselect — remove it
         return current.filter((entry) => entry.main_category !== mainCategory);
       }
-
-      return [...current, { main_category: mainCategory, subcategories: [] }];
+      // Select — auto-fill ALL subcategory keys
+      const subKeys = allSubcategories.map((s) => s[0]);
+      return [...current, { main_category: mainCategory, subcategories: subKeys }];
     });
   };
 
@@ -675,6 +677,25 @@ export default function Index() {
       )}
 
       {/* Category Selection - After Account Creation OR if no category selected */}
+      {(showCategorySelection ||
+        (loaderData.accountExists && !hasCategory && !isActive)) && (
+        <div style={{ textAlign: "center", marginTop: "32px" }}>
+          <h3
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "12px",
+            }}
+          >
+            How to select the categories
+          </h3>
+          <video
+            src="https://cdn.shopify.com/videos/c/o/v/b873ca4b7cee4fef84dae899af3d05c9.mp4"
+            controls
+            style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
+          />
+        </div>
+      )}
 
       {(showCategorySelection ||
         (loaderData.accountExists && !hasCategory && !isActive)) && (
@@ -683,7 +704,7 @@ export default function Index() {
             Select Your Product Categories
           </h2>
           <p className={styles.categorySubtitle}>
-            Choose the main categories that describe your store. Selecting the right categories ensures the AI uses the most accurate prompt for each product.
+            Select the Multiple Categories which is right fit for you business
           </p>
 
           <div className={styles.categoryList}>
@@ -691,42 +712,45 @@ export default function Index() {
               {
                 value: "indo_western",
                 label: "🪷 Indo Western",
-                examples: "Jacket kurti, fusion dress, dhoti pant, crop top lehenga, draped dress",
+                examples:
+                  "Jacket kurti, fusion dress, dhoti pant, crop top lehenga, draped dress",
                 subcategories: [
-                  ["jacket_kurti",     "Jacket Kurti / Cape Kurti"],
-                  ["indo_western_gown","Indo Western Gown"],
-                  ["fusion_dress",     "Fusion Dress (Block Print, Ikat, Ajrakh)"],
-                  ["dhoti_pant",       "Dhoti Pant"],
+                  ["jacket_kurti", "Jacket Kurti / Cape Kurti"],
+                  ["indo_western_gown", "Indo Western Gown"],
+                  ["fusion_dress", "Fusion Dress (Block Print, Ikat, Ajrakh)"],
+                  ["dhoti_pant", "Dhoti Pant"],
                   ["crop_top_lehenga", "Crop Top with Lehenga"],
-                  ["jacket_lehenga",   "Jacket Lehenga / Cape Lehenga"],
-                  ["kurti_jeans",      "Kurti with Jeans"],
-                  ["draped_dress",     "Draped / Saree-Style Dress"],
+                  ["jacket_lehenga", "Jacket Lehenga / Cape Lehenga"],
+                  ["kurti_jeans", "Kurti with Jeans"],
+                  ["draped_dress", "Draped / Saree-Style Dress"],
                 ],
               },
               {
                 value: "party_wear",
                 label: "✨ Party Wear",
-                examples: "Cocktail dress, evening gown, party saree, designer lehenga",
+                examples:
+                  "Cocktail dress, evening gown, party saree, designer lehenga",
                 subcategories: [
-                  ["cocktail_dress",    "Cocktail Dress"],
-                  ["evening_gown",      "Evening Gown / Ball Gown"],
-                  ["party_saree",       "Party Saree (Shimmer / Net / Organza)"],
-                  ["designer_lehenga",  "Designer / Bridal Lehenga"],
+                  ["cocktail_dress", "Cocktail Dress"],
+                  ["evening_gown", "Evening Gown / Ball Gown"],
+                  ["party_saree", "Party Saree (Shimmer / Net / Organza)"],
+                  ["designer_lehenga", "Designer / Bridal Lehenga"],
                 ],
               },
               {
                 value: "winter_wear",
                 label: "🧥 Winter Wear",
-                examples: "Puffer jacket, hoodie, sweater, leather jacket, parka, poncho",
+                examples:
+                  "Puffer jacket, hoodie, sweater, leather jacket, parka, poncho",
                 subcategories: [
-                  ["puffer_jacket",  "Puffer / Quilted Jacket"],
-                  ["hoodie",         "Hoodie"],
-                  ["sweater",        "Sweater / Knit Jumper"],
-                  ["sweatshirt",     "Sweatshirt / Crew Neck"],
+                  ["puffer_jacket", "Puffer / Quilted Jacket"],
+                  ["hoodie", "Hoodie"],
+                  ["sweater", "Sweater / Knit Jumper"],
+                  ["sweatshirt", "Sweatshirt / Crew Neck"],
                   ["leather_jacket", "Leather / Biker Jacket"],
-                  ["denim_jacket",   "Denim Jacket"],
-                  ["parka",          "Parka Jacket"],
-                  ["poncho",         "Poncho"],
+                  ["denim_jacket", "Denim Jacket"],
+                  ["parka", "Parka Jacket"],
+                  ["poncho", "Poncho"],
                   ["general_jacket", "General / Casual Jacket"],
                 ],
               },
@@ -735,10 +759,10 @@ export default function Index() {
                 label: "👕 Casual Wear",
                 examples: "T-shirts, shirts, kurtis, sarees",
                 subcategories: [
-                  ["tshirt",  "T-Shirt / Polo / Graphic Tee"],
-                  ["shirt",   "Shirt / Blouse / Button-Up"],
-                  ["kurti",   "Kurti / Kurta / Salwar Kameez"],
-                  ["saree",   "Saree (Cotton / Silk / Daily Wear)"],
+                  ["tshirt", "T-Shirt / Polo / Graphic Tee"],
+                  ["shirt", "Shirt / Blouse / Button-Up"],
+                  ["kurti", "Kurti / Kurta / Salwar Kameez"],
+                  ["saree", "Saree (Cotton / Silk / Daily Wear)"],
                 ],
               },
               {
@@ -752,9 +776,9 @@ export default function Index() {
                 label: "💍 Jewellery",
                 examples: "Rings, necklaces, earrings, bangles",
                 subcategories: [
-                  ["ring",     "Ring"],
+                  ["ring", "Ring"],
                   ["necklace", "Necklace / Pendant / Chain"],
-                  ["earring",  "Earrings (Studs, Jhumka, Drops)"],
+                  ["earring", "Earrings (Studs, Jhumka, Drops)"],
                 ],
               },
             ].map((option) => {
@@ -773,12 +797,12 @@ export default function Index() {
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => toggleCategory(option.value)}
+                      onChange={() => toggleCategory(option.value, option.subcategories)}
                       onClick={(e) => e.stopPropagation()}
                     />
                     <div
                       className={styles.categoryContent}
-                      onClick={() => toggleCategory(option.value)}
+                      onClick={() => toggleCategory(option.value, option.subcategories)}
                     >
                       <div className={styles.categoryName}>{option.label}</div>
                       <div className={styles.categoryExamples}>
@@ -787,43 +811,6 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {isSelected && (
-                    <div
-                      style={{
-                        marginTop: "12px",
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "8px",
-                      }}
-                    >
-                      {(option.subcategories || []).map((subcategory) => {
-                        const value = subcategory[0];
-                        const label = subcategory[1];
-                        const isChecked = subcategories.includes(value);
-                        return (
-                          <label
-                            key={value}
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              fontSize: "13px",
-                              color: "#374151",
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() =>
-                                toggleSubcategory(option.value, value)
-                              }
-                            />
-                            {label}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -841,26 +828,26 @@ export default function Index() {
         </div>
       )}
 
-
-
-
-
-
       {/* instruction guide video  */}
 
-      { showActivation && !isActive && (
-      <div style={{ textAlign: "center", marginTop: "32px" }}>
-        <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
-          How to Add the Try-On Block to Your Product Pages
-        </h3>
-        <video
-          src="https://cdn.shopify.com/videos/c/o/v/8d3ec3a22a01482ca376ea8d8b7b6b0b.mp4"
-          controls
-          style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
-        />
-      </div>
+      {showActivation && !isActive && (
+        <div style={{ textAlign: "center", marginTop: "32px" }}>
+          <h3
+            style={{
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "12px",
+            }}
+          >
+            How to Add the Try-On Block to Your Product Pages
+          </h3>
+          <video
+            src="https://cdn.shopify.com/videos/c/o/v/8d3ec3a22a01482ca376ea8d8b7b6b0b.mp4"
+            controls
+            style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
+          />
+        </div>
       )}
-
 
       {/* Activation Section - After Categories Saved */}
       {showActivation && !isActive && (
@@ -1297,6 +1284,35 @@ export default function Index() {
                 </div>
               </div>
             )}
+
+            {/* note  */}
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "12px 16px",
+                background: "#F0FDF4",
+                border: "1px solid #BBF7D0",
+                borderRadius: "8px",
+                fontSize: "13px",
+                color: "#065F46",
+                lineHeight: "1.6",
+              }}
+            >
+              <strong>💡 Note:</strong> Want more credits? Share your feedback
+              or improvement suggestions with us — we'll instantly upgrade you
+              to unlimited credits. Reach us at{" "}
+              <a
+                href="mailto:seebeforebuy.ai@gmail.com"
+                style={{ color: "#059669" }}
+              >
+                seebeforebuy.ai@gmail.com
+              </a>{" "}
+              or{" "}
+              <a href="tel:7796132778" style={{ color: "#059669" }}>
+                7796132778
+              </a>
+              .
+            </div>
           </>
         )}
 
