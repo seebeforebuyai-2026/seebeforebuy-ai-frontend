@@ -159,7 +159,7 @@
         <div class="vtl-result-image-area" id="vtl-result-image-area">
           <img id="vtl-result-image" src="" alt="AI Try-On Result" class="vtl-result-img">
           <div class="vtl-result-pip" id="vtl-result-pip">
-            {% if current_product.featured_image %}<img src="{{ current_product.featured_image | image_url: width: 160 }}" alt="{{ current_product.title | escape }}" class="vtl-pip-img">{% endif %}
+            {% if current_product.featured_image %}<img src="{{ current_product.featured_image | image_url: width: 160 }}" alt="{{ current_product.title | escape }}" class="vtl-pip-img" width="64" height="80">{% endif %}
           </div>
         </div>
         <div class="vtl-result-sheet">
@@ -191,8 +191,6 @@
 
 <input type="hidden" id="sbb-variant-id" value="{{ default_variant.id }}">
 <input type="hidden" id="sbb-product-title" value="{{ current_product.title | escape }}">
-
-{% endif %}
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -792,6 +790,8 @@
     fetchAndApplySettings();
   });
 </script>
+
+{% endif %}
 
 {% schema %}
 {
