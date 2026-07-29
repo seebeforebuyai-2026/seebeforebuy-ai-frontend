@@ -326,15 +326,16 @@
 
 <script>
   // ─── State ───────────────────────────────────────────────
-  let sbbShopCategories = [];
-  let selectedImageFile = null;
-  let userImageDataURL = null;
-  let generationStartTime = 0;
-  let tipInterval = null;
-  let screenTimers = [];
-  let currentRequestPromise = null;
+  // Using var (not let/const) — extension block may render multiple times per page
+  var sbbShopCategories = [];
+  var selectedImageFile = null;
+  var userImageDataURL = null;
+  var generationStartTime = 0;
+  var tipInterval = null;
+  var screenTimers = [];
+  var currentRequestPromise = null;
 
-  const TIPS = [
+  var TIPS = [
     'Use a full body photo for best results',
     'Stand straight with arms slightly away from your body',
     'Avoid extreme angles \u2014 a straight-on mirror selfie works best',
