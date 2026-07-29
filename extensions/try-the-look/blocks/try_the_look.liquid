@@ -505,10 +505,10 @@ console.log("script tag start here");
 
   // ─── API request ─────────────────────────────────────────
   async function sendGenerationRequest() {
-    var productTitle = "{{ current_product.title | escape }}";
-    var productDescription = "{{ current_product.description | strip_html | escape }}";
+    var productTitle = {{ current_product.title | json }};
+    var productDescription = {{ current_product.description | strip_html | json }};
     var productImageUrl = "{{ current_product.featured_image | image_url: width: 1024 }}";
-    var shopDomain = "{{ sbb_shop_domain }}" || window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
+    var shopDomain = {{ sbb_shop_domain | json }} || window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
     var sessionId = getSessionId();
 
     // Detect prompt using prompts.js
@@ -552,7 +552,7 @@ console.log("script tag start here");
 
   // ─── Add to cart ─────────────────────────────────────────
   async function addToCart() {
-    var variantId = "{{ default_variant.id }}";
+    var variantId = {{ default_variant.id | json }};
     var btn = document.getElementById('vtl-add-to-cart-btn');
     if (!variantId || !btn) return;
     var orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Adding...';
@@ -619,7 +619,7 @@ console.log("script tag start here");
 
   // ─── Card images ─────────────────────────────────────────
   function setCardImages() {
-    var productImageUrl = "{{ current_product.featured_image | image_url: width: 300 }}";
+    var productImageUrl = {{ current_product.featured_image | image_url: width: 300 | json }};
     ['1','2','3','4'].forEach(function(s) {
       var prodImg = document.getElementById('vtl-card-product-img-' + s);
       var userImg = document.getElementById('vtl-card-user-img-' + s);
@@ -747,7 +747,7 @@ console.log("script tag start here");
 
   // ─── Fetch settings + shop categories from backend ──────
   async function fetchAndApplySettings() {
-    var shopDomain = "{{ sbb_shop_domain }}" || window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
+    var shopDomain = {{ sbb_shop_domain | json }} || window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
     var backendUrl = 'https://seebeforebuy.in';
     console.log('[SBB] fetchAndApplySettings — shop:', shopDomain);
     try {
