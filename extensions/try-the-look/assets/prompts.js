@@ -533,6 +533,7 @@ Instructions: Show the customer wearing the exact product from Image 1. Replace 
 // @returns {string} The prompt to send to the AI
 // ═══════════════════════════════════════════════════════
 function detectPrompt(productTitle, productDescription, shopCategories) {
+  console.log("detect prompt run here");
   // Combine title + description into one lowercase search string
   const searchText = (productTitle + ' ' + productDescription).toLowerCase();
 
@@ -581,6 +582,8 @@ function detectPrompt(productTitle, productDescription, shopCategories) {
   // Final universal fallback
   return PROMPT_CONFIG._fallback;
 }
+  console.log(" prompts.js run here");
+
 
 // Make available globally (used by the Liquid script tag)
 window.SBB_PROMPTS = { detectPrompt, PROMPT_CONFIG };
