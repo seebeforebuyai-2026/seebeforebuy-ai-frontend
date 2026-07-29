@@ -511,6 +511,476 @@ Instructions: Replace the user's current outfit with the exact garment shown in 
 Output the final image only.`,
   },
 
+
+   activewear: {
+  label: 'Activewear & Gym Wear',
+  subcategories: {
+
+    compression_wear: {
+      keywords: [
+        'compression wear', 'compression tights', 'compression leggings',
+        'gym tights', 'running tights', 'skin tight leggings',
+        'performance tights', 'compression pants',
+      ],
+      prompt: `TASK: Virtual try-on of Compression Wear (Tights / Compression Leggings).
+Image 1: Product photo of Compression Wear (skin-tight compression leggings/tights).
+Image 2: Full body or 3/4 body photo of the user.
+Goal: Show the user wearing these exact compression tights naturally.
+
+STEP 1 — IDENTIFY THE PRODUCT:
+- Waistband height: high-waist (above navel) or mid-waist (at navel)
+- Colour: solid, colour-block, or with printed pattern
+- Panels: mesh inserts (sheer panels), colour-block sections, or reflective strips
+- Pocket: waistband phone pocket (typically at back or side) — if present
+- Waistband width: wide waistband (5-8cm) or regular waistband (3-4cm)
+
+STEP 2 — BODY-CONTOURING FIT (MOST CRITICAL):
+- Compression wear is SKIN TIGHT — it contours every surface of the body
+- The fabric must follow the user's leg muscles precisely:
+  Quadriceps at the front: fabric follows muscle outline
+  Hamstrings at the back: fabric wraps behind the leg
+  Calves: fabric narrows following calf taper
+- NO loose fabric, NO fabric bunching, NO gaps between fabric and skin
+- Leggings must look like a second skin — not a garment placed over the leg
+- User's natural body shape shows THROUGH the compression fabric
+
+STEP 3 — WAISTBAND PLACEMENT:
+- High-waist: rises above navel — sits at lower ribcage. Wide (5-8cm) and flat against abdomen. No rolling down or gaping.
+- Mid-waist: sits at navel exactly
+- Waistband colour or design must match product exactly
+- Phone pocket at back: show pocket outline as rectangular raised section
+
+STEP 4 — COMPRESSION PANEL DETAILS:
+- Colour-block panels: reproduce EXACTLY where each colour appears. Follow leg shape (curve with leg).
+- Mesh inserts: mesh panels are SHEER — skin beneath is visible. Show diamond/hexagonal pattern.
+- Reflective strips: bright linear highlights that catch light at side seam or back calf.
+
+STEP 5 — COMPRESSION FABRIC TEXTURE:
+- Lycra/spandex fabric has a subtle sheen — reflective on raised muscle surfaces.
+- Shadow between muscles — compression fabric makes anatomy more visible.
+- At knee: fabric slightly compresses and shows knee shape.
+- At ankle: narrows with ankle — no excess fabric.
+
+STEP 6 — FLATLOCK SEAMS:
+- Flatlock seams lie flat on surface as slightly raised lines.
+- Side seam: runs down outer leg from waist to ankle.
+- Do NOT render seams as thick raised ridges — keep them flat and subtle.
+
+STEP 7 — LIGHTING:
+- Strong highlight on quadriceps closest to light. Shadow on inner thigh and back leg.
+- Mesh inserts: light passes through showing skin beneath.
+
+SELF CHECK:
+[ ] Is the fabric skin-tight contouring every muscle without gaps?
+[ ] Is waistband at correct height and lying flat?
+[ ] Are colour-block panels at exact correct positions?
+[ ] Is mesh shown as sheer with skin visible?
+[ ] Subtle fabric sheen present?
+[ ] Tapered correctly at ankle?
+[ ] User's face and body shape unchanged?
+Output the final image only.`,
+    },
+
+    tank_top: {
+      keywords: [
+        'tank top', 'athletic tank top', 'racerback tank', 'muscle tank',
+        'gym tank top', 'sleeveless gym top', 'workout tank', 'running tank',
+      ],
+      prompt: `TASK: Virtual try-on of an Athletic Tank Top.
+Image 1: Product photo of an Athletic Tank Top.
+Image 2: User photo.
+Goal: Show the user wearing this exact tank top naturally.
+
+STEP 1 — IDENTIFY THE TANK TOP STYLE:
+- Strap style: racerback (converge at back into V shape), regular shoulder straps, spaghetti straps, or muscle tank (wide armhole).
+- Fit: fitted, regular, or loose/boxy.
+- Neckline: scoop neck, V-neck, crew neck, or high neck.
+- Length: regular (ends at hip) or cropped (ends above waist).
+
+STEP 2 — STRAP PLACEMENT:
+- Racerback: straps come from front shoulders and converge at CENTER BACK into a single point/band. Large armhole exposing shoulder area.
+- Regular straps: two equal-width straps sit flat on shoulders.
+- Muscle tank (men's): wide armhole exposing side torso from armpit to hip. Minimal shoulder coverage.
+
+STEP 3 — FABRIC FIT:
+- Fitted/compression: hugs torso following body shape.
+- Regular fit: slight ease from shoulders — not skin-tight.
+- Loose/boxy: excess fabric at sides and body, straight hem.
+
+STEP 4 — MOISTURE-WICKING FABRIC TEXTURE:
+- Athletic polyester/nylon: slight sheen, thin and lightweight texture.
+- Smooth even surface texture.
+
+STEP 5 — GRAPHIC AND MESH DETAILS:
+- Reproduce graphic/logo EXACTLY on chest/back, following body curvature.
+- Mesh panels: show as sheer with skin beneath subtly visible.
+
+STEP 6 — LIGHTING: Soft to moderate sheen. Highlight on chest and shoulder closest to light.
+
+SELF CHECK:
+[ ] Strap style correctly reproduced (racerback converging at back, regular, muscle)?
+[ ] Neckline style and depth accurate?
+[ ] Fit appropriate (fitted, regular, loose)?
+[ ] Graphic/print exactly reproduced?
+[ ] Mesh panels sheer with skin visible?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    half_sleeve_tshirt: {
+      keywords: [
+        'half sleeve t-shirt', 'athletic t-shirt', 'gym tshirt',
+        'dry fit tshirt', 'running tshirt', 'performance tshirt',
+        'raglan tshirt', 'drop shoulder gym tshirt',
+      ],
+      prompt: `TASK: Virtual try-on of an Athletic Half Sleeve T-Shirt.
+Image 1: Product photo of an Athletic Half Sleeve T-Shirt.
+Image 2: User photo.
+Goal: Show the user wearing this exact athletic t-shirt naturally.
+
+STEP 1 — IDENTIFY THE T-SHIRT:
+- Sleeve style: standard set-in sleeve, raglan sleeve (diagonal seam from collar to underarm), or drop shoulder (seam sits below shoulder).
+- Fit: slim/compression, regular, or oversized.
+- Neckline: crew neck or V-neck.
+
+STEP 2 — SLEEVE PLACEMENT:
+- Standard set-in: seam at shoulder edge, sleeve falls to mid-bicep.
+- Raglan sleeve: NO shoulder seam. Diagonal seam runs from underarm to collar on both front/back. Reproduce sleeve/body colour split if present.
+- Drop shoulder: sleeve seam falls BELOW natural shoulder onto upper arm.
+
+STEP 3 — FABRIC SPECIFICS:
+- Performance polyester (dry-fit): lightweight, micro-mesh/interlock subtle texture, dry-fit sheen.
+- Cotton blend athletic: heavier, matte finish, softer drape.
+
+STEP 4 — GRAPHIC AND FIT RULES:
+- Graphics/sublimation prints must wrap and curve naturally over chest/shoulders.
+- Slim/compression fit: close to body showing muscle definition.
+- Regular fit: comfortable ease through torso.
+- Oversized fit: intentionally loose with extra fabric volume.
+
+SELF CHECK:
+[ ] Sleeve style correctly reproduced (set-in, raglan diagonal seam, drop shoulder)?
+[ ] Sleeve length accurate?
+[ ] Graphic/print exactly reproduced following fabric surface?
+[ ] Fit matches style (slim, regular, oversized)?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    regular_gym_lower: {
+      keywords: [
+        'regular gym lower', 'track pant', 'fitted track pant',
+        'gym lower', 'athletic pants', 'slim fit track pant', 'sports lower',
+      ],
+      prompt: `TASK: Virtual try-on of a Regular Gym Lower / Track Pant.
+Image 1: Product photo of Regular Gym Lower / Track Pant.
+Image 2: Full body or 3/4 body photo of user.
+Goal: Show user wearing these exact gym track pants naturally.
+
+STEP 1 — IDENTIFY THE LOWER:
+- Leg fit: slim/tapered (narrows from hip to ankle) or straight.
+- Ankle style: ribbed ankle cuff or open hem.
+- Waistband: wide elastic with drawstring (external/internal).
+- Side detail: single/double side stripe or plain.
+
+STEP 2 — WAISTBAND & DRAWSTRING:
+- Elastic waistband sits flat at natural waist (4-6cm width).
+- External drawstring exits from two front center holes, cords hanging down naturally with visible aglets/tips.
+
+STEP 3 — LEG FIT & SIDE STRIPES:
+- Slim/tapered: follows leg shape, narrows progressively to ankle. No excess bunching.
+- Side stripes: reproduce EXACT width, count, and colour. Stripes curve with outer leg profile.
+
+STEP 4 — ANKLE CUFF & FABRIC:
+- Ribbed cuff: rib-knit band gathers pant fabric neatly at ankle with vertical rib lines visible.
+- Polyester/nylon: lightweight structure with soft athletic sheen.
+
+SELF CHECK:
+[ ] Waistband flat with drawstring hanging naturally?
+[ ] Leg taper/fit correct for style?
+[ ] Side stripes exact width and colour following outer leg?
+[ ] Ankle cuff showing rib texture and fabric gathers?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    baggy_lower: {
+      keywords: [
+        'baggy lower', 'parachute pant', 'parachute lower',
+        'oversized track pant', 'baggy gym pant', 'wide leg track pant',
+        'cargo track pant', 'streetwear lower',
+      ],
+      prompt: `TASK: Virtual try-on of a Baggy Lower / Parachute Pant.
+Image 1: Product photo of Baggy Lower or Parachute Pant.
+Image 2: Full body or 3/4 body photo of user.
+Goal: Show user wearing these exact baggy/parachute pants naturally.
+
+STEP 1 — IDENTIFY TYPE & TEXTURE:
+- Parachute Pant: crinkly, lightweight nylon shell, parachutelike drape, subtle nylon sheen, irregular crinkle fold pattern across surface.
+- Baggy Cotton/Fleece: heavier weight, matte surface, relaxed streetwear drape.
+
+STEP 2 — VOLUME & DRAPE (CRITICAL):
+- INTENTIONALLY EXTREMELY WIDE and voluminous. Do NOT slim down to fit legs.
+- Excess fabric falls in large, soft folds from hip to ankle.
+- Fabric drapes away from thigh on both sides. Fabric gathers/stacks at ankle over footwear if long.
+
+STEP 3 — WAISTBAND & CARGO POCKETS:
+- Elastic waistband with hanging drawstring/toggle cord lock.
+- Cargo pockets on thigh: reproduce pocket flaps, closures (snaps/velcro), and 3D pocket volume on both legs accurately.
+
+SELF CHECK:
+[ ] Leg VERY wide and voluminous — NOT slimmed down?
+[ ] Parachute fabric shows crinkle lines and nylon sheen?
+[ ] Cargo pockets reproduced with 3D depth and flaps?
+[ ] Fabric drapes in large loose folds?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    sports_bra: {
+      keywords: [
+        'sports bra', 'padded sports bra', 'racerback sports bra',
+        'high impact sports bra', 'workout bra', 'gym bra',
+        'strappy sports bra', 'cross back sports bra',
+      ],
+      prompt: `TASK: Virtual try-on of a Sports Bra.
+Image 1: Product photo of a Sports Bra.
+Image 2: User photo (woman).
+Goal: Show the user wearing this exact sports bra naturally.
+
+STEP 1 — IDENTIFY STYLE & BACK DETAIL:
+- Back style: racerback, cross-back (X pattern), T-back, strappy (multiple geometric straps), or regular parallel straps.
+- Impact level: low, medium, or high impact (firm compression, wide band).
+- Front: plain, zippered (front zip), or cutout detail.
+
+STEP 2 — PLACEMENT & COMPRESSION:
+- Underband sits FLAT and snug against lower chest at underbust level — no gaping/floating.
+- Straps sit securely on shoulders.
+- Compression fit: fabric hugs chest with zero gaps.
+
+STEP 3 — BACK STYLE REPRODUCTION (CRITICAL):
+- Racerback: straps converge to center back band exposing shoulder blades.
+- Cross-back: straps cross in clear X pattern at center back.
+- Strappy back: reproduce EVERY strap at exact position creating negative skin space between straps.
+
+STEP 4 — FABRIC & LIGHTING:
+- Technical spandex/nylon: soft sheen, smooth finish.
+- Mesh panels: sheer texture showing skin beneath.
+
+SELF CHECK:
+[ ] Bra sitting flat against chest and underbust?
+[ ] Back style (racerback, cross-back, strappy) EXACTLY reproduced?
+[ ] Compression visible — tight fit without gaps?
+[ ] Mesh panels sheer with skin visible?
+[ ] User's face, skin tone, and body unchanged?
+Output the final image only.`,
+    },
+
+    jogger_pants: {
+      keywords: [
+        'jogger pants', 'gym joggers', 'tapered joggers',
+        'fleece joggers', 'cotton joggers', 'athletic joggers',
+        'sweatpants', 'slim joggers',
+      ],
+      prompt: `TASK: Virtual try-on of Jogger Pants.
+Image 1: Product photo of Jogger Pants.
+Image 2: Full body or 3/4 body photo of user.
+Goal: Show user wearing these exact jogger pants naturally.
+
+STEP 1 — SILHOUETTE & TAPER (CRITICAL):
+- Relaxed/ease through hip and thigh -> progressively narrows down leg -> ends in snug ribbed/elastic cuff at ankle.
+- Smooth transition from wider thigh to narrow tapered lower leg.
+
+STEP 2 — RIBBED ANKLE CUFF:
+- 5-10cm tall rib-knit band hugging ankle.
+- Alternating raised/recessed vertical rib texture clearly visible.
+- Pant leg fabric GATHERS slightly into top of cuff (small fabric gathers visible above cuff).
+
+STEP 3 — WAISTBAND & POCKETS:
+- Wide elastic waistband (5-7cm) with drawstring hanging at front center.
+- Side slash pockets or zipped pockets accurately positioned at hip.
+
+STEP 4 — FABRIC:
+- Fleece/cotton: matte, warm weight, slightly fuzzy edge texture.
+- Polyester athletic: smooth, lightweight, subtle sheen.
+
+SELF CHECK:
+[ ] Silhouette correct: relaxed thigh tapering down to tight cuff?
+[ ] Ribbed ankle cuff showing vertical texture and fabric gathers above?
+[ ] Front drawstring hanging naturally?
+[ ] Fabric texture accurate to material?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    gym_shorts: {
+      keywords: [
+        'gym shorts', 'athletic shorts', 'running shorts',
+        '2-in-1 shorts', 'workout shorts', 'men gym shorts',
+        'women gym shorts', 'mesh gym shorts',
+      ],
+      prompt: `TASK: Virtual try-on of Gym Shorts / Athletic Shorts.
+Image 1: Product photo of Gym Shorts.
+Image 2: Full body or 3/4 body photo of user.
+Goal: Show user wearing these exact athletic shorts naturally.
+
+STEP 1 — IDENTIFY TYPE & LENGTH:
+- Type: compression (tight), regular/loose, or 2-in-1 (compression liner under loose shell).
+- Length: upper thigh (2-3 in), mid-thigh (5-7 in), or knee-length (9+ in).
+- Details: side slits, elastic waistband with drawstring, side pockets.
+
+STEP 2 — FIT & LAYERING:
+- Compression shorts: skin-tight contouring thigh muscles completely.
+- Regular shorts: loose/relaxed drape with clearance around leg.
+- 2-in-1 shorts: inner compression layer is tight against thigh and extends slightly below loose outer shell hem. Both layers clearly visible.
+
+STEP 3 — DETAILS:
+- Side slits: slit opens at outer hem showing bare leg or inner liner in motion.
+- Waistband: flat elastic with hanging drawstring.
+
+SELF CHECK:
+[ ] Length matches product precisely on user's thigh?
+[ ] Fit correct (tight compression vs loose outer shell)?
+[ ] For 2-in-1: inner tight layer and outer loose shell both visible?
+[ ] Side slits shown as openings at hem if present?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    cycling_shorts: {
+      keywords: [
+        'cycling shorts', 'biker shorts', 'mid thigh compression shorts',
+        'gym biker shorts', 'high waist biker shorts', 'women biker shorts',
+      ],
+      prompt: `TASK: Virtual try-on of Cycling Shorts / Biker Shorts.
+Image 1: Product photo of Cycling / Biker Shorts.
+Image 2: User photo (woman).
+Goal: Show user wearing these exact biker shorts naturally.
+
+STEP 1 — IDENTIFY & PLACEMENT:
+- Length: MID-THIGH endpoint (ends between upper thigh and knee — NOT at knee).
+- Waistband: high-waist (sits flat above navel, 6-10cm wide band).
+
+STEP 2 — COMPRESSION FIT:
+- Skin-tight compression fit from waist to hem band — zero gaps or bunching.
+- Hem band lies completely flat against skin at mid-thigh (no digging in or rolling up).
+- Outlines natural thigh contours.
+
+STEP 3 — DETAILS & FABRIC:
+- Lycra/spandex blend: smooth surface with soft athletic sheen.
+- Reproduce side panels, waistband logos, or phone pockets accurately if present.
+
+SELF CHECK:
+[ ] Endpoint is strictly MID-THIGH?
+[ ] High waistband is flat and above navel without rolling?
+[ ] Fabric skin-tight to hem band?
+[ ] User's face, skin tone, and body unchanged?
+Output the final image only.`,
+    },
+
+    tracksuit_set: {
+      keywords: [
+        'tracksuit', 'co-ord set', 'gym co-ord set', 'matching tracksuit',
+        'athletic set', 'tracksuit set', 'hoodie track set', 'sweat suit',
+      ],
+      prompt: `TASK: Virtual try-on of an Athletic Tracksuit / Co-ord Set.
+Image 1: Product photo of Tracksuit or Co-ord Set (matching top + bottom).
+Image 2: Full body photo of user.
+Goal: Show user wearing both top and bottom matching set together.
+
+STEP 1 — MATCHING REQUIREMENT (CRITICAL):
+- Top and bottom MUST match perfectly in colour, pattern, fabric weight, and sheen.
+- Stripes/panels: stripe width, colour, and accent details must be identical on both top and bottom.
+
+STEP 2 — PIECE FIT & TRANSITION:
+- Top (jacket/sweatshirt/hoodie): lightweight athletic fit or relaxed fit.
+- Bottom (track pants/joggers): apply jogger/track pant fit rules.
+- Transition: waistband of bottom visible where top hem meets it naturally.
+
+STEP 3 — UNIFIED LIGHTING:
+- Identical light direction, highlight intensity, and shadow rendering across BOTH top and bottom pieces.
+
+SELF CHECK:
+[ ] Top and bottom perfectly matched in colour and fabric sheen?
+[ ] Lighting completely consistent across entire outfit?
+[ ] Both pieces fully visible from shoulder to ankle?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    zip_up_gym_jacket: {
+      keywords: [
+        'zip up gym jacket', 'windcheater', 'gym jacket', 'running jacket',
+        'athletic jacket', 'lightweight gym jacket', 'softshell gym jacket',
+      ],
+      prompt: `TASK: Virtual try-on of a Zip-Up Gym Jacket / Windcheater.
+Image 1: Product photo of Zip-Up Gym Jacket / Windcheater.
+Image 2: User photo.
+Goal: Show user wearing this exact gym jacket naturally.
+
+STEP 1 — IDENTIFY:
+- Style: slim athletic cut, stand collar or funnel neck.
+- Features: full-length front zipper, zippered hand pockets, thumb holes at cuffs, reflective accents.
+
+STEP 2 — LIGHTWEIGHT APPEARANCE:
+- Garment is THIN performance fabric — NOT bulky, padded, or puffy like a winter coat.
+- Drapes close to body with light athletic ease.
+
+STEP 3 — THUMB HOLES (KEY DETAIL):
+- If product features thumb holes: show user's thumb protruding through cuff opening, fabric gathering slightly at wrist.
+
+STEP 4 — FABRIC & LIGHTING:
+- Polyester/nylon windcheater: smooth, light directional sheen, subtle ripstop grid pattern if present in product photo.
+- Full zip visible down center front with pull tab. Reflective elements catch bright highlights.
+
+SELF CHECK:
+[ ] Jacket looks THIN and lightweight (not puffy)?
+[ ] Full zipper visible from hem to collar?
+[ ] Thumb holes shown with thumbs protruding if featured in product?
+[ ] Reflective strips/logos highlighted?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+    sports_leggings: {
+      keywords: [
+        'sports leggings', 'full length leggings', 'gym leggings with pockets',
+        'mid compression leggings', 'high waist sports leggings',
+      ],
+      prompt: `TASK: Virtual try-on of Sports Leggings (Full Length, Mid-Compression).
+Image 1: Product photo of Sports Leggings.
+Image 2: Full body or 3/4 body photo of user.
+Goal: Show user wearing these exact sports leggings naturally.
+
+STEP 1 — FIT LEVEL (MID-COMPRESSION):
+- Fitted and close to body, but NOT as extreme skin-tight as performance compression tights.
+- Fabric defines leg shape with subtle natural ease/small fold at knee when standing.
+
+STEP 2 — SIDE POCKETS (KEY FEATURE):
+- Side pocket panels sewn into outer thigh seam.
+- Show clear panel outline/seam for pocket. If phone present, show subtle rectangular bulge through fabric.
+
+STEP 3 — WAISTBAND & PRINT:
+- High waistband (6-8cm) sitting flat above navel.
+- Printed patterns wrap and curve around muscle surfaces accurately.
+- Mesh panels at calf or back-knee rendered as sheer with skin tone visible.
+
+SELF CHECK:
+[ ] Fit is close-fitting with mid-compression (slight natural ease)?
+[ ] Side pockets clearly rendered as distinct panels on outer thigh?
+[ ] Waistband high and lying flat?
+[ ] Printed pattern wrapping leg curvature properly?
+[ ] User's face and body unchanged?
+Output the final image only.`,
+    },
+
+  }, // end activewear subcategories
+
+  defaultPrompt: `TASK: Virtual try-on of Activewear / Gym Wear garment.
+Image 1 = Product photo. Image 2 = User photo.
+Instructions: Replace the user's current outfit with the exact athletic activewear garment shown. Ensure proper body-contouring fit, correct technical details (flatlock seams, mesh panels, drawstrings, cuffed hems, zippers, thumb holes), and accurate fabric sheen. Fit the garment naturally to the user's body and pose. Keep the user's face, hair, skin tone, and background completely unchanged. No extra accessories or jewellery.
+Output the final image only.`,
+},
   // ─────────────────────────────────────────────
   // UNIVERSAL FALLBACK
   // Used when the shop has NO categories configured at all

@@ -781,6 +781,27 @@ export default function Index() {
                   ["earring", "Earrings (Studs, Jhumka, Drops)"],
                 ],
               },
+              {
+                value: "activewear",
+                label: " Activewear & Gym Wear",
+                examples:
+                  "Compression wear, sports bra, joggers, biker shorts, tracksuit",
+                subcategories: [
+                  ["compression_wear", "Compression Wear / Tights"],
+                  ["tank_top", "Athletic Tank Top"],
+                  ["half_sleeve_tshirt", "Athletic T-Shirt"],
+                  ["regular_gym_lower", "Track Pant / Gym Lower"],
+                  ["baggy_lower", "Baggy Lower / Parachute Pant"],
+                  ["sports_bra", "Sports Bra"],
+                  ["jogger_pants", "Jogger Pants"],
+                  ["gym_shorts", "Gym Shorts / Athletic Shorts"],
+                  ["cycling_shorts", "Cycling Shorts / Biker Shorts"],
+                  ["tracksuit_set", "Tracksuit / Co-ord Set"],
+                  ["zip_up_gym_jacket", "Zip-Up Gym Jacket / Windcheater"],
+                  ["sports_leggings", "Sports Leggings (Mid-Compression)"],
+                ],
+              },
+
             ].map((option) => {
               const selectedEntry = selectedCategories.find(
                 (entry) => entry.main_category === option.value,
