@@ -574,12 +574,14 @@ console.log("script tag start here");
   window.addToCart = addToCart;
 
   // ─── Download ────────────────────────────────────────────
-  async function downloadGeneratedImage() {
+  function downloadGeneratedImage() {
     var img = document.getElementById('vtl-result-image');
     if (!img || !img.src) return;
+    // Route through our proxy to avoid CORS and prevent page navigation
     var a = document.createElement('a');
     a.href = 'https://seebeforebuy.in/api/download-image?url=' + encodeURIComponent(img.src);
-    a.download = 'see-before-buy-preview.png'; a.target = '_blank';
+    a.download = 'see-before-buy-preview.png';
+    // No target="_blank" — keeps user on page while downloading
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
   }
   window.downloadGeneratedImage = downloadGeneratedImage;
@@ -590,16 +592,24 @@ console.log("script tag start here");
     if (!img || !img.src) { showVTLStatus('No generated try-on to share.','error'); return; }
     if (navigator.share) {
       try {
-        var res = await fetch(img.src);
-        var blob = await res.blob();
-        var file = new File([blob],'virtual-tryon.png',{type:'image/png'});
-        if (navigator.canShare && navigator.canShare({files:[file]})) {
-          await navigator.share({files:[file],title:'My Virtual Try-On',text:'Check out my new look!'});
-        } else {
-          await navigator.share({title:'My Virtual Try-On',text:'Check out my new look!',url:window.location.href});
+        // Share the proxy URL directly — avoids CORS fetch of S3 image
+        var shareUrl = 'https://seebeforebuy.in/api/download-image?url=' + encodeURIComponent(img.src);
+        await navigator.share({
+          title: 'My Virtual Try-On',
+          text: 'Check out how this product looks on me!',
+          url: shareUrl,
+        });
+      } catch(e) {
+        // User cancelled share or share failed — just show the URL to copy
+        if (e.name !== 'AbortError') {
+          showVTLStatus('Sharing is unavailable. Try downloading instead.', 'error');
+          setTimeout(function(){ hideVTLStatus(); }, 4000);
         }
-      } catch(e){ showVTLStatus('Sharing is unavailable right now.','error'); }
-    } else { showVTLStatus('Sharing is unavailable on this device.','error'); }
+      }
+    } else {
+      showVTLStatus('Sharing is unavailable on this device.', 'error');
+      setTimeout(function(){ hideVTLStatus(); }, 4000);
+    }
   }
   window.shareResultImage = shareResultImage;
 
