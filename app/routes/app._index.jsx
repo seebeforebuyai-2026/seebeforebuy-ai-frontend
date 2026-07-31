@@ -801,6 +801,20 @@ export default function Index() {
                   ["sports_leggings", "Sports Leggings (Mid-Compression)"],
                 ],
               },
+              {
+                value: "headwear_caps",
+                label: " Headwear & Caps",
+                examples:
+                  "Baseball cap, snapback, trucker hat, bucket hat, beanie",
+                subcategories: [
+                  ["baseball_dad_cap", "Baseball Cap / Dad Cap"],
+                  ["snapback_cap", "Snapback Cap (Flat Brim)"],
+                  ["trucker_cap", "Trucker Cap (Mesh Back)"],
+                  ["bucket_hat", "Bucket Hat"],
+                  ["beanie_cap", "Beanie / Skull Cap"],
+                  ["sports_cap", "Sports / Performance Cap"],
+                ],
+              },
 
             ].map((option) => {
               const selectedEntry = selectedCategories.find(
