@@ -724,38 +724,64 @@ export default function Settings() {
             
             {activeTab === 'button' && (
               <div className={styles.previewContent}>
-                <p className={styles.previewLabel}>Button Preview:</p>
-                <button
-                  className={styles.previewButton}
-                  style={{
-                    backgroundColor: settings.button.bg_color,
-                    color: settings.button.text_color,
-                    borderRadius: `${settings.button.border_radius}px`,
-                    padding: settings.button.size === 'small' ? '8px 16px' : 
-                             settings.button.size === 'large' ? '16px 32px' : '12px 24px',
-                    fontSize: settings.button.size === 'small' ? '14px' : 
-                              settings.button.size === 'large' ? '18px' : '16px',
-                  }}
-                >
-                  {settings.button.text}
+                <p className={styles.previewLabel}>Trigger Button Preview:</p>
+                {/* Actual trigger button replica */}
+                <button style={{
+                  width: '100%',
+                  padding: settings.button.size === 'small' ? '10px 20px' : settings.button.size === 'large' ? '18px 28px' : '14px 24px',
+                  fontSize: settings.button.size === 'small' ? '13px' : settings.button.size === 'large' ? '17px' : '15px',
+                  fontWeight: 700,
+                  fontFamily: "'Poppins', -apple-system, sans-serif",
+                  background: settings.button.bg_color,
+                  color: settings.button.text_color,
+                  border: 'none',
+                  borderRadius: `${settings.button.border_radius}px`,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+                }}>
+                  {settings.button.text || 'Try The Look'}
                 </button>
 
                 <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: '1px solid #E5E7EB' }}>
                   <p className={styles.previewLabel}>Add to Cart Button Preview:</p>
-                  <button
-                    className={styles.previewButton}
-                    style={{
-                      backgroundColor: settings.add_to_cart_button.bg_color,
-                      color: settings.add_to_cart_button.text_color,
-                      borderRadius: `${settings.add_to_cart_button.border_radius}px`,
-                      padding: settings.add_to_cart_button.size === 'small' ? '8px 16px' : 
-                               settings.add_to_cart_button.size === 'large' ? '16px 32px' : '12px 24px',
-                      fontSize: settings.add_to_cart_button.size === 'small' ? '14px' : 
-                                settings.add_to_cart_button.size === 'large' ? '18px' : '16px',
-                    }}
-                  >
-                    {settings.add_to_cart_button.text}
-                  </button>
+                  {/* Actual ATC button replica — shown inside the result sheet */}
+                  <div style={{
+                    background: '#111',
+                    borderRadius: '16px',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 10,
+                    maxWidth: 340,
+                  }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button style={{
+                        flex: 1,
+                        background: settings.add_to_cart_button.bg_color,
+                        color: settings.add_to_cart_button.text_color,
+                        border: 'none',
+                        borderRadius: `${settings.add_to_cart_button.border_radius}px`,
+                        padding: settings.add_to_cart_button.size === 'small' ? '8px' : settings.add_to_cart_button.size === 'large' ? '16px' : '12px',
+                        fontWeight: 700,
+                        fontSize: settings.add_to_cart_button.size === 'small' ? '11px' : settings.add_to_cart_button.size === 'large' ? '15px' : '13px',
+                        fontFamily: "'Poppins', -apple-system, sans-serif",
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                      }}>
+                        🛒 {settings.add_to_cart_button.text || 'Add to Cart'}
+                      </button>
+                      <div style={{ width: 44, height: 44, background: '#F6F6F7', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⬇</div>
+                      <div style={{ width: 44, height: 44, background: '#F6F6F7', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>↗</div>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 8 }}>Shown on the result screen after AI preview is generated</p>
                 </div>
               </div>
             )}
@@ -763,64 +789,124 @@ export default function Settings() {
             {activeTab === 'popup' && (
               <div className={styles.previewContent}>
                 <p className={styles.previewLabel}>Popup Preview:</p>
-                <div
-                  className={styles.previewPopup}
-                  style={{
-                    backgroundColor: settings.popup.bg_color,
-                    color: settings.popup.text_color,
-                    borderRadius: `${settings.popup.border_radius}px`,
-                    overflow: 'hidden',
-                    padding: 0,
-                  }}
-                >
+
+                {/* ── Accurate replica of the actual popup modal ── */}
+                <div style={{
+                  width: '100%',
+                  maxWidth: '340px',
+                  margin: '0 auto',
+                  borderRadius: `${settings.popup.border_radius}px`,
+                  overflow: 'hidden',
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
+                  fontFamily: "'Poppins', -apple-system, sans-serif",
+                  background: settings.popup.bg_color,
+                  color: settings.popup.text_color,
+                  border: '1px solid #E5E7EB',
+                }}>
+
                   {/* Header */}
                   <div style={{
-                    background: `linear-gradient(135deg, ${settings.popup.header_bg_color} 0%, ${settings.popup.header_bg_color}cc 100%)`,
-                    padding: '16px 20px',
+                    background: settings.popup.header_bg_color,
+                    padding: '14px 16px',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   }}>
-                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>{settings.popup.title}</span>
-                    <span style={{ color: '#fff', fontSize: '20px', cursor: 'pointer' }}>×</span>
-                  </div>
-                  {/* Body */}
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{
-                      background: settings.popup.upload_area_bg_color,
-                      border: '2px dashed #D1D5DB',
-                      borderRadius: '8px',
-                      padding: '20px',
-                      textAlign: 'center',
-                      color: settings.popup.text_color,
-                      fontSize: '13px',
-                    }}>
-                      📸 Upload Area
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#fff' }}>←</div>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ color: '#fff', fontWeight: 800, fontSize: '13px', lineHeight: 1.2 }}>{settings.popup.title || 'Try The Look'}</div>
+                        <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '9px', marginTop: 1 }}>See how it looks on you</div>
+                      </div>
                     </div>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#fff', cursor: 'pointer' }}>×</div>
+                  </div>
+
+                  {/* Product strip */}
+                  <div style={{
+                    margin: '12px 14px 0',
+                    background: '#f8f9fa',
+                    borderRadius: '12px',
+                    padding: '10px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    border: '1px solid #E5E7EB',
+                  }}>
+                    <div style={{ width: 44, height: 56, borderRadius: '8px', background: 'linear-gradient(135deg, #f0f4ff, #EAF5EF)', flexShrink: 0, border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>👗</div>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#111', marginBottom: 2 }}>Product Name</div>
+                      <div style={{ fontSize: '9px', color: '#6B7280' }}>Virtual try-on · <strong style={{ color: '#008060' }}>AI Try-On</strong></div>
+                    </div>
+                  </div>
+
+                  {/* Ready label */}
+                  <div style={{ textAlign: 'center', padding: '16px 14px 0' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 999, background: 'rgba(0,128,96,0.12)', color: '#008060', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>AI Preview</div>
+                    <div style={{ fontSize: '16px', fontWeight: 800, color: settings.popup.text_color || '#111', marginBottom: 4, letterSpacing: '-0.02em' }}>See it on you in seconds</div>
+                    <div style={{ fontSize: '10px', color: '#6B7280', lineHeight: 1.5 }}>Upload a clear photo and we'll create a live preview</div>
+                  </div>
+
+                  {/* Upload area */}
+                  <div style={{
+                    background: settings.popup.upload_area_bg_color,
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '12px',
+                    padding: '12px 14px',
+                    margin: '12px 14px 0',
+                  }}>
+                    {/* Upload button */}
                     <button style={{
+                      width: '100%',
                       background: settings.popup.upload_btn_bg_color,
                       color: settings.popup.upload_btn_text_color,
                       border: 'none',
-                      borderRadius: '6px',
-                      padding: '10px',
-                      fontWeight: 600,
-                      fontSize: '13px',
+                      borderRadius: '10px',
+                      padding: '11px',
+                      fontWeight: 700,
+                      fontSize: '12px',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      boxShadow: '0 3px 10px rgba(0,128,96,0.2)',
                     }}>
-                      {settings.popup.upload_button_text}
+                      <span>⬆</span> {settings.popup.upload_button_text || 'Choose Your Photo'}
                     </button>
+                    <div style={{ textAlign: 'center', marginTop: 6, fontSize: '9px', color: '#6B7280' }}>PNG or JPG • clear light • full body works best</div>
+                  </div>
+
+                  {/* Generate button */}
+                  <div style={{ padding: '10px 14px' }}>
                     <button style={{
+                      width: '100%',
                       background: settings.popup.generate_btn_bg_color,
                       color: settings.popup.generate_btn_text_color,
                       border: 'none',
-                      borderRadius: '6px',
-                      padding: '10px',
-                      fontWeight: 600,
-                      fontSize: '13px',
+                      borderRadius: '10px',
+                      padding: '11px',
+                      fontWeight: 700,
+                      fontSize: '12px',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      boxShadow: '0 3px 10px rgba(0,128,96,0.2)',
                     }}>
-                      {settings.popup.generate_button_text}
+                      <span>✦</span> {settings.popup.generate_button_text || 'Generate Preview'}
                     </button>
+                  </div>
+
+                  {/* Tips */}
+                  <div style={{ padding: '0 14px 14px' }}>
+                    <div style={{ fontSize: '9px', fontWeight: 700, color: '#9CA3AF', textAlign: 'center', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tips for best results</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      {['Full body photo', 'Good lighting', 'Stand straight', 'Front-facing'].map(tip => (
+                        <div key={tip} style={{ background: '#f8f9fa', border: '1px solid #E5E7EB', borderRadius: 8, padding: '6px 8px', fontSize: '9px', color: '#555', textAlign: 'center' }}>{tip}</div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
