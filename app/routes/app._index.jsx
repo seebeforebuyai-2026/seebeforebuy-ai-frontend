@@ -228,6 +228,33 @@ export const action = async ({ request }) => {
     }
   }
 
+  if (actionType === "savePhoneNumbers") {
+    const shopDomain = formData.get("shop_domain");
+    const phoneNumber = formData.get("phone_number");
+    const whatsappNumber = formData.get("whatsapp_number");
+
+    console.log("📱 Saving phone numbers...");
+    console.log("   Shop:", shopDomain);
+
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+
+    try {
+      const response = await fetch(`${backendUrl}/api/merchant/save-phone`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shop_domain: shopDomain, phone_number: phoneNumber, whatsapp_number: whatsappNumber }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log("✅ Phone numbers saved!");
+        return { success: true, step: "phoneSaved" };
+      }
+      return { success: false, error: data.error || "Failed to save phone numbers" };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   if (actionType === "saveCategories") {
     const shopDomain = formData.get("shop_domain");
     const categoriesValue = formData.get("categories");
@@ -423,6 +450,9 @@ export default function Index() {
   const [showCategorySelection, setShowCategorySelection] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [showActivation, setShowActivation] = useState(false);
+  const [showPhoneStep, setShowPhoneStep] = useState(false);   // NEW
+  const [phoneNumber, setPhoneNumber] = useState('');           // NEW
+  const [whatsappNumber, setWhatsappNumber] = useState('');     // NEW
   const [selectedDays, setSelectedDays] = useState(30); // date range: 7, 30, 90
   const [rangeMetrics, setRangeMetrics] = useState(null); // metrics for selected range
   const [isLoadingRange, setIsLoadingRange] = useState(false);
@@ -431,6 +461,9 @@ export default function Index() {
   const isSavingCategories =
     fetcher.state === "submitting" &&
     fetcher.formData?.get("actionType") === "saveCategories";
+  const isSavingPhone =
+    fetcher.state === "submitting" &&
+    fetcher.formData?.get("actionType") === "savePhoneNumbers";
   const isSyncingOrders =
     fetcher.state === "submitting" &&
     fetcher.formData?.get("actionType") === "syncOrders";
@@ -512,6 +545,10 @@ export default function Index() {
   useEffect(() => {
     if (fetcher.data?.success && fetcher.data?.step === "accountCreated") {
       shopify.toast.show("Account created successfully!");
+      setShowPhoneStep(true);   // Show phone step first, not category
+    } else if (fetcher.data?.success && fetcher.data?.step === "phoneSaved") {
+      shopify.toast.show("Contact details saved!");
+      setShowPhoneStep(false);
       setShowCategorySelection(true);
     } else if (
       fetcher.data?.success &&
@@ -587,8 +624,26 @@ export default function Index() {
 
   // Function to start integration
   const startIntegration = () => {
-    // Create account first
     fetcher.submit({ actionType: "createAccount" }, { method: "POST" });
+  };
+
+  // Save phone + whatsapp numbers
+  const savePhoneNumbers = () => {
+    const phone = phoneNumber.trim();
+    const whatsapp = whatsappNumber.trim();
+    if (!phone || !whatsapp) {
+      shopify.toast.show("Please enter both phone and WhatsApp numbers", { isError: true });
+      return;
+    }
+    fetcher.submit(
+      {
+        actionType: "savePhoneNumbers",
+        shop_domain: loaderData.shop.domain,
+        phone_number: phone,
+        whatsapp_number: whatsapp,
+      },
+      { method: "POST" },
+    );
   };
 
   const toggleCategory = (mainCategory, allSubcategories = []) => {
@@ -676,7 +731,79 @@ export default function Index() {
         </div>
       )}
 
-      {/* Category Selection - After Account Creation OR if no category selected */}
+      {/* Phone Number Step - After Account Created, Before Category */}
+      {showPhoneStep && (
+        <div className={styles.categorySection}>
+          <h2 className={styles.categoryTitle}> Contact Details</h2>
+          <p className={styles.categorySubtitle}>
+            Please enter your contact numbers so we can reach you for support and updates.
+          </p>
+
+          <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+            {/* Phone Number */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                 Phone Number <span style={{ color: '#EF4444' }}>*</span>
+              </label>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="+91 12345 67890"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  fontSize: '15px',
+                  border: '2px solid #E5E7EB',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '4px' }}>
+                Your primary contact number
+              </p>
+            </div>
+
+            {/* WhatsApp Number */}
+            <div style={{ marginBottom: '32px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                 WhatsApp Number <span style={{ color: '#EF4444' }}>*</span>
+              </label>
+              <input
+                type="tel"
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value)}
+                placeholder="+91 12345 67890"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  fontSize: '15px',
+                  border: '2px solid #E5E7EB',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '4px' }}>
+                Can be the same as phone number
+              </p>
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <button
+                className={styles.tealButton}
+                onClick={savePhoneNumbers}
+                disabled={isSavingPhone || !phoneNumber.trim() || !whatsappNumber.trim()}
+              >
+                {isSavingPhone ? 'Saving...' : 'Continue →'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Category Selection - After Phone Step OR if no category selected */}
       {(showCategorySelection ||
         (loaderData.accountExists && !hasCategory && !isActive)) && (
         <div style={{ textAlign: "center", marginTop: "32px" }}>
