@@ -127,8 +127,13 @@ export default function PlansPage() {
   // KEY FIX: When we get confirmationUrl back, open at TOP LEVEL (break out of iframe)
   useEffect(() => {
     if (fetcher.data?.success && fetcher.data?.confirmationUrl) {
-      // shopify.open() breaks out of the embedded app iframe — required for billing pages
-      shopify.open(fetcher.data.confirmationUrl, "_top");
+      // Break out of Shopify's embedded app iframe for billing page
+      // window.top navigates the parent window, not the iframe
+      if (window.top) {
+        window.top.location.href = fetcher.data.confirmationUrl;
+      } else {
+        window.location.href = fetcher.data.confirmationUrl;
+      }
     }
     if (fetcher.data?.error) {
       shopify.toast.show(`Error: ${fetcher.data.error}`, { isError: true });
