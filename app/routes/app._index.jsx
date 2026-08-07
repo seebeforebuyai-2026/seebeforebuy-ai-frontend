@@ -833,7 +833,6 @@ export default function Index() {
           <p className={styles.categorySubtitle}>
             Select the Multiple Categories which is right fit for you business
           </p>
-
           <div className={styles.categoryList}>
             {[
               {
@@ -1447,34 +1446,7 @@ export default function Index() {
               </div>
             )}
 
-            {/* note  */}
-            <div
-              style={{
-                marginTop: "20px",
-                padding: "12px 16px",
-                background: "#F0FDF4",
-                border: "1px solid #BBF7D0",
-                borderRadius: "8px",
-                fontSize: "13px",
-                color: "#065F46",
-                lineHeight: "1.6",
-              }}
-            >
-              <strong>💡 Note:</strong> Want more credits? Share your feedback
-              or improvement suggestions with us — we'll instantly upgrade you
-              to unlimited credits. Reach us at{" "}
-              <a
-                href="mailto:seebeforebuy.ai@gmail.com"
-                style={{ color: "#059669" }}
-              >
-                seebeforebuy.ai@gmail.com
-              </a>{" "}
-              or{" "}
-              <a href="tel:7796132778" style={{ color: "#059669" }}>
-                7796132778
-              </a>
-              .
-            </div>
+         
           </>
         )}
 

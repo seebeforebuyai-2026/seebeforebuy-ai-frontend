@@ -992,14 +992,72 @@ headwear_caps: {
         'baseball cap', 'dad cap', 'curved brim cap', 'curved visor cap',
         'unstructured cap', '6 panel cap', 'cotton twill cap', 'adjustable cap',
       ],
-      prompt: `TASK: Virtual try-on of a Baseball Cap / Dad Cap (curved brim cap).
-Image 1: Product photo of a Baseball or Dad Cap. Image 2: User photo showing head and face clearly.
-STEP 1 — CAP IDENTIFY & BRIM CURVE: Curved brim (baseball or dad cap). Reproduce the exact brim curve radius from the product (shallow arc vs deep downward curve). The brim MUST cast a natural curved shadow onto the user's forehead. Underside of brim (green/grey/matching) visible facing forehead.
-STEP 2 — CROWN & STRUCTURE: Baseball cap = stiff structured 6-panel crown with top button at peak. Dad cap = soft unstructured crown that sags and creases naturally at the top. Panel seam lines visible from brim to crown peak.
-STEP 3 — HEAD PLACEMENT & HAIR INTERACTION: Cap sits directly ON the head following skull shape (2-3 fingers above eyebrows). Compress hair beneath the cap band realistically — hair billows or flows naturally below the band/sides/back. Ponytail exits through back loop if applicable.
-STEP 4 — EMBROIDERY & LOGO: Front panel embroidery MUST look raised and 3D with visible thread texture and subtle thread shadows. Flat prints lie smooth against fabric.
-STEP 5 — BACK CLOSURE & LIGHTING: Reproduce strapback (metal buckle/fabric strap) or velcro closure. Shadow cast by brim on upper face matches dominant scene lighting.
-SELF CHECK: Cap resting on head naturally? Curved brim shadow cast on forehead? Front embroidery rendered as raised 3D thread? Hair compressed realistically under band? User's face and skin tone unchanged?
+      prompt: `TASK:
+Image 1: Product photo of a Baseball Cap / Dad Cap (curved brim cap)
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact curved brim cap naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
+- The user's face in the output must be a pixel-perfect copy of Image 2.
+- Same skin tone, facial features, facial hair (beard/stubble), expression, eye colour, and skin texture.
+- Do NOT relight, smooth, brighten, or alter the face in any way.
+- Treat the face like a locked layer that cannot be touched.
+
+RULE 2 — EMBROIDERY, LOGO, AND BRAND DETAILS MUST BE EXACT:
+- Front panel embroidery MUST appear raised and 3D with visible thread texture and subtle thread shadows.
+- Correct logo size, exact position, accurate thread colours, and crisp lettering.
+- Flat prints or patches must lie flat on the front fabric surface — no floating logos.
+
+RULE 3 — CAP MUST SIT ON THE HEAD, NOT FLOAT:
+- The cap physically conforms to the user's skull with zero gap.
+- The cap compresses the hair beneath it slightly.
+
+══════════════════════════════════════════
+STEP 1 — CAP TYPE & CROWN STRUCTURE
+══════════════════════════════════════════
+- BASEBALL CAP: Stiff, structured 6-panel crown that holds its shape firmly.
+- DAD CAP: Soft, unstructured crown that sags and creases naturally at the top.
+- 6-panel seam lines run from the brim edge to the fabric-covered top button at the crown peak.
+- Reproduce the top button at the crown peak precisely.
+
+══════════════════════════════════════════
+STEP 2 — BRIM CURVE & FOREHEAD SHADOW
+══════════════════════════════════════════
+- The brim curves DOWNWARD from the front center — reproduce the exact arc curve radius from Image 1.
+- The brim sits 2-3 fingers above the eyebrows, curving gently across the forehead profile.
+- CRITICAL: The brim MUST cast a natural curved shadow onto the user's forehead and upper face, matching Image 2 lighting direction.
+- Show the underside of the brim (green, grey, or matching fabric) facing downward toward the forehead.
+
+══════════════════════════════════════════
+STEP 3 — HEAD GEOMETRY & HAIR INTERACTION
+══════════════════════════════════════════
+- Cap matches user's head angle and tilt from Image 2.
+- Top hair is compressed under the cap crown.
+- Hair below the cap band flows naturally at the sides and back. If a ponytail is present, show it exiting through the back loop opening above the strap.
+- Back closure: Reproduce strapback (metal buckle/fabric strap) or Velcro closure naturally at the rear.
+
+══════════════════════════════════════════
+STEP 4 — FABRIC TEXTURE & LIGHTING
+══════════════════════════════════════════
+- Cotton twill texture: Subtle diagonal weave pattern with matte surface finish.
+- Cap lighting matches Image 2 dominant light direction exactly.
+- Highlights on top crown, soft shadows in panel seam lines.
+
+══════════════════════════════════════════
+STEP 5 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face identical to Image 2 (features, skin tone, beard, expression untouched)?
+[ ] Cap sitting directly ON the skull conforming to its curvature?
+[ ] Brim curves correctly and casts a curved shadow across the forehead?
+[ ] Front panel embroidery rendered with raised 3D thread texture?
+[ ] Crown structure accurate (stiff structured for baseball vs soft creased for dad cap)?
+[ ] Hair compressed under band, natural at sides/back, ponytail exiting back loop if present?
+[ ] Top button and 6-panel seams visible?
+
 Output the final image only.`,
     },
 
@@ -1008,13 +1066,60 @@ Output the final image only.`,
         'snapback cap', 'snapback', 'flat brim cap', 'flat visor cap',
         'streetwear cap', '5 panel cap', 'fitted cap', 'flat bill cap',
       ],
-      prompt: `TASK: Virtual try-on of a Snapback Cap (flat brim structured cap).
-Image 1: Product photo of a Snapback Cap. Image 2: User photo showing head and face clearly.
-STEP 1 — FLAT BRIM RULE (CRITICAL): The brim is COMPLETELY FLAT with ZERO downward curve. Geometrically straight brim extending forward parallel to ground. Show brim stickers (hologram/brand stickers) exactly where present on flat surface. Brim casts a straight-edged shadow across forehead.
-STEP 2 — CROWN & EMBROIDERY: High-profile structured crown — stiff and rigid holding its shape. Front embroidery/logo is heavily raised and 3D with thread texture. Top button present at peak.
-STEP 3 — HEAD PLACEMENT & BACK CLOSURE: Sits snug on skull. Show plastic snap closure (overlapping plastic strips with adjustment holes) at the back. Hair compressed naturally beneath cap band.
-STEP 4 — LIGHTING & FABRIC: Wool blend or thick twill matte texture. Highlight at top crown, sharp shadow beneath flat brim on user's forehead.
-SELF CHECK: Brim completely flat (zero curve)? Hologram/brand stickers reproduced if present? Front embroidery 3D and raised? Plastic snap closure visible at back? Straight shadow across forehead? User's face unchanged?
+      prompt: `TASK:
+Image 1: Product photo of a Snapback Cap (flat brim structured cap)
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact snapback cap naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
+- The user's face in the output must be a pixel-perfect copy of Image 2.
+- Same skin tone, facial features, facial hair, expression, eye colour, and skin texture.
+- Do NOT relight, smooth, brighten, or alter the face in any way.
+
+RULE 2 — FLAT BRIM RULE (NON-NEGOTIABLE):
+- The brim is COMPLETELY FLAT with ZERO downward curve.
+- Geometrically straight brim extending straight forward parallel to the ground.
+- If stickers (hologram or brand stickers) are present on the brim in Image 1, reproduce them EXACTLY on the flat brim surface.
+
+RULE 3 — EMBROIDERY & BRAND DETAILS:
+- Front embroidery MUST be high-density, heavily raised 3D thread with tactile depth and sharp edge shadows.
+- Exact logo size, placement, design, and thread colours.
+
+══════════════════════════════════════════
+STEP 1 — CROWN STRUCTURE & BACK CLOSURE
+══════════════════════════════════════════
+- High-profile, stiff, rigid structured crown that maintains its tall shape without collapsing.
+- Top button present at peak; panel seams running cleanly down the crown.
+- Plastic snapback closure at the rear: Overlapping plastic strips with visible adjustment holes.
+
+══════════════════════════════════════════
+STEP 2 — PLACEMENT & STRAIGHT FOREHEAD SHADOW
+══════════════════════════════════════════
+- Sits firm and level on the skull, 2-3 fingers above eyebrows.
+- CRITICAL: The flat brim casts a straight-edged shadow horizontally across the user's forehead.
+- Shadow direction matches the dominant light source in Image 2.
+
+══════════════════════════════════════════
+STEP 3 — HAIR INTERACTION & FABRIC TEXTURE
+══════════════════════════════════════════
+- Hair is compressed under the rigid cap crown. Lower hair emerges naturally at sides and back.
+- Wool-blend or thick twill texture: Matte finish with firm, structured panels.
+
+══════════════════════════════════════════
+STEP 4 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face completely identical to Image 2?
+[ ] Brim is 100% FLAT with zero downward curve?
+[ ] Straight horizontal shadow cast beneath flat brim onto forehead?
+[ ] Hologram/brand brim stickers reproduced if present in Image 1?
+[ ] Front artwork rendered as raised 3D thread embroidery?
+[ ] High-profile structured crown firm and tall?
+[ ] Plastic snap adjustment visible at the back?
+
 Output the final image only.`,
     },
 
@@ -1023,13 +1128,62 @@ Output the final image only.`,
         'trucker cap', 'mesh cap', 'foam trucker hat', 'mesh back cap',
         'trucker hat', 'snapback trucker', 'mesh snapback',
       ],
-      prompt: `TASK: Virtual try-on of a Trucker Cap (foam front with mesh back).
-Image 1: Product photo of a Trucker Cap. Image 2: User photo showing head and face clearly.
-STEP 1 — FRONT VS BACK DUAL STRUCTURE: Front panel = stiff structured foam panel holding high-profile shape. Back & side panels = SHEER MESH fabric with visible open grid/diamond pattern.
-STEP 2 — MESH TRANSPARENCY (CRITICAL): User's hair colour and scalp MUST be visible through the back and side mesh panels. Mesh is semi-transparent, not solid fabric. Clear seam join between foam front and mesh sides.
-STEP 3 — BRIM & EMBROIDERY: Curved or flat brim as shown in product. Front foam panel artwork (screen print, patch, or 3D embroidery) reproduced with exact crispness and patch edges.
-STEP 4 — PLACEMENT & SHADOW: Sits on head resting on skull. Plastic snapback adjustment visible at rear. Brim casts natural shadow on upper face.
-SELF CHECK: Foam front stiff and smooth? Back mesh panels sheer with user's hair/scalp visible through grid? Distinct join between foam and mesh? Brim shadow on forehead? User's face unchanged?
+      prompt: `TASK:
+Image 1: Product photo of a Trucker Cap (foam front with mesh back)
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact trucker cap naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
+- The user's face in the output must be a pixel-perfect copy of Image 2.
+- Same skin tone, facial features, facial hair, expression, eye colour, and skin texture.
+- Zero face modification, smoothing, or relighting.
+
+RULE 2 — MESH TRANSPARENCY (NON-NEGOTIABLE):
+- Back and side panels are SHEER MESH with a visible open grid or diamond pattern.
+- User's hair colour and scalp MUST be visible through the mesh panels from behind and sides.
+- Mesh panels are semi-transparent fabric, NOT solid opaque material.
+
+RULE 3 — FRONT FOAM & LOGO ACCURACY:
+- Front panel is a stiff structured FOAM panel holding a smooth, high-profile shape.
+- Screen print, woven patch, or embroidery on front foam reproduced with exact precision, crisp borders, and correct scale.
+
+══════════════════════════════════════════
+STEP 1 — DUAL MATERIAL CONSTRUCTION
+══════════════════════════════════════════
+- Front section: Thick, smooth foam panel.
+- Back section: Sheer open-grid mesh fabric.
+- Clear, distinct seam join where the stiff foam front meets the sheer mesh side panels.
+
+══════════════════════════════════════════
+STEP 2 — BRIM, PLACEMENT & SHADOW
+══════════════════════════════════════════
+- Curved or flat brim matching Image 1 exactly.
+- Cap sits firmly on the head following skull curvature.
+- Brim casts a natural shadow onto the user's forehead matching Image 2 light direction.
+- Rear adjustment: Plastic snapback closure visible at the back.
+
+══════════════════════════════════════════
+STEP 3 — HAIR INTERACTION
+══════════════════════════════════════════
+- Hair under the foam front is covered.
+- Hair under the mesh panels is clearly visible through the open mesh grid.
+- Hair below the cap band flows out naturally at side/neck.
+
+══════════════════════════════════════════
+STEP 4 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face 100% identical to Image 2?
+[ ] Back/side mesh panels sheer with user's hair/scalp visible through the grid?
+[ ] Front foam panel structured, smooth, and holding high-profile shape?
+[ ] Distinct seam line visible between front foam and rear mesh?
+[ ] Front artwork/patch reproduced with exact details and placement?
+[ ] Brim shadow cast on user's forehead?
+[ ] Rear plastic snap closure visible?
+
 Output the final image only.`,
     },
 
@@ -1038,13 +1192,58 @@ Output the final image only.`,
         'bucket hat', 'fisherman hat', 'soft brim hat', 'sun bucket hat',
         'canvas bucket hat', 'streetwear bucket hat', 'denim bucket hat',
       ],
-      prompt: `TASK: Virtual try-on of a Bucket Hat (soft sloped brim hat).
-Image 1: Product photo of a Bucket Hat. Image 2: User photo showing head and face clearly.
-STEP 1 — BRIM DROOP SILHOUETTE: Soft flexible brim that droops downward 360 degrees all the way around the head (front, sides, and back). No rigid stiffness — soft natural fabric wave along brim edge.
-STEP 2 — CROWN & PLACEMENT: Soft cylindrical crown fitting over head. Sits comfortable on skull, compressing top hair down. Hair flows naturally outward from beneath full perimeter brim.
-STEP 3 — FABRIC & LOGO: Cotton canvas, denim, or nylon texture. Embroidered logo or woven label patch at center front crown reproduced with tactile depth.
-STEP 4 — LIGHTING & SHADOW: Soft circular shadow cast over upper face, eyes, and ears by 360-degree drooping brim.
-SELF CHECK: Brim droops soft and downward all around head? Hair flows out beneath brim edge? Circular soft shadow on upper face? Center logo reproduced? User's face unchanged?
+      prompt: `TASK:
+Image 1: Product photo of a Bucket Hat (soft sloped brim hat)
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact bucket hat naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
+- The user's face in the output must be a pixel-perfect copy of Image 2.
+- Same skin tone, facial features, facial hair, expression, and skin texture.
+- Do NOT alter, smooth, or relight the face.
+
+RULE 2 — 360-DEGREE DROOPING BRIM RULE:
+- Soft, flexible brim droops downward all the way around the head (front, sides, and back).
+- No rigid stiffness — the brim displays a soft, natural fabric wave along its circumference.
+- The brim angle matches Image 1 exactly.
+
+RULE 3 — LOGO & BRAND DETAILS:
+- Front center logo, embroidered motif, or woven label patch reproduced with exact size, position, and thread detail.
+
+══════════════════════════════════════════
+STEP 1 — CROWN STRUCTURE & HEAD PLACEMENT
+══════════════════════════════════════════
+- Unstructured, soft cylindrical crown that fits over the top of the skull.
+- Crown conforms softly to the head shape without rigid paneling.
+- Sits comfortably on the skull, compressing top hair downwards.
+
+══════════════════════════════════════════
+STEP 2 — HAIR INTERACTION & SHADOW
+══════════════════════════════════════════
+- Hair on top of head is completely covered under crown.
+- Hair at sides, back, and temples flows out naturally from under the perimeter drooping brim.
+- CRITICAL: The 360-degree brim casts a soft circular shadow over the upper forehead, eyes, and temple area, consistent with Image 2 lighting.
+
+══════════════════════════════════════════
+STEP 3 — FABRIC TEXTURE
+══════════════════════════════════════════
+- Heavy cotton canvas, denim, twill, or nylon texture matching Image 1.
+- Visible stitching lines along the brim rings if present in Image 1.
+
+══════════════════════════════════════════
+STEP 4 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face identical to Image 2?
+[ ] Soft brim droops downward 360 degrees all around the head?
+[ ] Soft cylindrical crown fits naturally on skull?
+[ ] Soft circular shadow cast over forehead and upper face?
+[ ] Front logo/patch reproduced accurately on the crown?
+[ ] Hair emerges naturally from underneath the entire brim edge?
+
 Output the final image only.`,
     },
 
@@ -1053,13 +1252,78 @@ Output the final image only.`,
         'beanie', 'beanie cap', 'skull cap', 'knit cap', 'winter cap',
         'docker hat', 'ribbed beanie', 'cuffed beanie',
       ],
-      prompt: `TASK: Virtual try-on of a Beanie / Skull Cap (knit brimless headwear).
-Image 1: Product photo of a Beanie. Image 2: User photo showing head and face clearly.
-STEP 1 — NO BRIM SILHOUETTE: Zero brim or visor. Fits snug and form-fitting around the user's skull, covering upper forehead and upper/full ears as per product style.
-STEP 2 — KNIT TEXTURE & CUFF: Show detailed knit pattern — ribbed knit (vertical rib lines), chunky cable knit, or fine jersey knit. Folded cuff band (if cuffed beanie) sits snug across forehead with doubled fabric thickness.
-STEP 3 — HAIR COMPRESSION: Hair above forehead compresses tightly inside beanie body. Hair at sides/back/neck flows out naturally from beneath beanie rim.
-STEP 4 — LOGO & TOP DETAIL: Woven patch or embroidered logo on folded cuff reproduced exactly. Top seam gathers naturally at peak of head.
-SELF CHECK: Fitted snug to skull without brim? Ribbed/knit fabric texture clearly visible? Folded cuff and logo accurately placed? Hair compressed under beanie with lower hair emerging naturally? User's face unchanged?
+      prompt: `TASK:
+Image 1: Product photo of a Beanie / Skull Cap (knit brimless cap)
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact beanie naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — READ BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE PRESERVATION IS NON-NEGOTIABLE:
+- The user's face must be 100% identical to Image 2.
+- Same skin tone — exact match, not approximated.
+- Same facial features — eyes, nose, mouth, jawline, cheekbones unchanged.
+- Same facial hair — beard, moustache, stubble reproduced exactly.
+- Same expression, eye colour, eyebrow shape, lip colour, skin texture.
+- Do NOT relight, smooth, brighten, or alter the face in any way.
+- The face in the output must be a PERFECT COPY of Image 2.
+
+RULE 2 — BRAND LABEL / PATCH MUST BE REPRODUCED EXACTLY:
+- The brand patch (e.g. Carhartt label, woven tag) MUST appear in the output.
+- Reproduce the patch at the EXACT SIZE shown in Image 1 relative to the beanie.
+- Reproduce the EXACT position — centered on the front cuff, below the fold line.
+- Reproduce patch background colour, logo, text, and border precisely.
+- The patch sits FLAT on the knit cuff fabric — sewn onto the surface, not floating.
+- If raised embroidery is present on the patch, show the 3D thread texture.
+
+RULE 3 — BEANIE MUST FIT SKULL, NOT FLOAT:
+- The beanie physically conforms to the user's skull shape.
+- Zero gap between beanie and head.
+
+══════════════════════════════════════════
+STEP 1 — SKULL PLACEMENT & CUFF CURVE
+══════════════════════════════════════════
+- Base cuff sits across forehead approximately 1-2 fingers above eyebrows.
+- The cuff fold follows the CURVE of the forehead — NOT a straight horizontal line. It curves gently at temples.
+- Beanie compresses slightly against the skull with realistic fabric weight.
+- Top of beanie follows the crown of the skull (fitted or slight slouch as shown in Image 1).
+
+══════════════════════════════════════════
+STEP 2 — HAIR INTERACTION
+══════════════════════════════════════════
+- Hair above beanie cuff line is covered/compressed inside the beanie.
+- Hair below beanie cuff remains visible naturally:
+  Long hair: flows out from under the beanie at sides and back.
+  Short hair: ends at cuff line or emerges naturally at temples/neck.
+  Curly/voluminous hair: billows out from under beanie at sides.
+
+══════════════════════════════════════════
+STEP 3 — KNIT TEXTURE & CUFF DETAILS
+══════════════════════════════════════════
+- Visible ribbed knit texture — vertical columns of stitches across the entire surface.
+- Individual stitch rows subtly visible between rib columns.
+- Folded cuff crease line clearly visible at base with doubled fabric thickness.
+
+══════════════════════════════════════════
+STEP 4 — LIGHTING & THREE-DIMENSIONALITY
+══════════════════════════════════════════
+- Light direction on beanie matches Image 2 face lighting exactly.
+- Raised ribs catch light while recessed stitch channels sit in subtle shadow.
+- Beanie wraps three-dimensionally around the head sphere.
+
+══════════════════════════════════════════
+STEP 5 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face identical to Image 2 (skin tone, features, beard, expression untouched)?
+[ ] Beanie sitting ON skull, conforming to head shape?
+[ ] Cuff fold curves naturally with forehead curvature?
+[ ] Brand patch/label centered on front cuff, correct size, flat on fabric?
+[ ] Ribbed knit texture and cuff fold crease clearly visible?
+[ ] Hair below cuff visible and natural?
+[ ] Lighting consistent with user's face?
+
 Output the final image only.`,
     },
 
@@ -1068,21 +1332,114 @@ Output the final image only.`,
         'sports cap', 'running cap', 'performance cap', 'dry fit cap',
         'breathable gym cap', 'athletic cap', 'lightweight sports cap',
       ],
-      prompt: `TASK: Virtual try-on of a Sports / Performance Cap.
-Image 1: Product photo of a Sports Cap. Image 2: User photo showing head and face clearly.
-STEP 1 — ATHLETIC MATERIAL & FIT: Ultra-lightweight performance polyester/dry-fit fabric. Subtle athletic sheen. Laser-cut ventilation holes or side micro-mesh panels visible.
-STEP 2 — BRIM & PLACEMENT: Flexible curved visor casting crisp shadow on forehead. Low-profile fit hugging skull tightly for running/gym use.
-STEP 3 — REFLECTIVE ACCENTS & STRAP: Reflective logos/strips rendered with bright reflective highlights. Elastic or Velcro strapback closure at rear.
-STEP 4 — HAIR INTERACTION: Fits snugly over head, compressing hair underneath. Ponytail exits back strap opening seamlessly.
-SELF CHECK: Lightweight athletic fabric texture with laser-cut holes/mesh? Curved visor casting natural shadow? Reflective elements catching light? User's face unchanged?
+      prompt: `TASK:
+Image 1: Product photo of a Sports / Performance Cap
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact performance cap naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
+- The user's face in the output must be a pixel-perfect copy of Image 2.
+- Same skin tone, facial features, facial hair, expression, and skin texture.
+- Zero face modification, smoothing, or relighting.
+
+RULE 2 — ATHLETIC MATERIAL & DETAILS:
+- Ultra-lightweight performance polyester / dry-fit synthetic fabric with a subtle technical sheen.
+- Laser-cut ventilation perforations, micro-mesh side panels, or breathable seam taping MUST be reproduced if present in Image 1.
+- Reflective brand logos, strips, or brim edge piping MUST catch bright specular light highlights.
+
+RULE 3 — LOW-PROFILE ATHLETIC FIT:
+- Low-profile crown hugging the skull tightly for running/athletic use.
+- Flexible curved visor sitting 1-2 fingers above eyebrows.
+
+══════════════════════════════════════════
+STEP 1 — BRIM SHADOW & PLACEMENT
+══════════════════════════════════════════
+- Cap sits snug and tight on the skull.
+- Curved visor casts a crisp, clean shadow across the user's forehead matching Image 2 lighting.
+- Rear strap closure: Elastic band, Velcro tab, or quick-release clip visible at the back.
+
+══════════════════════════════════════════
+STEP 2 — HAIR INTERACTION
+══════════════════════════════════════════
+- Hair is tightly compressed underneath the low-profile crown.
+- Lower hair exits naturally at sides and back.
+- If ponytail is present, it exits seamlessly through the rear strap opening.
+
+══════════════════════════════════════════
+STEP 3 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face completely identical to Image 2?
+[ ] Low-profile performance fit hugging skull tightly?
+[ ] Dry-fit fabric texture with laser-cut holes/mesh panels rendered?
+[ ] Reflective logos/accents catching bright light highlights?
+[ ] Curved visor casting clean shadow on forehead?
+[ ] Rear Velcro/elastic strap and ponytail loop accurate?
+
 Output the final image only.`,
     },
 
   }, // end headwear_caps subcategories
 
-  defaultPrompt: `TASK: Virtual try-on of a Cap / Headwear.
-Image 1 = Product photo of Cap. Image 2 = User photo showing head and face.
-Instructions: Place the exact cap from Image 1 onto the user's head naturally. Ensure the cap follows skull curvature, compresses hair realistically underneath, and casts a natural brim shadow onto the forehead. Front embroidery/logos must be rendered as raised 3D thread. Match cap style (baseball, snapback flat brim, trucker mesh, bucket, beanie, sports). Keep user's face, skin tone, hair colour, and background completely unchanged. No extra accessories.
+  defaultPrompt: `TASK:
+Image 1: Product photo of Headwear / Cap
+Image 2: User's photo showing their head and face clearly
+Goal: Show the user wearing this exact headwear naturally on their head.
+
+══════════════════════════════════════════
+ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
+══════════════════════════════════════════
+
+RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
+- The user's face in the output must be a pixel-perfect copy of Image 2.
+- Same skin tone, facial features, facial hair, expression, eye colour, and skin texture.
+- Do NOT relight, smooth, brighten, or alter the face in any way.
+- Treat the face like a locked layer that cannot be touched.
+
+RULE 2 — LOGO, PATCH, PRINT, AND BRAND DETAIL IS PARAMOUNT:
+- Any logo, patch, embroidery, print, label, or brand detail on the headwear must be reproduced EXACTLY.
+- Correct size, position, colours, and design.
+- Embroidered logos must show 3D raised thread texture. Patches must sit flat on the fabric surface.
+- NEVER simplify, omit, or approximate any brand detail.
+
+RULE 3 — HEADWEAR MUST SIT ON THE HEAD, NOT FLOAT:
+- The headwear must physically conform to the shape of the user's skull with zero gap.
+- The headwear compresses the hair beneath it slightly.
+
+══════════════════════════════════════════
+STEP 1 — HEADWEAR TYPE & PLACEMENT SPECIFICS
+══════════════════════════════════════════
+- Match headwear type (baseball cap, snapback flat brim, trucker mesh, bucket hat, beanie, sports cap, fedora, beret, turban, bandana).
+- Brimmed styles: Brim sits above eyebrows, curving or flat as per product, casting a natural shadow onto the user's forehead.
+- Brimless styles (beanie/skull cap): Base cuff curves across forehead 1-2 fingers above eyebrows, conforming snugly to skull curvature.
+- Trucker styles: Stiff foam front with sheer open-grid mesh back panels showing user's hair/scalp beneath.
+
+══════════════════════════════════════════
+STEP 2 — HAIR INTERACTION & FABRIC TEXTURE
+══════════════════════════════════════════
+- Top hair compressed under crown; lower hair flows out naturally from under headwear base at sides/back.
+- Ponytail exits through rear strap opening if applicable.
+- Fabric texture (twill weave, knit ribbing, foam/mesh, canvas, dry-fit synthetic) accurately rendered.
+
+══════════════════════════════════════════
+STEP 3 — LIGHTING & 3D DEPTH
+══════════════════════════════════════════
+- Headwear lighting direction matches Image 2 face lighting exactly.
+- Brim casts forehead shadow at correct angle.
+- Headwear wraps three-dimensionally around the head.
+
+══════════════════════════════════════════
+STEP 4 — MANDATORY SELF CHECK
+══════════════════════════════════════════
+[ ] Face identical to Image 2 in every detail?
+[ ] Headwear sits directly ON the skull conforming to its shape?
+[ ] Logos, patches, and embroidery 100% accurately reproduced?
+[ ] Brim shadow cast on forehead (for brimmed styles)?
+[ ] Texture, fabric details, and lighting match reference photo?
+
 Output the final image only.`,
 },
 
