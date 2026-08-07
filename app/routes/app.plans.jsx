@@ -124,23 +124,26 @@ export default function PlansPage() {
   }, [searchParams, shopify]);
 
   // Show error if purchase failed
+  // KEY FIX: When we get confirmationUrl back, open at TOP LEVEL (break out of iframe)
   useEffect(() => {
+    if (fetcher.data?.success && fetcher.data?.confirmationUrl) {
+      // shopify.open() breaks out of the embedded app iframe — required for billing pages
+      shopify.open(fetcher.data.confirmationUrl, "_top");
+    }
     if (fetcher.data?.error) {
       shopify.toast.show(`Error: ${fetcher.data.error}`, { isError: true });
     }
   }, [fetcher.data, shopify]);
 
   const handleBuyPlan = (planKey) => {
-    // Redirect to Shopify managed pricing page
-    // Using fetcher submit to /app/billing which handles the redirect
     fetcher.submit({ plan: planKey }, { method: "POST", action: "/app/billing" });
   };
 
   const getPlanButtonLabel = (plan) => {
-    if (plan.key === "free") return "Current Plan";
-    if (plan.key === currentPlanKey) return "Current Plan";
-    if (isPurchasing && fetcher.formData?.get("plan") === plan.key) return "Redirecting...";
-    return `Buy ${plan.name} — ${plan.price}`;
+    if (plan.key === "free") return "Free Forever";
+    if (plan.key === currentPlanKey) return "✅ Current Plan";
+    if (isPurchasing && fetcher.formData?.get("plan") === plan.key) return "⏳ Opening Shopify...";
+    return `Subscribe — ${plan.price}/mo`;
   };
 
   const isPlanButtonDisabled = (plan) => {
@@ -306,7 +309,7 @@ export default function PlansPage() {
                   }}
                 >
                   {isPurchasing && fetcher.formData?.get("plan") === plan.key
-                    ? "⏳ Redirecting to Shopify..."
+                    ? "⏳ Opening Shopify..."
                     : `Subscribe — ${plan.price}/mo`}
                 </button>
               )}
