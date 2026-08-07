@@ -131,6 +131,8 @@ export default function PlansPage() {
   }, [fetcher.data, shopify]);
 
   const handleBuyPlan = (planKey) => {
+    // Redirect to Shopify managed pricing page
+    // Using fetcher submit to /app/billing which handles the redirect
     fetcher.submit({ plan: planKey }, { method: "POST", action: "/app/billing" });
   };
 
@@ -322,7 +324,7 @@ export default function PlansPage() {
           fontSize: 13,
           color: "#065F46",
         }}>
-          💡 All paid plans are <strong>monthly subscriptions</strong> — billed every 30 days. Credits reset at the start of each billing cycle. Cancel anytime from your Shopify admin. Payments are processed securely by Shopify.
+          💡 All paid plans are <strong>monthly subscriptions</strong> — billed every 30 days by Shopify. Credits reset at the start of each billing cycle. Cancel anytime from your Shopify admin. Clicking "Subscribe" takes you to Shopify's secure checkout.
         </div>
       </div>
     </s-page>
