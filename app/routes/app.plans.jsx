@@ -47,12 +47,13 @@ const PLANS = [
   {
     key: "standard",
     name: "Standard",
-    price: "$39",
-    period: "one-time",
+    price: "$29",
+    period: "/month",
     credits: 500,
     description: "Great for growing stores",
     features: [
-      "500 AI Try-On images",
+      "500 AI Try-On images / month",
+      "Credits reset every 30 days",
       "All product categories",
       "Try-on popup on product pages",
       "Full analytics dashboard",
@@ -65,11 +66,12 @@ const PLANS = [
     key: "growth",
     name: "Growth",
     price: "$59",
-    period: "one-time",
+    period: "/month",
     credits: 1000,
     description: "For stores with high traffic",
     features: [
-      "1,000 AI Try-On images",
+      "1,000 AI Try-On images / month",
+      "Credits reset every 30 days",
       "All product categories",
       "Try-on popup on product pages",
       "Full analytics dashboard",
@@ -82,12 +84,13 @@ const PLANS = [
   {
     key: "scale",
     name: "Scale",
-    price: "$319",
-    period: "one-time",
+    price: "$299",
+    period: "/month",
     credits: 10000,
     description: "For high-volume stores",
     features: [
-      "10,000 AI Try-On images",
+      "10,000 AI Try-On images / month",
+      "Credits reset every 30 days",
       "All product categories",
       "Try-on popup on product pages",
       "Full analytics dashboard",
@@ -302,7 +305,7 @@ export default function PlansPage() {
                 >
                   {isPurchasing && fetcher.formData?.get("plan") === plan.key
                     ? "⏳ Redirecting to Shopify..."
-                    : `Buy ${plan.name} — ${plan.price}`}
+                    : `Subscribe — ${plan.price}/mo`}
                 </button>
               )}
             </div>
@@ -319,7 +322,7 @@ export default function PlansPage() {
           fontSize: 13,
           color: "#065F46",
         }}>
-          💡 All plans are <strong>one-time purchases</strong> — pay once, use your credits anytime. Credits never expire. Payments are processed securely by Shopify.
+          💡 All paid plans are <strong>monthly subscriptions</strong> — billed every 30 days. Credits reset at the start of each billing cycle. Cancel anytime from your Shopify admin. Payments are processed securely by Shopify.
         </div>
       </div>
     </s-page>

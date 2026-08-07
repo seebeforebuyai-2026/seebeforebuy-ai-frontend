@@ -1,7 +1,7 @@
 /**
  * app.billing.jsx
- * Handles Shopify one-time purchase confirmation callback.
- * Shopify redirects here after merchant confirms payment.
+ * Handles Shopify recurring subscription confirmation callback.
+ * Shopify redirects here after merchant confirms subscription.
  */
 
 import { redirect } from "react-router";
@@ -10,29 +10,32 @@ import { authenticate } from "../shopify.server";
 // ── Plan definitions — single source of truth ──────────────────────────────
 export const PLANS = {
   standard: {
-    name: "Standard Plan — 500 AI Try-Ons",
-    price: "39.00",
+    name: "Standard Plan — 500 AI Try-Ons / month",
+    price: "29.00",
     currency: "USD",
     images: 500,
     plan_type: "starter",
+    interval: "EVERY_30_DAYS",
   },
   growth: {
-    name: "Growth Plan — 1,000 AI Try-Ons",
+    name: "Growth Plan — 1,000 AI Try-Ons / month",
     price: "59.00",
     currency: "USD",
     images: 1000,
     plan_type: "growth",
+    interval: "EVERY_30_DAYS",
   },
   scale: {
-    name: "Scale Plan — 10,000 AI Try-Ons",
-    price: "319.00",
+    name: "Scale Plan — 10,000 AI Try-Ons / month",
+    price: "299.00",
     currency: "USD",
     images: 10000,
     plan_type: "pro",
+    interval: "EVERY_30_DAYS",
   },
 };
 
-// ── Loader: Shopify redirects here after payment confirmed ──────────────────
+// ── Loader: Shopify redirects here after subscription confirmed ─────────────
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const url = new URL(request.url);
@@ -48,7 +51,7 @@ export const loader = async ({ request }) => {
     return redirect("/app/plans");
   }
 
-  console.log(`✅ Payment confirmed — shop: ${session.shop} | plan: ${planKey} | charge: ${chargeId}`);
+  console.log(`✅ Subscription confirmed — shop: ${session.shop} | plan: ${planKey} | charge: ${chargeId}`);
 
   // Activate plan in backend
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
@@ -61,18 +64,19 @@ export const loader = async ({ request }) => {
         plan_type: plan.plan_type,
         images_limit: plan.images,
         shopify_charge_id: chargeId,
+        billing_interval: "EVERY_30_DAYS",
       }),
     });
     const data = await res.json();
-    console.log("✅ Plan activated in backend:", data);
+    console.log("✅ Subscription activated in backend:", data);
   } catch (err) {
-    console.error("❌ Failed to activate plan in backend:", err.message);
+    console.error("❌ Failed to activate subscription in backend:", err.message);
   }
 
   return redirect("/app/plans?activated=1");
 };
 
-// ── Action: creates the Shopify one-time charge ─────────────────────────────
+// ── Action: creates Shopify recurring subscription ──────────────────────────
 export const action = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   const formData = await request.formData();
@@ -87,23 +91,25 @@ export const action = async ({ request }) => {
   const returnUrl = `${appUrl}/app/billing?plan=${planKey}`;
   const isTest = process.env.NODE_ENV !== "production";
 
-  console.log(`💳 Creating charge for ${session.shop} | plan: ${planKey} | test: ${isTest}`);
+  console.log(`💳 Creating subscription for ${session.shop} | plan: ${planKey} | test: ${isTest}`);
 
   try {
     const response = await admin.graphql(`
-      mutation appPurchaseOneTimeCreate(
+      mutation appSubscriptionCreate(
         $name: String!
-        $price: MoneyInput!
+        $lineItems: [AppSubscriptionLineItemInput!]!
         $returnUrl: URL!
         $test: Boolean
+        $trialDays: Int
       ) {
-        appPurchaseOneTimeCreate(
+        appSubscriptionCreate(
           name: $name
-          price: $price
+          lineItems: $lineItems
           returnUrl: $returnUrl
           test: $test
+          trialDays: $trialDays
         ) {
-          appPurchaseOneTime {
+          appSubscription {
             id
             status
           }
@@ -117,28 +123,37 @@ export const action = async ({ request }) => {
     `, {
       variables: {
         name: plan.name,
-        price: { amount: plan.price, currencyCode: plan.currency },
+        lineItems: [
+          {
+            plan: {
+              appRecurringPricingDetails: {
+                price: { amount: plan.price, currencyCode: plan.currency },
+                interval: plan.interval,
+              },
+            },
+          },
+        ],
         returnUrl,
         test: isTest,
+        trialDays: 0,
       },
     });
 
     const data = await response.json();
-    const result = data.data?.appPurchaseOneTimeCreate;
+    const result = data.data?.appSubscriptionCreate;
 
     if (result?.userErrors?.length > 0) {
-      console.error("❌ Shopify billing error:", result.userErrors);
+      console.error("❌ Shopify subscription error:", result.userErrors);
       return { success: false, error: result.userErrors[0].message };
     }
 
     if (result?.confirmationUrl) {
-      // Redirect merchant to Shopify's payment page
       return redirect(result.confirmationUrl);
     }
 
     return { success: false, error: "Could not get confirmation URL from Shopify" };
   } catch (error) {
-    console.error("❌ Error creating charge:", error.message);
+    console.error("❌ Error creating subscription:", error.message);
     return { success: false, error: error.message };
   }
 };
