@@ -14,19 +14,52 @@ import { authenticate } from "../shopify.server";
 
 // ── Loader: Shopify redirects here after merchant subscribes ─────────────────
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, admin } = await authenticate.admin(request);
   const url = new URL(request.url);
 
-  // Shopify sends charge_id when subscription is confirmed
   const chargeId = url.searchParams.get("charge_id");
-  const planName = url.searchParams.get("plan_name"); // optional
+  console.log(`💳 Billing callback — shop: ${session.shop} | charge: ${chargeId}`);
 
-  console.log(`✅ Plan activated — shop: ${session.shop} | charge: ${chargeId}`);
+  let planName = null;
+  let planImages = null;
 
-  // Activate plan in backend based on chargeId
-  // We query Shopify to get plan details, then update our backend
+  // Query Shopify to get the actual plan name from the active subscription
+  if (admin) {
+    try {
+      const response = await admin.graphql(`
+        query {
+          currentAppInstallation {
+            activeSubscriptions {
+              name
+              lineItems {
+                plan {
+                  pricingDetails {
+                    ... on AppRecurringPricing {
+                      price { amount }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `);
+      const data = await response.json();
+      const subs = data.data?.currentAppInstallation?.activeSubscriptions;
+      if (subs && subs.length > 0) {
+        planName = subs[0].name; // e.g. "Standard Plan — 500 AI Try-Ons / month"
+        console.log(`📋 Active subscription name: ${planName}`);
+        // Parse plan key from name
+        if (planName.toLowerCase().includes('standard')) planImages = 500;
+        else if (planName.toLowerCase().includes('growth')) planImages = 1000;
+        else if (planName.toLowerCase().includes('scale')) planImages = 10000;
+      }
+    } catch (err) {
+      console.error("⚠️  Could not query active subscription:", err.message);
+    }
+  }
+
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
-
   try {
     await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
       method: "POST",
@@ -34,9 +67,11 @@ export const loader = async ({ request }) => {
       body: JSON.stringify({
         shop_domain: session.shop,
         charge_id: chargeId,
+        plan_name: planName,
+        images_limit: planImages,
       }),
     });
-    console.log(`✅ Backend notified of plan activation`);
+    console.log(`✅ Backend notified — plan: ${planName} | credits: ${planImages}`);
   } catch (err) {
     console.error("❌ Backend notification failed:", err.message);
   }
