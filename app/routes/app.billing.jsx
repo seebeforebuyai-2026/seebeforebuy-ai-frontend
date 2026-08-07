@@ -1,43 +1,14 @@
 /**
- * app.billing.jsx
+ * app.billing.jsx — SERVER ONLY
  *
  * Handles Shopify billing for embedded apps.
- *
- * KEY POINT: Shopify embedded apps run inside an iframe.
- * The billing confirmation page CANNOT load inside an iframe (X-Frame-Options: deny).
- * Solution: Use the special Shopify-Served-By header to do a top-level redirect.
- *
- * Official pattern: Return the confirmationUrl and redirect at top level using
- * the `Shopify-App-Init-URL` header or use `@shopify/shopify-app-react-router` billing helper.
+ * Only exports loader and action (server-only).
+ * No client-side exports to avoid server/client bundle conflict.
  */
 
 import { redirect } from "react-router";
-import { authenticate, shopify } from "../shopify.server";
-
-// Plan definitions
-export const PLANS = {
-  standard: {
-    name: "Standard Plan — 500 AI Try-Ons / month",
-    price: "29.00",
-    currency: "USD",
-    images: 500,
-    plan_type: "starter",
-  },
-  growth: {
-    name: "Growth Plan — 1,000 AI Try-Ons / month",
-    price: "59.00",
-    currency: "USD",
-    images: 1000,
-    plan_type: "growth",
-  },
-  scale: {
-    name: "Scale Plan — 10,000 AI Try-Ons / month",
-    price: "299.00",
-    currency: "USD",
-    images: 10000,
-    plan_type: "pro",
-  },
-};
+import { authenticate } from "../shopify.server";
+import { PLANS } from "../billing-plans";
 
 // ── Loader: called after Shopify redirects back post-payment ─────────────────
 export const loader = async ({ request }) => {
@@ -74,8 +45,8 @@ export const loader = async ({ request }) => {
   return redirect("/app/plans?activated=1");
 };
 
-// ── Action: creates subscription and returns confirmationUrl as JSON ─────────
-// The frontend (app.plans.jsx) handles the top-level redirect via shopify.open()
+// ── Action: creates subscription, returns confirmationUrl as JSON ─────────────
+// Frontend (app.plans.jsx) uses shopify.open(confirmationUrl, "_top") to break out of iframe
 export const action = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   const formData = await request.formData();
@@ -87,6 +58,8 @@ export const action = async ({ request }) => {
   const appUrl = process.env.SHOPIFY_APP_URL || "";
   const returnUrl = `${appUrl}/app/billing?plan=${planKey}`;
   const isTest = process.env.NODE_ENV !== "production";
+
+  console.log(`💳 Creating subscription — shop: ${session.shop} | plan: ${planKey} | test: ${isTest}`);
 
   try {
     const response = await admin.graphql(`
@@ -127,15 +100,16 @@ export const action = async ({ request }) => {
     const result = data.data?.appSubscriptionCreate;
 
     if (result?.userErrors?.length > 0) {
+      console.error("❌ Shopify billing error:", result.userErrors);
       return { success: false, error: result.userErrors[0].message };
     }
 
     if (result?.confirmationUrl) {
-      // Return the URL — frontend will do top-level redirect via shopify.open()
+      // Return URL as JSON — frontend will open at top level via shopify.open()
       return { success: true, confirmationUrl: result.confirmationUrl };
     }
 
-    return { success: false, error: "No confirmation URL received" };
+    return { success: false, error: "No confirmation URL received from Shopify" };
   } catch (error) {
     console.error("❌ Billing error:", error.message);
     return { success: false, error: error.message };
