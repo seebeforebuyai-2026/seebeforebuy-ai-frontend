@@ -88,7 +88,7 @@ const PLANS = [
     period: "/month",
     credits: 10000,
     description: "For high-volume stores",
-    features: [
+    features: [ 
       "10,000 AI Try-On images / month",
       "Credits reset every 30 days",
       "All product categories",
