@@ -38,7 +38,7 @@ export const loader = async ({ request }) => {
 
     // Map plan handle → credits
     const planMap = {
-      standard: { plan_type: "starter", images_limit: 500 },
+      standard: { plan_type: "Starter", images_limit: 500 },
       growth:   { plan_type: "growth",  images_limit: 1000 },
       scale:    { plan_type: "pro",     images_limit: 10000 },
     };
