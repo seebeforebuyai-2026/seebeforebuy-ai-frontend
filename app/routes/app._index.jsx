@@ -26,6 +26,43 @@ export const loader = async ({ request }) => {
   // Get shop information from Shopify session
   const shopDomain = session.shop;
 
+  // ── Handle Shopify App Pricing return URL ────────────────────────────────
+  // Shopify redirects back to /app with ?charge_id=xxx&plan_handle=xxx
+  // after merchant approves a subscription on the pricing page.
+  const url = new URL(request.url);
+  const chargeId = url.searchParams.get("charge_id");
+  const planHandle = url.searchParams.get("plan_handle"); // e.g. "standard"
+
+  if (chargeId && planHandle) {
+    console.log(`💳 Plan activated — shop: ${shopDomain} | plan: ${planHandle} | charge: ${chargeId}`);
+
+    // Map plan handle → credits
+    const planMap = {
+      standard: { plan_type: "starter", images_limit: 500 },
+      growth:   { plan_type: "growth",  images_limit: 1000 },
+      scale:    { plan_type: "pro",     images_limit: 10000 },
+    };
+    const planConfig = planMap[planHandle.toLowerCase()] || planMap.standard;
+
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    try {
+      const res = await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop_domain: shopDomain,
+          plan_name: planHandle,
+          images_limit: planConfig.images_limit,
+          charge_id: chargeId,
+        }),
+      });
+      const data = await res.json();
+      console.log(`✅ Plan activated in loader: ${shopDomain} → ${planConfig.plan_type} | response:`, data);
+    } catch (err) {
+      console.error("❌ Plan activation failed in loader:", err.message);
+    }
+  }
+
   // Fetch actual store owner email from Shopify GraphQL
   let shopEmail = session.email || `${shopDomain.split(".")[0]}@shopify.com`;
   let shopName = session.shop || shopDomain;
