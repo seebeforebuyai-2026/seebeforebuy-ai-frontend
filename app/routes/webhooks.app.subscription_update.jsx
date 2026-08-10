@@ -21,26 +21,31 @@ export const action = async ({ request }) => {
   try {
     // payload.app_subscription contains the subscription details
     const subscription = payload.app_subscription || payload;
-    const status = subscription.status; // ACTIVE, CANCELLED, DECLINED, EXPIRED
-    const planName = subscription.name || "";
+    const status = (subscription.status || "").toUpperCase();
+    const planName = (subscription.name || "").toLowerCase(); // normalize to lowercase
 
-    console.log(`📋 Subscription status: ${status} | plan: ${planName}`);
+    console.log(`📋 Subscription status: ${status} | plan raw name: "${subscription.name}"`);
 
     if (status === "ACTIVE") {
-      // Determine credits from plan name
-      let images_limit = 500; // default Standard
+      // Determine credits from plan name — case-insensitive substring match
+      let images_limit = 500;
       let plan_type = "starter";
 
-      if (planName.toLowerCase().includes("scale")) {
+      if (planName.includes("scale")) {
         images_limit = 10000;
         plan_type = "pro";
-      } else if (planName.toLowerCase().includes("growth")) {
+      } else if (planName.includes("growth")) {
         images_limit = 1000;
         plan_type = "growth";
-      } else if (planName.toLowerCase().includes("standard")) {
+      } else if (planName.includes("standard")) {
         images_limit = 500;
         plan_type = "starter";
+      } else {
+        // Log unrecognized plan name so we can debug
+        console.warn(`⚠️  Unrecognized plan name: "${subscription.name}" — defaulting to Standard 500 credits`);
       }
+
+      console.log(`➡️  Activating: ${plan_type} | ${images_limit} credits | shop: ${shop}`);
 
       // Activate plan in backend
       const res = await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
