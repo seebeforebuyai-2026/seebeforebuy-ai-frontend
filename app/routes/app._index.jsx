@@ -1330,7 +1330,8 @@ export default function Index() {
                 <div className={styles.statItem}>
                   <div className={styles.statLabel}>Plan</div>
                   <div className={styles.statValue}>
-                    {loaderData.shopStatus?.plan || "Free"}
+                    {/* {loaderData.shopStatus?.plan || "Free"} */}
+                    {loaderData.plan_type || loaderData}
                   </div>
                 </div>
 
