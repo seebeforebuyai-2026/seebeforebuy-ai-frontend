@@ -19,6 +19,10 @@ api_version = "2026-04"
   topics = [ "app/scopes_update" ]
   uri = "/webhooks/app/scopes_update"
 
+  [[webhooks.subscriptions]]
+  topics = [ "app_subscriptions/update" ]
+  uri = "/webhooks/app/subscription_update"
+
 [webhooks.privacy_compliance]
 customer_deletion_url = "https://seebeforebuy.in/webhooks/customers/redact"
 customer_data_request_url = "https://seebeforebuy.in/webhooks/customers/data_request"

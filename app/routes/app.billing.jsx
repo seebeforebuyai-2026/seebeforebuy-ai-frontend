@@ -83,13 +83,13 @@ export const loader = async ({ request }) => {
 export const action = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
-  // This is the official Shopify App Pricing URL
-  // app-handle = your app's handle from Partner Dashboard
   const shopHandle = session.shop.replace(".myshopify.com", "");
-  const appHandle = "see-before-buy-ai-full"; // from shopify.app.toml name field
+  const appHandle = "see-before-buy-ai-full";
+  const appUrl = process.env.SHOPIFY_APP_URL || "https://seebeforebuy.in";
 
-  const pricingUrl = `https://admin.shopify.com/store/${shopHandle}/charges/${appHandle}/pricing_plans`;
+  // returnUrl tells Shopify where to redirect merchant after subscribing
+  const returnUrl = encodeURIComponent(`${appUrl}/app/billing?shop=${session.shop}`);
+  const pricingUrl = `https://admin.shopify.com/store/${shopHandle}/charges/${appHandle}/pricing_plans?return_url=${returnUrl}`;
 
-  // Return URL so frontend can open it at top level (breaks out of iframe)
   return { success: true, confirmationUrl: pricingUrl };
 };
