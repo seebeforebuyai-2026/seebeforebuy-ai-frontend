@@ -1448,7 +1448,7 @@ export default function Index() {
 
          
           </>
-        )}
+        )} 
 
       {/* Show activation section if account exists but app is disabled */}
       {loaderData.accountExists &&
