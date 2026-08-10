@@ -750,7 +750,7 @@ export default function Settings() {
                   <p className={styles.previewLabel}>Add to Cart Button Preview:</p>
                   {/* Actual ATC button replica — shown inside the result sheet */}
                   <div style={{
-                    background: '#111',
+                    background: '#111111',
                     borderRadius: '16px',
                     padding: '14px',
                     display: 'flex',
