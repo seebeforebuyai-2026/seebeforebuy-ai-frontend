@@ -464,7 +464,7 @@ export default function Settings() {
               <div className={styles.formSection}>
                 <h2 className={styles.sectionTitle}>Popup Customization</h2>
                 <p className={styles.sectionSubtitle}>
-                  Customize the popup modal that appears when customers click the button.
+                  Customize the popup modal that appears when customers click the buttonnnn.
                 </p>
 
                 {/* ── HEADER ── */}
