@@ -542,10 +542,11 @@ console.log("script tag start here");
 function updateCategoryUploadTip() {
   console.log("updateCategoryUploadTip is running");
   var tipEl = document.getElementById('vtl-upload-tip');
+  console.log("update catery issue is from tipEl"+tipEl);
   if (!tipEl || !sbbShopCategories.length) return;
 
   var category = String(sbbShopCategories[0]).toLowerCase();
-    console.log("updateCategoryUploadTip is running", sbbShopCategories);
+  console.log("updateCategoryUploadTip is running", sbbShopCategories);
 
   console.log("updateCategoryUploadTip is running", category);
 
