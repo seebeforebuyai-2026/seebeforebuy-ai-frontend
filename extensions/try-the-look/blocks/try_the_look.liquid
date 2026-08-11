@@ -45,7 +45,7 @@
       <div class="vtl-ready-label">
         <div class="vtl-badge">AI Preview</div>
         <h3 class="vtl-ready-title">See it on you in seconds</h3>
-        <p class="vtl-ready-sub">Tip: Please upload a photo that matches the product’s view. If the product photo shows the front, upload a front-facing photo. If it shows the back, upload a back-facing photo.</p>
+        <p class="vtl-ready-sub">Tip: Upload a photo from the same angle as the product — front for front, back for back.</p>
       </div>
       <div class="vtl-upload-card">
         <input type="file" id="vtl-file-input" accept="image/*" style="display:none;" onchange="handleVTLUpload(event)">
@@ -142,9 +142,9 @@
         <div class="vtl-progress-wrap"><div class="vtl-progress-track"><div class="vtl-progress-fill" id="vtl-prog-fill-4" style="width:82%"></div></div><div class="vtl-progress-pct" id="vtl-prog-pct-4">82%</div></div>
         <div class="vtl-checklist">
           <div class="vtl-check-row" id="vtl-cr1"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Lighting matched</div><div class="vtl-cr-desc">Ambient light blended</div></div><div class="vtl-cr-badge">done</div></div>
-          <div class="vtl-check-row" id="vtl-cr2"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Fabric texture applied</div><div class="vtl-cr-desc">Folds and weight rendered</div></div><div class="vtl-cr-badge">done</div></div>
+          <div class="vtl-check-row" id="vtl-cr2"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Analysing Photo</div><div class="vtl-cr-desc">Folds and weight rendered</div></div><div class="vtl-cr-badge">done</div></div>
           <div class="vtl-check-row" id="vtl-cr3"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Shadow depth set</div><div class="vtl-cr-desc">Natural shadows added</div></div><div class="vtl-cr-badge">done</div></div>
-          <div class="vtl-check-row" id="vtl-cr4"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Face preserved</div><div class="vtl-cr-desc">Confirming face is unchanged</div></div><div class="vtl-cr-badge">done</div></div>
+          <div class="vtl-check-row" id="vtl-cr4"><div class="vtl-cr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg></div><div class="vtl-cr-text"><div class="vtl-cr-label">Identity preserved</div><div class="vtl-cr-desc">Confirming your identity is unchanged</div></div><div class="vtl-cr-badge">done</div></div>
         </div>
       </div>
     </div>
@@ -337,7 +337,7 @@ console.log("script tag start here");
   var currentRequestPromise = null;
 
   var TIPS = [
-    'Use a full body photo for best results',
+    'Use a Clear photo for best results',
     'Stand straight with arms slightly away from your body',
     'Avoid extreme angles \u2014 a straight-on mirror selfie works best',
     'Good lighting helps the AI match colours accurately',
@@ -538,6 +538,34 @@ console.log("script tag start here");
     return data.generated_image_url;
   }
 
+
+function updateCategoryUploadTip() {
+  var tipEl = document.getElementById('vtl-upload-tip');
+  if (!tipEl || !sbbShopCategories.length) return;
+
+  var category = String(sbbShopCategories[0]).toLowerCase();
+
+  if (category === 'jewellery') {
+    tipEl.textContent =
+      'Tip: Upload a clear, well-lit photo of the area where the jewelry will be worn, with minimal obstruction.';
+  
+  } else if (category === 'watch') {
+    tipEl.textContent =
+      'Tip: Please upload a clear photo of your wrist and hand. Keep your wrist visible and use good lighting.';
+  
+  } else if (category === 'activewear') {
+    tipEl.textContent =
+      'Tip: Please upload a clear full-body photo. Stand straight and keep your body clearly visible.';
+  } else if (
+    category === 'indo_western' ||
+    category === 'party_wear' ||
+    category === 'winter_wear' ||
+    category === 'casual'
+  ) {
+    tipEl.textContent =
+      'Tip: Upload a photo from the same angle as the product — front for front, back for back.';
+  }
+}
   // ─── Result display ──────────────────────────────────────
   function showResult(imageUrl) {
     var elapsed = Math.round((Date.now() - generationStartTime) / 1000);
@@ -778,6 +806,7 @@ console.log("script tag start here");
         var cats = shopData.shopStatus && shopData.shopStatus.product_categories;
         if (Array.isArray(cats) && cats.length > 0) {
           sbbShopCategories = cats.map(function(c){ return typeof c==='string' ? c : (c.main_category||c); }).filter(Boolean);
+          updateCategoryUploadTip();
           console.log('[SBB] categories:', sbbShopCategories);
         }
         if (sbbShopCategories.length > 0 && window.SBB_PROMPTS) {
