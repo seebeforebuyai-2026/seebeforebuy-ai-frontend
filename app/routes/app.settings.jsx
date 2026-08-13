@@ -118,30 +118,30 @@ export default function Settings() {
       text_color: "#FFFFFF",
       border_radius: 8,
       size: "medium"
+    },
+    entry_popup: {
+      enabled: true,
+      delay_seconds: 5,
+      bg_color: "#0D2B1E",
+      heading_text: "See yourself in it before you buy",
+      sub_text: "Upload your photo. Our AI shows you wearing this exact product in seconds. Free \u2014 no sign-up needed.",
+      cta_text: "Try it on now \u2192",
+      cta_bg_color: "#111111",
+      cta_text_color: "#FFFFFF",
+      dismiss_text: "Maybe later",
     }
   };
 
-  // State for settings
-  const [activeTab, setActiveTab] = useState('button'); // 'button' or 'popup'
+  const [activeTab, setActiveTab] = useState('button');
   const [settings, setSettings] = useState(() => {
-    // Merge loaded settings with defaults to ensure all fields exist
     const loadedSettings = loaderData.settings || {};
     return {
-      button: {
-        ...defaultSettings.button,
-        ...(loadedSettings.button || {})
-      },
-      popup: {
-        ...defaultSettings.popup,
-        ...(loadedSettings.popup || {})
-      },
-      add_to_cart_button: {
-        ...defaultSettings.add_to_cart_button,
-        ...(loadedSettings.add_to_cart_button || {})
-      }
+      button: { ...defaultSettings.button, ...(loadedSettings.button || {}) },
+      popup: { ...defaultSettings.popup, ...(loadedSettings.popup || {}) },
+      add_to_cart_button: { ...defaultSettings.add_to_cart_button, ...(loadedSettings.add_to_cart_button || {}) },
+      entry_popup: { ...defaultSettings.entry_popup, ...(loadedSettings.entry_popup || {}) },
     };
   });
-
   const isSaving = fetcher.state === "submitting";
 
   // Show success/error messages
@@ -186,6 +186,17 @@ export default function Settings() {
     }));
   };
 
+  // Update entry_popup settings
+  const updateEntryPopupSetting = (key, value) => {
+    setSettings(prev => ({
+      ...prev,
+      entry_popup: {
+        ...prev.entry_popup,
+        [key]: value
+      }
+    }));
+  };
+
   // Save settings
   const handleSave = () => {
     fetcher.submit(
@@ -222,6 +233,12 @@ export default function Settings() {
             onClick={() => setActiveTab('popup')}
           >
             Popup Settings
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'entry_popup' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('entry_popup')}
+          >
+            Entry Popup
           </button>
         </div>
 
@@ -699,29 +716,117 @@ export default function Settings() {
               </div>
             )}
 
+            {/* Entry Popup form */}
+            {activeTab === 'entry_popup' && (
+              <div className={styles.formSection}>
+                <h2 className={styles.sectionTitle}>Entry Popup</h2>
+                <p className={styles.sectionSubtitle}>A teaser popup shown to first-time visitors on product pages.</p>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Show Entry Popup</label>
+                  <div className={styles.radioGroup}>
+                    <label className={styles.radioLabel}><input type="radio" checked={settings.entry_popup.enabled === true} onChange={() => updateEntryPopupSetting('enabled', true)} /> Enabled</label>
+                    <label className={styles.radioLabel}><input type="radio" checked={settings.entry_popup.enabled === false} onChange={() => updateEntryPopupSetting('enabled', false)} /> Disabled</label>
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Delay: {settings.entry_popup.delay_seconds} seconds</label>
+                  <input type="range" className={styles.slider} min="2" max="30" value={settings.entry_popup.delay_seconds} onChange={(e) => updateEntryPopupSetting('delay_seconds', parseInt(e.target.value))} />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Background Color (top section)</label>
+                  <div className={styles.colorInput}>
+                    <input type="color" className={styles.colorPicker} value={settings.entry_popup.bg_color} onChange={(e) => updateEntryPopupSetting('bg_color', e.target.value)} />
+                    <input type="text" className={styles.colorText} value={settings.entry_popup.bg_color} onChange={(e) => updateEntryPopupSetting('bg_color', e.target.value)} />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Heading Text</label>
+                  <input type="text" className={styles.input} value={settings.entry_popup.heading_text} onChange={(e) => updateEntryPopupSetting('heading_text', e.target.value)} />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Sub Text</label>
+                  <input type="text" className={styles.input} value={settings.entry_popup.sub_text} onChange={(e) => updateEntryPopupSetting('sub_text', e.target.value)} />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>CTA Button Text</label>
+                  <input type="text" className={styles.input} value={settings.entry_popup.cta_text} onChange={(e) => updateEntryPopupSetting('cta_text', e.target.value)} />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>CTA Button Color</label>
+                  <div className={styles.colorInput}>
+                    <input type="color" className={styles.colorPicker} value={settings.entry_popup.cta_bg_color} onChange={(e) => updateEntryPopupSetting('cta_bg_color', e.target.value)} />
+                    <input type="text" className={styles.colorText} value={settings.entry_popup.cta_bg_color} onChange={(e) => updateEntryPopupSetting('cta_bg_color', e.target.value)} />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>CTA Button Text Color</label>
+                  <div className={styles.colorInput}>
+                    <input type="color" className={styles.colorPicker} value={settings.entry_popup.cta_text_color} onChange={(e) => updateEntryPopupSetting('cta_text_color', e.target.value)} />
+                    <input type="text" className={styles.colorText} value={settings.entry_popup.cta_text_color} onChange={(e) => updateEntryPopupSetting('cta_text_color', e.target.value)} />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Dismiss Link Text</label>
+                  <input type="text" className={styles.input} value={settings.entry_popup.dismiss_text} onChange={(e) => updateEntryPopupSetting('dismiss_text', e.target.value)} />
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className={styles.actions}>
-              <button
-                className={styles.resetButton}
-                onClick={handleReset}
-                disabled={isSaving}
-              >
-                Reset to Defaults
-              </button>
-              <button
-                className={styles.saveButton}
-                onClick={handleSave}
-                disabled={isSaving}
-              >
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
+              <button className={styles.resetButton} onClick={handleReset} disabled={isSaving}>Reset to Defaults</button>
+              <button className={styles.saveButton} onClick={handleSave} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Changes'}</button>
             </div>
           </div>
 
           {/* Live Preview */}
           <div className={styles.preview}>
             <h3 className={styles.previewTitle}>Live Preview</h3>
-            
+
+            {/* Entry Popup Preview */}
+            {activeTab === 'entry_popup' && (
+              <div className={styles.previewContent}>
+                <p className={styles.previewLabel}>Entry Popup Preview:</p>
+                <div style={{ width: '100%', maxWidth: 300, margin: '0 auto', borderRadius: 20, overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', fontFamily: "'Poppins',-apple-system,sans-serif" }}>
+                  <div style={{ background: settings.entry_popup.bg_color, padding: '24px 18px 16px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                    <div style={{ position: 'absolute', top: 10, right: 12, width: 26, height: 26, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13 }}>×</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', height: 110, width: '100%' }}>
+                      <div style={{ position: 'absolute', left: '20%', width: 74, height: 92, borderRadius: 10, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.18)', transform: 'rotate(-6deg)' }} />
+                      <div style={{ position: 'relative', width: 82, height: 100, borderRadius: 10, background: '#e8ddd0', border: '2px solid #fff', boxShadow: '0 6px 20px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+                        <div style={{ fontSize: 20, color: '#888' }}>?</div>
+                        <div style={{ fontSize: 7, color: '#888', fontWeight: 600 }}>your photo here</div>
+                        <div style={{ position: 'absolute', top: -12, left: -12, width: 26, height: 26, borderRadius: '50%', background: '#008060', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}>✦</div>
+                      </div>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 6, background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#fff', marginBottom: 1 }}>See yourself wearing it</div>
+                        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.55)' }}>Before you add to cart</div>
+                      </div>
+                      <div style={{ background: '#008060', color: '#fff', fontSize: 8, fontWeight: 700, padding: '3px 7px', borderRadius: 5 }}>NEW ✦</div>
+                    </div>
+                    <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>· Results in under 30 seconds ·</div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '14px 14px 12px' }}>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 5, lineHeight: 1.3 }}>{settings.entry_popup.heading_text}</div>
+                    <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{settings.entry_popup.sub_text}</div>
+                    <button style={{ width: '100%', background: settings.entry_popup.cta_bg_color, color: settings.entry_popup.cta_text_color, border: 'none', borderRadius: 10, padding: '11px', fontSize: 11, fontWeight: 700, cursor: 'pointer', marginBottom: 8 }}>{settings.entry_popup.cta_text}</button>
+                    <div style={{ textAlign: 'center', fontSize: 10, color: '#9CA3AF' }}>{settings.entry_popup.dismiss_text}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {activeTab === 'button' && (
               <div className={styles.previewContent}>
                 <p className={styles.previewLabel}>Trigger Button Preview:</p>

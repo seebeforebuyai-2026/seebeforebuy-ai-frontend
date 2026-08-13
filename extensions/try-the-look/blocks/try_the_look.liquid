@@ -73,7 +73,8 @@ Tip: Upload a photo from the same angle as the product — front for front, back
         <div class="vtl-uploading-spinner"></div>
         <div class="vtl-uploading-text">Preparing your preview...</div>
       </div>
-      <div class="vtl-upload-tips">
+     <!-- 
+     <div class="vtl-upload-tips">
         <div class="vtl-tips-title">Tips for best results</div>
         <div class="vtl-tips-grid">
           <div class="vtl-tip-item">Full body photo</div>
@@ -82,6 +83,7 @@ Tip: Upload a photo from the same angle as the product — front for front, back
           <div class="vtl-tip-item">Front-facing angle</div>
         </div>
       </div>
+      -->
       <div class="vtl-terms">Your photo is processed securely and used to generate your preview.</div>
     </div>
 
@@ -109,7 +111,7 @@ Tip: Upload a photo from the same angle as the product — front for front, back
           <div class="vtl-cv-card vtl-cv-user"><img id="vtl-card-user-img-2" src="" alt="You" class="vtl-cv-card-img" width="100" height="130"></div>
           <div class="vtl-cv-sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></div>
         </div>
-        <div class="vtl-stage-text"><div class="vtl-stage-title">Reading garment details...</div><div class="vtl-stage-sub">Mapping fabric, colour, and structure</div></div>
+        <div class="vtl-stage-text"><div class="vtl-stage-title">Reading product details...</div><div class="vtl-stage-sub">Mapping material, colour, and structure</div></div>
         <div class="vtl-progress-wrap"><div class="vtl-progress-track"><div class="vtl-progress-fill" id="vtl-prog-fill-2"></div></div><div class="vtl-progress-pct" id="vtl-prog-pct-2">38%</div></div>
         <div class="vtl-tip-card"><div class="vtl-tip-label">Tip</div><div class="vtl-tip-text" id="vtl-tip-text-2">Stand straight with arms slightly away from your body.</div></div>
       </div>
@@ -193,95 +195,82 @@ Tip: Upload a photo from the same angle as the product — front for front, back
 <input type="hidden" id="sbb-variant-id" value="{{ default_variant.id }}">
 <input type="hidden" id="sbb-product-title" value="{{ current_product.title | escape }}">
 
-<!-- ── SBB Teaser Popup (first-visit only, shows after 5s) ── -->
-<div id="sbb-teaser" style="display:none;" role="dialog" aria-modal="true" aria-label="Virtual try-on offer">
-  <button id="sbb-teaser-close" aria-label="Close">&times;</button>
-  <div class="sbb-teaser-inner">
-    <div class="sbb-teaser-icon">✨</div>
-    <div class="sbb-teaser-text">
-      <strong>FREE Virtual Try-On</strong>
-      <span>See how this looks on you before buying</span>
+<!-- ── SBB Entry Popup (first-visit only, settings-driven) ── -->
+<div id="sbb-ep-overlay">
+  <div id="sbb-ep-modal">
+    <button id="sbb-ep-close" aria-label="Close">×</button>
+
+    <!-- Dark top section -->
+    <div id="sbb-ep-top">
+      <!-- Two-card visual -->
+      <div id="sbb-ep-cards">
+        <div id="sbb-ep-card-back"></div>
+        <div id="sbb-ep-card-front">
+          <span id="sbb-ep-card-icon">✦</span>
+          <div id="sbb-ep-card-body">
+            <div id="sbb-ep-qmark">?</div>
+            <div id="sbb-ep-photo-label">your photo here</div>
+          </div>
+        </div>
+      </div>
+      <!-- Product strip -->
+      <div id="sbb-ep-strip">
+        <div id="sbb-ep-strip-thumb">
+          {% if current_product.featured_image %}
+            <img src="{{ current_product.featured_image | image_url: width: 80 }}" alt="{{ current_product.title | escape }}" width="36" height="36" style="width:100%;height:100%;object-fit:cover;">
+          {% endif %}
+        </div>
+        <div id="sbb-ep-strip-text">
+          <span id="sbb-ep-strip-title">See yourself wearing it</span>
+          <span id="sbb-ep-strip-sub">Before you add to cart</span>
+        </div>
+        <div id="sbb-ep-strip-badge">NEW ✦</div>
+      </div>
+      <div id="sbb-ep-results-tag">· Results in under 30 seconds ·</div>
     </div>
-    <button id="sbb-teaser-cta">Try Now</button>
+
+    <!-- White bottom section -->
+    <div id="sbb-ep-bottom">
+      <div id="sbb-ep-heading">See yourself in it before you buy</div>
+      <div id="sbb-ep-sub">Upload your photo. Our AI shows you wearing this exact product in seconds. Free — no sign-up needed.</div>
+      <button id="sbb-ep-cta">📷 Try it on now →</button>
+      <div id="sbb-ep-dismiss">Maybe later</div>
+    </div>
   </div>
 </div>
 
 <style>
-  #sbb-teaser {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 9999998;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 16px 18px;
-    max-width: 320px;
-    width: calc(100vw - 48px);
-    font-family: 'Poppins', -apple-system, sans-serif;
-    border: 1.5px solid #E5E7EB;
-    animation: sbb-teaser-in 0.4s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  @keyframes sbb-teaser-in {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .sbb-teaser-inner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .sbb-teaser-icon {
-    font-size: 24px;
-    flex-shrink: 0;
-  }
-  .sbb-teaser-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .sbb-teaser-text strong {
-    font-size: 13px;
-    font-weight: 700;
-    color: #111;
-    line-height: 1.3;
-  }
-  .sbb-teaser-text span {
-    font-size: 11px;
-    color: #6B7280;
-    line-height: 1.4;
-  }
-  #sbb-teaser-cta {
-    flex-shrink: 0;
-    background: #008060;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    font-family: 'Poppins', -apple-system, sans-serif;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
-  }
-  #sbb-teaser-cta:hover { background: #005c45; }
-  #sbb-teaser-close {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    line-height: 1;
-    color: #9CA3AF;
-    cursor: pointer;
-    padding: 0;
-    font-family: sans-serif;
-  }
-  #sbb-teaser-close:hover { color: #111; }
+  /* ── SBB Entry Popup — unique IDs, no CSS class collisions ── */
+  #sbb-ep-overlay{display:none;position:fixed;inset:0;z-index:9999997;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;padding:16px;box-sizing:border-box;}
+  #sbb-ep-overlay.sbb-ep-active{display:flex!important;}
+  #sbb-ep-modal{position:relative;width:100%;max-width:400px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);font-family:'Poppins',-apple-system,sans-serif;animation:sbb-ep-up 0.4s cubic-bezier(0.16,1,0.3,1) both;}
+  @keyframes sbb-ep-up{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+  #sbb-ep-close{position:absolute;top:12px;right:14px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:background 0.2s;}
+  #sbb-ep-close:hover{background:rgba(255,255,255,0.28);}
+  #sbb-ep-top{background:#0D2B1E;padding:32px 20px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;}
+  #sbb-ep-cards{position:relative;height:130px;width:100%;display:flex;align-items:center;justify-content:center;}
+  #sbb-ep-card-back{position:absolute;left:calc(50% - 70px);width:85px;height:108px;border-radius:14px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.18);transform:rotate(-6deg);}
+  #sbb-ep-card-front{position:relative;width:94px;height:116px;border-radius:14px;background:#e8ddd0;border:2.5px solid #fff;box-shadow:0 8px 28px rgba(0,0,0,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+  #sbb-ep-card-icon{position:absolute;top:-15px;left:-15px;width:30px;height:30px;border-radius:50%;background:#008060;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);}
+  #sbb-ep-qmark{font-size:26px;color:#888;}
+  #sbb-ep-photo-label{font-size:9px;color:#888;font-weight:600;}
+  #sbb-ep-strip{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+  #sbb-ep-strip-thumb{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.12);flex-shrink:0;overflow:hidden;}
+  #sbb-ep-strip-text{flex:1;display:flex;flex-direction:column;gap:2px;}
+  #sbb-ep-strip-title{font-size:12px;font-weight:700;color:#fff;}
+  #sbb-ep-strip-sub{font-size:10px;color:rgba(255,255,255,0.55);}
+  #sbb-ep-strip-badge{background:#008060;color:#fff;font-size:9px;font-weight:700;padding:4px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;}
+  #sbb-ep-results-tag{font-size:10px;color:rgba(255,255,255,0.4);}
+  #sbb-ep-bottom{background:#fff;padding:20px 20px 18px;}
+  #sbb-ep-heading{font-size:19px;font-weight:800;color:#111;margin-bottom:8px;line-height:1.3;}
+  #sbb-ep-sub{font-size:13px;color:#6B7280;margin-bottom:16px;line-height:1.55;}
+  #sbb-ep-cta{width:100%;background:#111;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;font-family:'Poppins',-apple-system,sans-serif;cursor:pointer;margin-bottom:12px;transition:background 0.2s;}
+  #sbb-ep-cta:hover{background:#333;}
+  #sbb-ep-dismiss{text-align:center;font-size:13px;color:#9CA3AF;cursor:pointer;padding:4px;transition:color 0.2s;}
+  #sbb-ep-dismiss:hover{color:#374151;}
 </style>
+
+<style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
   :root {
     --vtl-teal:#008060; --vtl-teal-d:#005c45; --vtl-navy:#111827;
@@ -1040,7 +1029,14 @@ function updateCategoryUploadTip() {
       if (settingsRes.ok) {
         var sd = await settingsRes.json();
         console.log('[SBB] settings response:', JSON.stringify(sd));
-        if (sd.success && sd.settings) applySettings(sd.settings);
+        if (sd.success && sd.settings) {
+          applySettings(sd.settings);
+          // Store entry popup settings for use in timer
+          if (sd.settings.entry_popup) {
+            window._sbbEntryPopupSettings = sd.settings.entry_popup;
+            applyEntryPopupSettings(sd.settings.entry_popup);
+          }
+        }
       } else {
         console.warn('[SBB] settings fetch failed:', settingsRes.status);
       }
@@ -1064,6 +1060,16 @@ function updateCategoryUploadTip() {
     } catch(err) {
       console.error('[SBB] fetchAndApplySettings error:', err);
     }
+
+    // ── Start entry popup timer AFTER settings are loaded ──
+    if (!localStorage.getItem(EP_KEY)) {
+      var epSettings = (window._sbbEntryPopupSettings) || null;
+      var delayMs = (epSettings && epSettings.delay_seconds) ? epSettings.delay_seconds * 1000 : 5000;
+      var enabled = (epSettings && epSettings.enabled === false) ? false : true;
+      if (enabled) {
+        setTimeout(showEntryPopup, delayMs);
+      }
+    }
   }
 
   // ─── Init ────────────────────────────────────────────────
@@ -1077,38 +1083,60 @@ function updateCategoryUploadTip() {
     // Fetch settings AFTER popup is in body so element lookups work
     fetchAndApplySettings();
 
-    // ── Teaser popup: show after 5s, first visit only ──────
-    var TEASER_KEY = 'sbb_teaser_shown';
-    if (!localStorage.getItem(TEASER_KEY)) {
-      var teaserTimeout = setTimeout(function() {
-        var teaser = document.getElementById('sbb-teaser');
-        if (teaser) {
-          teaser.style.display = 'block';
-          // Mark as shown so it never appears again on this browser
-          localStorage.setItem(TEASER_KEY, '1');
-        }
-      }, 5000);
+    // ── Entry popup: show after delay, first visit only ──────
+    var EP_KEY = 'sbb_ep_shown';
 
-      // "Try Now" → close teaser, open main try-on popup
-      var ctaBtn = document.getElementById('sbb-teaser-cta');
-      if (ctaBtn) {
-        ctaBtn.addEventListener('click', function() {
-          var teaser = document.getElementById('sbb-teaser');
-          if (teaser) teaser.style.display = 'none';
-          clearTimeout(teaserTimeout);
-          openVTLPopup();
-        });
+    function applyEntryPopupSettings(ep) {
+      if (!ep) return;
+      var top = document.getElementById('sbb-ep-top');
+      if (top && ep.bg_color) top.style.background = ep.bg_color;
+      var heading = document.getElementById('sbb-ep-heading');
+      if (heading && ep.heading_text) heading.textContent = ep.heading_text;
+      var sub = document.getElementById('sbb-ep-sub');
+      if (sub && ep.sub_text) sub.textContent = ep.sub_text;
+      var cta = document.getElementById('sbb-ep-cta');
+      if (cta) {
+        if (ep.cta_text) cta.textContent = ep.cta_text;
+        if (ep.cta_bg_color) cta.style.background = ep.cta_bg_color;
+        if (ep.cta_text_color) cta.style.color = ep.cta_text_color;
       }
+      var dismiss = document.getElementById('sbb-ep-dismiss');
+      if (dismiss && ep.dismiss_text) dismiss.textContent = ep.dismiss_text;
+    }
 
-      // Close button → just dismiss
-      var closeBtn = document.getElementById('sbb-teaser-close');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-          var teaser = document.getElementById('sbb-teaser');
-          if (teaser) teaser.style.display = 'none';
-          clearTimeout(teaserTimeout);
-        });
-      }
+    function showEntryPopup() {
+      var overlay = document.getElementById('sbb-ep-overlay');
+      if (overlay) overlay.classList.add('sbb-ep-active');
+      localStorage.setItem(EP_KEY, '1');
+    }
+
+    function hideEntryPopup() {
+      var overlay = document.getElementById('sbb-ep-overlay');
+      if (overlay) overlay.classList.remove('sbb-ep-active');
+    }
+
+    // Only show if not seen before
+    if (!localStorage.getItem(EP_KEY)) {
+      // Wire close button
+      var epClose = document.getElementById('sbb-ep-close');
+      if (epClose) epClose.addEventListener('click', hideEntryPopup);
+
+      // Wire dismiss link
+      var epDismiss = document.getElementById('sbb-ep-dismiss');
+      if (epDismiss) epDismiss.addEventListener('click', hideEntryPopup);
+
+      // Wire CTA → open main try-on popup
+      var epCta = document.getElementById('sbb-ep-cta');
+      if (epCta) epCta.addEventListener('click', function() {
+        hideEntryPopup();
+        openVTLPopup();
+      });
+
+      // Close on overlay background click
+      var epOverlay = document.getElementById('sbb-ep-overlay');
+      if (epOverlay) epOverlay.addEventListener('click', function(e) {
+        if (e.target === epOverlay) hideEntryPopup();
+      });
     }
   });
 </script>
