@@ -789,6 +789,155 @@ function updateCategoryUploadTip() {
     }
   }
 
+  // ─── Category Copy — messages per category ──────────────
+  var CATEGORY_COPY = {
+    indo_western: {
+      badge: 'Indo Western',
+      tip: 'Upload a full body photo facing the camera. Include your feet so we can show the complete length and layering on you.',
+      hint: 'PNG or JPG \u00b7 clear light \u00b7 full body works best',
+      loading: [
+        { title: 'Analyzing your photo...', sub: 'Reading your body position and proportions', tip: 'A full body photo helps us show the complete outfit length on your frame' },
+        { title: 'Reading the garment...', sub: 'Mapping embroidery, layers and fabric weight', tip: 'Zari, mirror work and embellishments are being reproduced at full detail' },
+        { title: 'Placing it on you...', sub: 'Draping fabric and aligning layers to your frame', tip: 'Each layer \u2014 jacket, kurti, dupatta \u2014 is being placed in the correct order' },
+        { title: 'Finalizing the look...', sub: 'Quality check in progress', tip: 'Checking embroidery detail and layer alignment on your frame' }
+      ],
+      checklist: [
+        { label: 'Outfit length matched', desc: 'Proportioned to your height' },
+        { label: 'Layers placed correctly', desc: 'Each piece in correct order' },
+        { label: 'Embroidery reproduced', desc: 'Zari and detail preserved' },
+        { label: 'Face preserved', desc: 'Confirming face is unchanged' }
+      ]
+    },
+    party_wear: {
+      badge: 'Party Wear',
+      tip: 'Upload a full body photo facing the camera. Include your feet so we can show the complete gown or lehenga length on you.',
+      hint: 'PNG or JPG \u00b7 clear light \u00b7 full body works best',
+      loading: [
+        { title: 'Analyzing your photo...', sub: 'Reading your full body silhouette', tip: 'Including your feet helps us show the gown or lehenga hem accurately' },
+        { title: 'Reading the outfit...', sub: 'Mapping sequins, embellishments and fabric', tip: 'Sequins and stone work are being rendered with individual light reflection' },
+        { title: 'Placing it on you...', sub: 'Draping the silhouette from shoulder to hem', tip: 'The gown or lehenga volume is being built in three dimensions on your frame' },
+        { title: 'Finalizing the look...', sub: 'Quality check in progress', tip: 'Checking sequin detail and silhouette volume on your frame' }
+      ],
+      checklist: [
+        { label: 'Silhouette matched', desc: 'A-line/mermaid/ball gown applied' },
+        { label: 'Sequins rendered', desc: 'Individual light reflection done' },
+        { label: 'Hem length accurate', desc: 'Proportioned to your height' },
+        { label: 'Face preserved', desc: 'Confirming face is unchanged' }
+      ]
+    },
+    winter_wear: {
+      badge: 'Winter Wear',
+      tip: 'Upload a full body photo facing the camera. The jacket or coat will appear with its full volume and structure on you.',
+      hint: 'PNG or JPG \u00b7 clear light \u00b7 full body works best',
+      loading: [
+        { title: 'Analyzing your photo...', sub: 'Reading your shoulder width and body position', tip: 'Shoulder alignment is the most critical detail for jackets \u2014 stand naturally' },
+        { title: 'Reading the garment...', sub: 'Mapping fabric texture, quilting and structure', tip: 'Puffer channels, wool texture and leather grain are being reproduced accurately' },
+        { title: 'Placing it on you...', sub: 'Fitting the jacket structure to your frame', tip: 'Collar, lapels and pockets are being placed at the exact correct positions' },
+        { title: 'Finalizing the look...', sub: 'Quality check in progress', tip: 'Checking shoulder alignment and fabric texture on your frame' }
+      ],
+      checklist: [
+        { label: 'Shoulders aligned', desc: 'Seams at your shoulder edge' },
+        { label: 'Fabric texture applied', desc: 'Wool/leather/puffer rendered' },
+        { label: 'Structure preserved', desc: 'Lapels and collar placed' },
+        { label: 'Face preserved', desc: 'Confirming face is unchanged' }
+      ]
+    },
+    casual: {
+      badge: 'Casual Wear',
+      tip: 'Upload a front-facing photo from the same angle as the product \u2014 front for front, back for back.',
+      hint: 'PNG or JPG \u00b7 clear light \u00b7 full body works best',
+      loading: [
+        { title: 'Analyzing your photo...', sub: 'Reading your body position and proportions', tip: 'A full body photo gives the most accurate fit preview for casual wear' },
+        { title: 'Reading the garment...', sub: 'Mapping the fabric, colour and print', tip: 'Graphics and prints are being reproduced exactly \u2014 every detail preserved' },
+        { title: 'Placing it on you...', sub: 'Fitting the garment to your body naturally', tip: 'The fabric drape and fit are being matched to your exact body position' },
+        { title: 'Finalizing the look...', sub: 'Quality check in progress', tip: 'Checking print accuracy and fabric fit on your frame' }
+      ],
+      checklist: [
+        { label: 'Fit matched', desc: 'Proportioned to your body' },
+        { label: 'Fabric texture applied', desc: 'Cotton/poly drape rendered' },
+        { label: 'Print reproduced', desc: 'Graphic placed accurately' },
+        { label: 'Face preserved', desc: 'Confirming face is unchanged' }
+      ]
+    },
+    watch: {
+      badge: 'Watch',
+      tip: 'Upload a clear, well-lit photo of your wrist. A natural wrist angle gives the most accurate placement and strap wrap.',
+      hint: 'PNG or JPG \u00b7 clear light \u00b7 wrist fully visible',
+      loading: [
+        { title: 'Analyzing your photo...', sub: 'Reading your wrist angle and width', tip: 'A natural wrist photo gives the most accurate watch placement and strap fit' },
+        { title: 'Reading the watch...', sub: 'Mapping the dial face, strap and case finish', tip: 'The dial design is being reproduced exactly \u2014 not a generic clock face' },
+        { title: 'Placing it on you...', sub: 'Wrapping the strap around your wrist', tip: 'The strap is wrapping near side, far side and under your wrist for a realistic fit' },
+        { title: 'Finalizing the look...', sub: 'Quality check in progress', tip: 'Checking strap wrap and dial face light reflection' }
+      ],
+      checklist: [
+        { label: 'Dial sitting on wrist', desc: 'Positioned at top of wrist' },
+        { label: 'Strap wrapped naturally', desc: 'Near and far side rendered' },
+        { label: 'Dial face reproduced', desc: 'Exact design preserved' },
+        { label: 'Metal/leather finish done', desc: 'Material texture applied' }
+      ]
+    },
+    jewellery: {
+      badge: 'Jewellery',
+      tip: 'Upload a clear, well-lit photo of the area where the jewellery will be worn, with minimal obstruction.',
+      hint: 'PNG or JPG \u00b7 clear light \u00b7 area fully visible',
+      loading: [
+        { title: 'Analyzing your photo...', sub: 'Reading the area where the jewellery is worn', tip: 'Good lighting helps the AI match the metal finish and stone colour accurately' },
+        { title: 'Reading the jewellery...', sub: 'Mapping stones, metal finish and setting design', tip: 'Each stone and its facets are being reproduced individually for a realistic finish' },
+        { title: 'Placing it on you...', sub: 'Positioning the jewellery to your exact anatomy', tip: 'The metal is catching light from the same direction as your photo for realism' },
+        { title: 'Finalizing the look...', sub: 'Quality check in progress', tip: 'Checking stone facets and metal light reflection' }
+      ],
+      checklist: [
+        { label: 'Jewellery positioned', desc: 'Placed at exact anatomy point' },
+        { label: 'Metal finish applied', desc: 'Gold/silver/rose gold rendered' },
+        { label: 'Stones reproduced', desc: 'Cut, colour and facets accurate' },
+        { label: 'Skin unchanged', desc: 'Your skin tone preserved exactly' }
+      ]
+    }
+  };
+
+  // ─── Apply category copy to UI elements ──────────────────
+  function applyCategoryCopy(categoryKey) {
+    var copy = CATEGORY_COPY[categoryKey];
+    if (!copy) return; // unknown category — keep defaults
+
+    // Badge label
+    var catLabel = document.getElementById('vtl-product-cat-label');
+    if (catLabel) catLabel.textContent = copy.badge;
+
+    // Upload tip
+    var tip = document.getElementById('vtl-upload-tip');
+    if (tip) tip.textContent = copy.tip;
+
+    // Upload hint
+    var hint = document.querySelector('.vtl-upload-hint');
+    if (hint) hint.textContent = copy.hint;
+
+    // Loading screens — title, sub, tip
+    var ids = [
+      ['vtl-s1-title', 'vtl-s1-sub', 'vtl-tip-text-1'],
+      [null, null, 'vtl-tip-text-2'],
+      [null, null, 'vtl-tip-text-3'],
+      [null, null, null]
+    ];
+    copy.loading.forEach(function(stage, i) {
+      if (ids[i][0]) { var el = document.getElementById(ids[i][0]); if (el) el.textContent = stage.title; }
+      if (ids[i][1]) { var el2 = document.getElementById(ids[i][1]); if (el2) el2.textContent = stage.sub; }
+      if (ids[i][2]) { var el3 = document.getElementById(ids[i][2]); if (el3) el3.textContent = stage.tip; }
+    });
+
+    // Checklist rows
+    var rows = ['vtl-cr1', 'vtl-cr2', 'vtl-cr3', 'vtl-cr4'];
+    copy.checklist.forEach(function(item, i) {
+      var row = document.getElementById(rows[i]);
+      if (row) {
+        var lbl = row.querySelector('.vtl-cr-label');
+        var desc = row.querySelector('.vtl-cr-desc');
+        if (lbl) lbl.textContent = item.label;
+        if (desc) desc.textContent = item.desc;
+      }
+    });
+  }
+
   // ─── Fetch settings + shop categories from backend ──────
   async function fetchAndApplySettings() {
     var shopDomain = {{ sbb_shop_domain | json }} || window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
@@ -818,6 +967,10 @@ function updateCategoryUploadTip() {
         if (sbbShopCategories.length > 0 && window.SBB_PROMPTS) {
           var fc = window.SBB_PROMPTS.PROMPT_CONFIG[sbbShopCategories[0]];
           if (fc && fc.label) { var cl = document.getElementById('vtl-product-cat-label'); if(cl) cl.textContent = fc.label; }
+        }
+        // Apply category-specific copy to all UI elements
+        if (sbbShopCategories.length > 0) {
+          applyCategoryCopy(sbbShopCategories[0]);
         }
       }
     } catch(err) {
