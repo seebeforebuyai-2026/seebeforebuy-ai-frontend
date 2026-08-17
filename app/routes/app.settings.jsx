@@ -8,7 +8,7 @@ export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const shopDomain = session.shop;
 
-  console.log('âš™ï¸  Settings page loaded for:', shopDomain);
+  console.log(' Settings page loaded for:', shopDomain);
 
   // Fetch current settings from backend
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
@@ -24,7 +24,7 @@ export const loader = async ({ request }) => {
       settings: data.settings || null,
     };
   } catch (error) {
-    console.error('âŒ Error fetching settings:', error);
+    console.error('❌ Error fetching settings:', error);
     return {
       shop: {
         domain: shopDomain,
@@ -43,7 +43,7 @@ export const action = async ({ request }) => {
     const shopDomain = session.shop;
     const settings = JSON.parse(formData.get('settings'));
 
-    console.log('ðŸ’¾ Saving settings...');
+    console.log('💾 Saving settings...');
     console.log('   Shop:', shopDomain);
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
@@ -60,20 +60,20 @@ export const action = async ({ request }) => {
       const data = await response.json();
 
       if (data.success) {
-        console.log('âœ… Settings saved successfully!');
+        console.log('✅ Settings saved successfully!');
         return {
           success: true,
           message: 'Settings saved successfully!',
         };
       } else {
-        console.error('âŒ Failed to save settings:', data.error);
+        console.error('❌ Failed to save settings:', data.error);
         return {
           success: false,
           error: data.error || 'Failed to save settings',
         };
       }
     } catch (error) {
-      console.error('âŒ Error saving settings:', error);
+      console.error('❌ Error saving settings:', error);
       return {
         success: false,
         error: error.message,
@@ -93,7 +93,7 @@ export default function Settings() {
   const defaultSettings = {
     button: {
       text: "See Before You Buy",
-      bg_color: "#329580",
+      bg_color: "#008060",
       text_color: "#FFFFFF",
       border_radius: 8,
       size: "medium"
@@ -105,16 +105,16 @@ export default function Settings() {
       bg_color: "#FFFFFF",
       text_color: "#000000",
       border_radius: 12,
-      header_bg_color: "#329580",
+      header_bg_color: "#008060",
       upload_area_bg_color: "#F6F6F7",
-      upload_btn_bg_color: "#329580",
+      upload_btn_bg_color: "#008060",
       upload_btn_text_color: "#FFFFFF",
-      generate_btn_bg_color: "#329580",
+      generate_btn_bg_color: "#008060",
       generate_btn_text_color: "#FFFFFF"
     },
     add_to_cart_button: {
       text: "Add to Cart",
-      bg_color: "#2a7f6d",
+      bg_color: "#111827",
       text_color: "#FFFFFF",
       border_radius: 8,
       size: "medium"
@@ -122,17 +122,20 @@ export default function Settings() {
     entry_popup: {
       enabled: true,
       delay_seconds: 5,
-      bg_color: "#0D2B1E",
+      bg_color: "#0D1F18",
       heading_text: "See yourself in it before you buy",
-      sub_text: "Upload your photo. Our AI shows you wearing this exact product in seconds. Free \u2014 no sign-up needed.",
-      cta_text: "Try it on now \u2192",
-      cta_bg_color: "#111111",
+      sub_text: "Upload your photo. Our AI shows you wearing this exact product in seconds. Free — no sign-up needed.",
+      cta_text: "Try it on now →",
+      cta_bg_color: "#008060",
       cta_text_color: "#FFFFFF",
       dismiss_text: "Maybe later",
     }
   };
 
-  const [activeTab, setActiveTab] = useState('button');
+  const [activeTab, setActiveTab] = useState('button'); // 'button' | 'popup' | 'entry_popup'
+  const [subTab, setSubTab] = useState('colors'); // 'colors' | 'style' | 'copy'
+  const [viewFilter, setViewFilter] = useState('all'); // 'all' | 'flow' | 'popup'
+
   const [settings, setSettings] = useState(() => {
     const loadedSettings = loaderData.settings || {};
     return {
@@ -157,10 +160,7 @@ export default function Settings() {
   const updateButtonSetting = (key, value) => {
     setSettings(prev => ({
       ...prev,
-      button: {
-        ...prev.button,
-        [key]: value
-      }
+      button: { ...prev.button, [key]: value }
     }));
   };
 
@@ -168,10 +168,7 @@ export default function Settings() {
   const updatePopupSetting = (key, value) => {
     setSettings(prev => ({
       ...prev,
-      popup: {
-        ...prev.popup,
-        [key]: value
-      }
+      popup: { ...prev.popup, [key]: value }
     }));
   };
 
@@ -179,10 +176,7 @@ export default function Settings() {
   const updateAddToCartButtonSetting = (key, value) => {
     setSettings(prev => ({
       ...prev,
-      add_to_cart_button: {
-        ...prev.add_to_cart_button,
-        [key]: value
-      }
+      add_to_cart_button: { ...prev.add_to_cart_button, [key]: value }
     }));
   };
 
@@ -190,10 +184,7 @@ export default function Settings() {
   const updateEntryPopupSetting = (key, value) => {
     setSettings(prev => ({
       ...prev,
-      entry_popup: {
-        ...prev.entry_popup,
-        [key]: value
-      }
+      entry_popup: { ...prev.entry_popup, [key]: value }
     }));
   };
 
@@ -215,375 +206,746 @@ export default function Settings() {
     }
   };
 
-  const ColorCtrl = ({ label, value, onChange }) => (
-    <div className={styles.ctrlRow}>
-      <div>
-        <div className={styles.ctrlLabel}>{label}</div>
-      </div>
-      <div className={styles.swatchWrap}>
-        <div className={styles.swatch} style={{ background: value }}>
-          <input type="color" value={value} onChange={e => onChange(e.target.value)} />
-        </div>
-        <input className={styles.hexInput} value={value}
-          onChange={e => onChange(e.target.value)} maxLength={7} />
-      </div>
-    </div>
-  );
+  // Quick theme application
+  const applyTheme = (themeName) => {
+    const themes = {
+      teal: { primary: '#008060', header: '#0d1f18' },
+      minimal: { primary: '#111827', header: '#0a0a0a' },
+      rose: { primary: '#e11d48', header: '#1f080e' },
+      violet: { primary: '#7c3aed', header: '#120a1f' },
+      amber: { primary: '#d97706', header: '#1f1208' },
+      navy: { primary: '#1e3a5f', header: '#081018' },
+    };
+    const t = themes[themeName];
+    if (!t) return;
 
-  const TextCtrl = ({ label, value, onChange, placeholder }) => (
-    <div className={styles.ctrlSection}>
-      <div className={styles.ctrlSectionTitle}>{label}</div>
-      <input className={styles.textInput} value={value}
-        onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+    setSettings(prev => ({
+      ...prev,
+      button: { ...prev.button, bg_color: t.primary },
+      popup: { 
+        ...prev.popup, 
+        header_bg_color: t.primary,
+        upload_btn_bg_color: t.primary,
+        generate_btn_bg_color: t.primary 
+      },
+      entry_popup: { 
+        ...prev.entry_popup, 
+        bg_color: t.header,
+        cta_bg_color: t.primary 
+      }
+    }));
+  };
+
+  const ColorCtrl = ({ label, sub, value, onChange, presets = [] }) => (
+    <div className={styles.ctrlRowWrap}>
+      <div className={styles.ctrlRow}>
+        <div>
+          <div className={styles.ctrlLabel}>{label}</div>
+          {sub && <div className={styles.ctrlSub}>{sub}</div>}
+        </div>
+        <div className={styles.swatchWrap}>
+          <div className={styles.swatch} style={{ background: value }}>
+            <input type="color" value={value} onChange={e => onChange(e.target.value)} />
+          </div>
+          <input 
+            className={styles.hexInput} 
+            value={value}
+            onChange={e => onChange(e.target.value)} 
+            maxLength={7} 
+          />
+        </div>
+      </div>
+      {presets.length > 0 && (
+        <div className={styles.presets}>
+          {presets.map((hex, idx) => (
+            <div 
+              key={idx} 
+              className={styles.presetDot} 
+              style={{ background: hex }} 
+              onClick={() => onChange(hex)} 
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 
   const s = settings;
 
+  const currentTabSubtitles = {
+    button: 'Try The Look Button',
+    popup: 'Upload & Result Screen',
+    entry_popup: 'Entry Teaser Popup'
+  };
+
   return (
-    <s-page heading="Brand Customizer">
-      <div className={styles.settingsRoot}>
-
-        <div className={styles.sidebar}>
-          <div className={styles.sidebarHead}>
-            <div className={styles.sidebarHeadTitle}>See Before Buy AI</div>
-            <div className={styles.sidebarHeadSub}>Customize your store experience</div>
-          </div>
-
-          {/* Feature tabs */}
-          <div className={styles.featureTabs}>
-            {[
-              { id: 'button', icon: '🖱', title: 'Try The Look Button', sub: 'Product page trigger' },
-              { id: 'popup', icon: '🖱', title: 'Popup Modal', sub: 'Upload & generate screen' },
-              { id: 'entry_popup', icon: '✨', title: 'Entry Popup', sub: 'First-visit teaser' },
-            ].map(ft => (
-              <button key={ft.id}
-                className={`${styles.featureTab} ${activeTab === ft.id ? styles.featureTabActive : ''}`}
-                onClick={() => setActiveTab(ft.id)}
-              >
-                <div className={styles.featureTabIcon}>{ft.icon}</div>
-                <div>
-                  <div className={styles.featureTabTitle}>{ft.title}</div>
-                  <div className={styles.featureTabSub}>{ft.sub}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.sidebarDivider} />
-
-          {/* Controls */}
-          <div className={styles.controlsPanel}>
-
-            {activeTab === 'button' && <>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Colors</div>
-                <ColorCtrl label="Button background" value={s.button.bg_color} onChange={v => updateButtonSetting('bg_color', v)} />
-                <ColorCtrl label="Button text color" value={s.button.text_color} onChange={v => updateButtonSetting('text_color', v)} />
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Style</div>
-                <div className={styles.ctrlRow}>
-                  <div className={styles.ctrlLabel}>Border radius: {s.button.border_radius}px</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input type="range" className={styles.radiusSlider} min={0} max={28} value={s.button.border_radius}
-                      onChange={e => updateButtonSetting('border_radius', parseInt(e.target.value))} />
-                    <span className={styles.radiusVal}>{s.button.border_radius}</span>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Text</div>
-                <input className={styles.textInput} value={s.button.text}
-                  onChange={e => updateButtonSetting('text', e.target.value)} placeholder="Try The Look" />
-              </div>
-              <div className={styles.sidebarDivider} />
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Add to Cart Button</div>
-                <ColorCtrl label="Background" value={s.add_to_cart_button.bg_color} onChange={v => updateAddToCartButtonSetting('bg_color', v)} />
-                <ColorCtrl label="Text color" value={s.add_to_cart_button.text_color} onChange={v => updateAddToCartButtonSetting('text_color', v)} />
-                <div style={{ marginTop: 8 }}>
-                  <input className={styles.textInput} value={s.add_to_cart_button.text}
-                    onChange={e => updateAddToCartButtonSetting('text', e.target.value)} placeholder="Add to Cart" />
-                </div>
-              </div>
-            </>}
-
-            {/* â”€â”€ POPUP TAB â”€â”€ */}
-            {activeTab === 'popup' && <>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Header Colors</div>
-                <ColorCtrl label="Header background" value={s.popup.header_bg_color} onChange={v => updatePopupSetting('header_bg_color', v)} />
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Upload Button</div>
-                <ColorCtrl label="Background" value={s.popup.upload_btn_bg_color} onChange={v => updatePopupSetting('upload_btn_bg_color', v)} />
-                <ColorCtrl label="Text color" value={s.popup.upload_btn_text_color} onChange={v => updatePopupSetting('upload_btn_text_color', v)} />
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Generate Button</div>
-                <ColorCtrl label="Background" value={s.popup.generate_btn_bg_color} onChange={v => updatePopupSetting('generate_btn_bg_color', v)} />
-                <ColorCtrl label="Text color" value={s.popup.generate_btn_text_color} onChange={v => updatePopupSetting('generate_btn_text_color', v)} />
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Text</div>
-                <div style={{ marginBottom: 8 }}>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Popup title</div>
-                  <input className={styles.textInput} value={s.popup.title}
-                    onChange={e => updatePopupSetting('title', e.target.value)} />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Upload button text</div>
-                  <input className={styles.textInput} value={s.popup.upload_button_text}
-                    onChange={e => updatePopupSetting('upload_button_text', e.target.value)} />
-                </div>
-                <div>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Generate button text</div>
-                  <input className={styles.textInput} value={s.popup.generate_button_text}
-                    onChange={e => updatePopupSetting('generate_button_text', e.target.value)} />
-                </div>
-              </div>
-            </>}
-
-            {/* â”€â”€ ENTRY POPUP TAB â”€â”€ */}
-            {activeTab === 'entry_popup' && <>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Visibility</div>
-                <div className={styles.ctrlRow}>
-                  <div className={styles.ctrlLabel}>Show entry popup</div>
-                  <button className={`${styles.toggle} ${s.entry_popup.enabled ? styles.toggleOn : ''}`}
-                    onClick={() => updateEntryPopupSetting('enabled', !s.entry_popup.enabled)} />
-                </div>
-                <div className={styles.ctrlRow}>
-                  <div><div className={styles.ctrlLabel}>Delay</div></div>
-                  <select className={styles.selectInput} value={s.entry_popup.delay_seconds}
-                    onChange={e => updateEntryPopupSetting('delay_seconds', parseInt(e.target.value))}>
-                    {[2,3,4,5,7,10,15,20,30].map(d => <option key={d} value={d}>{d}s</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Colors</div>
-                <ColorCtrl label="Dark section background" value={s.entry_popup.bg_color} onChange={v => updateEntryPopupSetting('bg_color', v)} />
-                <ColorCtrl label="CTA button" value={s.entry_popup.cta_bg_color} onChange={v => updateEntryPopupSetting('cta_bg_color', v)} />
-                <ColorCtrl label="CTA text" value={s.entry_popup.cta_text_color} onChange={v => updateEntryPopupSetting('cta_text_color', v)} />
-              </div>
-              <div className={styles.ctrlSection}>
-                <div className={styles.ctrlSectionTitle}>Text</div>
-                <div style={{ marginBottom: 8 }}>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Heading</div>
-                  <input className={styles.textInput} value={s.entry_popup.heading_text}
-                    onChange={e => updateEntryPopupSetting('heading_text', e.target.value)} />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Sub text</div>
-                  <input className={styles.textInput} value={s.entry_popup.sub_text}
-                    onChange={e => updateEntryPopupSetting('sub_text', e.target.value)} />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>CTA button text</div>
-                  <input className={styles.textInput} value={s.entry_popup.cta_text}
-                    onChange={e => updateEntryPopupSetting('cta_text', e.target.value)} />
-                </div>
-                <div>
-                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Dismiss text</div>
-                  <input className={styles.textInput} value={s.entry_popup.dismiss_text}
-                    onChange={e => updateEntryPopupSetting('dismiss_text', e.target.value)} />
-                </div>
-              </div>
-            </>}
-          </div>
-
-          {/* â”€â”€ Save button â”€â”€ */}
-          <div className={styles.saveWrap}>
-            <button className={styles.saveBtn} onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'â³ Saving...' : 'ðŸ’¾ Save Changes'}
-            </button>
-            <button className={styles.resetLink} onClick={handleReset}>Reset to defaults</button>
+    <div className={styles.appContainer}>
+      {/* ════════════════════════════
+           SIDEBAR
+      ════════════════════════════ */}
+      <div className={styles.sidebar}>
+        <div className={styles.sbHead}>
+          <div className={styles.sbHeadIcon}>SBB</div>
+          <div className={styles.sbHeadText}>
+            <div className={styles.sbTitle}>Brand Customizer</div>
+            <div className={styles.sbSub}>See Before Buy AI</div>
           </div>
         </div>
 
-        {/* â”€â”€ MAIN PREVIEW AREA â”€â”€ */}
-        <div className={styles.mainArea}>
-
-          {/* â”€â”€ Try The Look Button preview â”€â”€ */}
-          <div>
-            <div className={styles.sectionLabel}>
-              <div className={styles.sectionLabelBadge}>ðŸ”˜ Try The Look Button</div>
-              <div className={styles.sectionLabelLine} />
+        {/* TOP-LEVEL FEATURE TABS */}
+        <div className={styles.featureTabs}>
+          <div className={styles.groupLabel}>Try The Look Flow</div>
+          <button 
+            className={`${styles.ftBtn} ${activeTab === 'button' ? styles.ftBtnActive : ''}`}
+            onClick={() => setActiveTab('button')}
+          >
+            <div className={styles.ftIcon}>🖱</div>
+            <div className={styles.ftLabel}>
+              <div className={styles.ftTitle}>Try The Look Button</div>
+              <div className={styles.ftSub}>Product page trigger</div>
             </div>
-            <div className={styles.previewRow}>
-              {/* Product page simulation */}
-              <div className={styles.previewPanel}>
-                <div className={styles.panelHead}>
-                  <span className={styles.panelTitle}>Product page</span>
-                  <span className={styles.panelBadge}>LIVE PREVIEW</span>
-                </div>
-                <div className={styles.panelBody}>
-                  <div className={styles.fakePage}>
-                    <div className={styles.fakePageImg}>ðŸ‘—</div>
-                    <div className={styles.fakePageName}>Sample Product</div>
-                    <div className={styles.fakePagePrice}>â‚¹2,499</div>
-                    <button className={styles.fakePageAtc}>Add to Cart</button>
-                    <button className={styles.brandBtn} style={{
-                      background: s.button.bg_color,
-                      color: s.button.text_color,
-                      borderRadius: `${s.button.border_radius}px`,
-                    }}>
-                      âœ¦ {s.button.text || 'Try The Look'}
-                    </button>
+          </button>
+
+          <button 
+            className={`${styles.ftBtn} ${activeTab === 'popup' ? styles.ftBtnActive : ''}`}
+            onClick={() => setActiveTab('popup')}
+          >
+            <div className={styles.ftIcon}>📸</div>
+            <div className={styles.ftLabel}>
+              <div className={styles.ftTitle}>Popup Modal</div>
+              <div className={styles.ftSub}>Upload & preview screen</div>
+            </div>
+          </button>
+
+          <div className={styles.ftDivider} />
+
+          <div className={styles.groupLabel}>Entry Teaser</div>
+          <button 
+            className={`${styles.ftBtn} ${activeTab === 'entry_popup' ? styles.ftBtnActive : ''}`}
+            onClick={() => setActiveTab('entry_popup')}
+          >
+            <div className={styles.ftIcon}>🔔</div>
+            <div className={styles.ftLabel}>
+              <div className={styles.ftTitle}>Entry Popup</div>
+              <div className={styles.ftSub}>First-visit prompt</div>
+            </div>
+          </button>
+        </div>
+
+        {/* SECOND-LEVEL SUB TABS */}
+        <div className={styles.subTabs}>
+          <button 
+            className={`${styles.stBtn} ${subTab === 'colors' ? styles.stBtnActive : ''}`}
+            onClick={() => setSubTab('colors')}
+          >Colors</button>
+          <button 
+            className={`${styles.stBtn} ${subTab === 'style' ? styles.stBtnActive : ''}`}
+            onClick={() => setSubTab('style')}
+          >Style</button>
+          <button 
+            className={`${styles.stBtn} ${subTab === 'copy' ? styles.stBtnActive : ''}`}
+            onClick={() => setSubTab('copy')}
+          >Copy</button>
+        </div>
+
+        {/* CONTROLS AREA */}
+        <div className={styles.controlsArea}>
+
+          {/* ════ COLORS SUB-TAB ════ */}
+          {subTab === 'colors' && (
+            <>
+              <div className={styles.ctrlSection}>
+                <div className={styles.csTitle}>Quick Themes</div>
+                <div className={styles.themeGrid}>
+                  <div className={styles.themeCard} onClick={() => applyTheme('teal')}>
+                    <div className={styles.themeSwatch} style={{ background: '#008060' }} />
+                    <span className={styles.themeName}>Default</span>
+                  </div>
+                  <div className={styles.themeCard} onClick={() => applyTheme('minimal')}>
+                    <div className={styles.themeSwatch} style={{ background: '#111827' }} />
+                    <span className={styles.themeName}>Minimal</span>
+                  </div>
+                  <div className={styles.themeCard} onClick={() => applyTheme('rose')}>
+                    <div className={styles.themeSwatch} style={{ background: '#e11d48' }} />
+                    <span className={styles.themeName}>Rose</span>
+                  </div>
+                  <div className={styles.themeCard} onClick={() => applyTheme('violet')}>
+                    <div className={styles.themeSwatch} style={{ background: '#7c3aed' }} />
+                    <span className={styles.themeName}>Violet</span>
+                  </div>
+                  <div className={styles.themeCard} onClick={() => applyTheme('amber')}>
+                    <div className={styles.themeSwatch} style={{ background: '#d97706' }} />
+                    <span className={styles.themeName}>Amber</span>
+                  </div>
+                  <div className={styles.themeCard} onClick={() => applyTheme('navy')}>
+                    <div className={styles.themeSwatch} style={{ background: '#1e3a5f' }} />
+                    <span className={styles.themeName}>Navy</span>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* â”€â”€ Popup preview â”€â”€ */}
-          <div>
-            <div className={styles.sectionLabel}>
-              <div className={styles.sectionLabelBadge}>ðŸªŸ Popup Modal</div>
-              <div className={styles.sectionLabelLine} />
-            </div>
-            <div className={styles.previewRow}>
-              {/* Upload screen */}
-              <div className={styles.previewPanel}>
-                <div className={styles.panelHead}>
-                  <span className={styles.panelTitle}>Upload screen</span>
-                  <span className={styles.panelBadge}>Screen 1</span>
-                </div>
-                <div className={styles.panelBody}>
-                  <div className={styles.uploadModal}>
-                    <div className={styles.umTop}>
-                      <div>
-                        <div className={styles.umTitle}>{s.popup.title || 'Try The Look'}</div>
-                        <div className={styles.umSub}>See how it looks on you</div>
-                      </div>
-                      <button className={styles.umClose}>Ã—</button>
-                    </div>
-                    <div className={styles.umBody}>
-                      <div className={styles.umAiBadge} style={{
-                        background: `${s.popup.header_bg_color}1a`,
-                        border: `1px solid ${s.popup.header_bg_color}33`,
-                        color: s.popup.header_bg_color,
-                      }}>âœ¦ AI Preview</div>
-                      <div className={styles.umMain}>See it on you in seconds</div>
-                      <div className={styles.umTip}>Upload a clear photo and our AI creates a live preview.</div>
-                      <button className={styles.umUploadBtn} style={{
-                        background: s.popup.upload_btn_bg_color,
-                        color: s.popup.upload_btn_text_color,
-                        borderRadius: `${s.button.border_radius}px`,
-                      }}>â¬† {s.popup.upload_button_text || 'Choose Your Photo'}</button>
-                      <div className={styles.umTipsGrid}>
-                        {['Full body','Good lighting','Stand straight','Face camera'].map(t => (
-                          <div key={t} className={styles.umChip}>{t}</div>
-                        ))}
-                      </div>
-                    </div>
+              {activeTab === 'button' && (
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Main Button Colors</div>
+                    <ColorCtrl 
+                      label="Background color" 
+                      sub="Primary CTA background"
+                      value={s.button.bg_color} 
+                      onChange={v => updateButtonSetting('bg_color', v)}
+                      presets={['#008060', '#111827', '#e11d48', '#7c3aed', '#d97706', '#0891b2']}
+                    />
+                    <ColorCtrl 
+                      label="Text color" 
+                      sub="Primary CTA text"
+                      value={s.button.text_color} 
+                      onChange={v => updateButtonSetting('text_color', v)}
+                      presets={['#FFFFFF', '#111111', '#F3F4F6']}
+                    />
                   </div>
-                </div>
-              </div>
 
-              {/* Checklist / result screen */}
-              <div className={styles.previewPanel}>
-                <div className={styles.panelHead}>
-                  <span className={styles.panelTitle}>Result screen</span>
-                  <span className={styles.panelBadge}>Screen 4</span>
-                </div>
-                <div className={styles.panelBody}>
-                  <div className={styles.checklistCard}>
-                    {[
-                      { label: 'Lighting matched', sub: 'Ambient light blended' },
-                      { label: 'Fabric texture applied', sub: 'Folds and weight rendered' },
-                      { label: 'Shadow depth set', sub: 'Natural shadows added' },
-                      { label: 'Face preserved', sub: 'Your identity unchanged' },
-                    ].map((item, i) => (
-                      <div key={i} className={styles.clItem} style={{
-                        background: `${s.popup.header_bg_color}0d`,
-                        borderColor: `${s.popup.header_bg_color}1a`,
-                      }}>
-                        <div className={styles.clCheck} style={{ background: s.popup.header_bg_color }}>âœ“</div>
-                        <div>
-                          <div className={styles.clLabel}>{item.label}</div>
-                          <div className={styles.clSub}>{item.sub}</div>
-                        </div>
-                        <div className={styles.clDone} style={{ color: s.popup.header_bg_color }}>done</div>
-                      </div>
-                    ))}
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Add To Cart Colors</div>
+                    <ColorCtrl 
+                      label="Background color" 
+                      value={s.add_to_cart_button.bg_color} 
+                      onChange={v => updateAddToCartButtonSetting('bg_color', v)}
+                    />
+                    <ColorCtrl 
+                      label="Text color" 
+                      value={s.add_to_cart_button.text_color} 
+                      onChange={v => updateAddToCartButtonSetting('text_color', v)}
+                    />
                   </div>
-                  <div style={{ marginTop: 10 }}>
-                    <button style={{
-                      width: '100%', background: s.add_to_cart_button.bg_color,
-                      color: s.add_to_cart_button.text_color, border: 'none',
-                      borderRadius: `${s.add_to_cart_button.border_radius}px`,
-                      padding: '11px', fontSize: 12, fontWeight: 700,
-                      cursor: 'pointer', fontFamily: 'inherit',
-                    }}>ðŸ›’ {s.add_to_cart_button.text || 'Add to Cart'}</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* â”€â”€ Entry popup preview â”€â”€ */}
-          <div>
-            <div className={styles.sectionLabel}>
-              <div className={styles.sectionLabelBadge}>âœ¨ Entry Popup</div>
-              <div className={styles.sectionLabelLine} />
-              {!s.entry_popup.enabled && (
-                <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 600 }}>DISABLED</span>
+                </>
               )}
-            </div>
-            <div className={styles.previewRow}>
-              <div className={styles.previewPanel}>
-                <div className={styles.panelHead}>
-                  <span className={styles.panelTitle}>Entry popup</span>
-                  <span className={styles.panelBadge}>After {s.entry_popup.delay_seconds}s Â· First visit only</span>
+
+              {activeTab === 'popup' && (
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Header & Accent</div>
+                    <ColorCtrl 
+                      label="Header background" 
+                      value={s.popup.header_bg_color} 
+                      onChange={v => updatePopupSetting('header_bg_color', v)}
+                      presets={['#008060', '#111827', '#7c3aed', '#1e3a5f']}
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Upload Button Colors</div>
+                    <ColorCtrl 
+                      label="Background" 
+                      value={s.popup.upload_btn_bg_color} 
+                      onChange={v => updatePopupSetting('upload_btn_bg_color', v)}
+                    />
+                    <ColorCtrl 
+                      label="Text color" 
+                      value={s.popup.upload_btn_text_color} 
+                      onChange={v => updatePopupSetting('upload_btn_text_color', v)}
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Generate Button Colors</div>
+                    <ColorCtrl 
+                      label="Background" 
+                      value={s.popup.generate_btn_bg_color} 
+                      onChange={v => updatePopupSetting('generate_btn_bg_color', v)}
+                    />
+                    <ColorCtrl 
+                      label="Text color" 
+                      value={s.popup.generate_btn_text_color} 
+                      onChange={v => updatePopupSetting('generate_btn_text_color', v)}
+                    />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'entry_popup' && (
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Entry Popup Dark Area</div>
+                    <ColorCtrl 
+                      label="Header dark background" 
+                      value={s.entry_popup.bg_color} 
+                      onChange={v => updateEntryPopupSetting('bg_color', v)}
+                      presets={['#0D1F18', '#0A0A0A', '#120A1F', '#081018']}
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>CTA Button Colors</div>
+                    <ColorCtrl 
+                      label="CTA button background" 
+                      value={s.entry_popup.cta_bg_color} 
+                      onChange={v => updateEntryPopupSetting('cta_bg_color', v)}
+                    />
+                    <ColorCtrl 
+                      label="CTA text color" 
+                      value={s.entry_popup.cta_text_color} 
+                      onChange={v => updateEntryPopupSetting('cta_text_color', v)}
+                    />
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {/* ════ STYLE SUB-TAB ════ */}
+          {subTab === 'style' && (
+            <>
+              {activeTab === 'button' && (
+                <div className={styles.ctrlSection}>
+                  <div className={styles.csTitle}>Button Corner Radius</div>
+                  <div className={styles.radiusRow}>
+                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>Square</span>
+                    <input 
+                      type="range" 
+                      className={styles.radiusSlider} 
+                      min={0} 
+                      max={28} 
+                      value={s.button.border_radius}
+                      onChange={e => updateButtonSetting('border_radius', parseInt(e.target.value))} 
+                    />
+                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>Round</span>
+                    <span className={styles.radiusVal}>{s.button.border_radius}px</span>
+                  </div>
+                  <div className={styles.radiusPresets}>
+                    <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 0)}>Square (0px)</button>
+                    <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 8)}>Soft (8px)</button>
+                    <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 28)}>Pill (28px)</button>
+                  </div>
                 </div>
-                <div className={styles.panelBody}>
-                  <div className={styles.entryPopupPreview}>
-                    {/* Dark top */}
-                    <div className={styles.epHeader} style={{ background: s.entry_popup.bg_color }}>
-                      <button className={styles.epClose}>Ã—</button>
-                      <div className={styles.epCards}>
-                        <div className={styles.epCardLeft}>ðŸ‘—</div>
-                        <div className={styles.epMerge} style={{ background: s.popup.header_bg_color }}>âœ¦</div>
-                        <div className={styles.epCardRight}>
-                          <div className={styles.epRightLabel}>your photo</div>
-                          <div className={styles.epCam} style={{ background: s.popup.header_bg_color }}>ðŸ“·</div>
-                        </div>
-                      </div>
-                      <div className={styles.epStrip} style={{
-                        background: `${s.popup.header_bg_color}18`,
-                        border: `1px solid ${s.popup.header_bg_color}28`,
-                      }}>
-                        <div className={styles.epStripThumb} />
-                        <div>
-                          <div className={styles.epStripTitle}>See yourself wearing it</div>
-                          <div className={styles.epStripSub}>Before you add to cart</div>
-                        </div>
-                        <div className={styles.epStripBadge} style={{ background: s.popup.header_bg_color }}>NEW âœ¦</div>
-                      </div>
-                      <div className={styles.epTrust}>Â· Results in under 30 seconds Â·</div>
+              )}
+
+              {activeTab === 'entry_popup' && (
+                <div className={styles.ctrlSection}>
+                  <div className={styles.csTitle}>Popup Settings</div>
+                  <div className={styles.ctrlRow}>
+                    <div>
+                      <div className={styles.ctrlLabel}>Enable Entry Popup</div>
+                      <div className={styles.ctrlSub}>Auto prompt on PDP</div>
                     </div>
-                    {/* White bottom */}
-                    <div className={styles.epBody}>
-                      <div className={styles.epTitle}>{s.entry_popup.heading_text}</div>
-                      <div className={styles.epDesc}>{s.entry_popup.sub_text}</div>
-                      <button className={styles.epCta} style={{
-                        background: s.entry_popup.cta_bg_color,
-                        color: s.entry_popup.cta_text_color,
+                    <button 
+                      className={`${styles.toggle} ${s.entry_popup.enabled ? styles.toggleOn : ''}`}
+                      onClick={() => updateEntryPopupSetting('enabled', !s.entry_popup.enabled)} 
+                    />
+                  </div>
+
+                  <div className={styles.ctrlRow} style={{ marginTop: 12 }}>
+                    <div>
+                      <div className={styles.ctrlLabel}>Auto-trigger Delay</div>
+                      <div className={styles.ctrlSub}>Show after seconds</div>
+                    </div>
+                    <select 
+                      className={styles.selInput}
+                      value={s.entry_popup.delay_seconds}
+                      onChange={e => updateEntryPopupSetting('delay_seconds', parseInt(e.target.value))}
+                    >
+                      {[2,3,4,5,7,10,15,20,30].map(d => (
+                        <option key={d} value={d}>{d} seconds</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {(activeTab === 'popup' || activeTab === 'button') && (
+                <div className={styles.ctrlSection}>
+                  <div className={styles.csTitle}>Add to Cart Corner Radius</div>
+                  <div className={styles.radiusRow}>
+                    <input 
+                      type="range" 
+                      className={styles.radiusSlider} 
+                      min={0} 
+                      max={28} 
+                      value={s.add_to_cart_button.border_radius}
+                      onChange={e => updateAddToCartButtonSetting('border_radius', parseInt(e.target.value))} 
+                    />
+                    <span className={styles.radiusVal}>{s.add_to_cart_button.border_radius}px</span>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ════ COPY SUB-TAB ════ */}
+          {subTab === 'copy' && (
+            <>
+              {activeTab === 'button' && (
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Try The Look Button Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.button.text}
+                      onChange={e => updateButtonSetting('text', e.target.value)} 
+                      placeholder="e.g. Try The Look"
+                    />
+                    <div className={styles.chips}>
+                      {['Try The Look', 'See Before You Buy', 'Virtual Try-On', 'See it on me'].map(text => (
+                        <span key={text} className={styles.chip} onClick={() => updateButtonSetting('text', text)}>
+                          {text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Add To Cart Button Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.add_to_cart_button.text}
+                      onChange={e => updateAddToCartButtonSetting('text', e.target.value)} 
+                      placeholder="e.g. Add to Cart"
+                    />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'popup' && (
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Popup Title</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.popup.title}
+                      onChange={e => updatePopupSetting('title', e.target.value)} 
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Upload Button Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.popup.upload_button_text}
+                      onChange={e => updatePopupSetting('upload_button_text', e.target.value)} 
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Generate Button Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.popup.generate_button_text}
+                      onChange={e => updatePopupSetting('generate_button_text', e.target.value)} 
+                    />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'entry_popup' && (
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Headline Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.entry_popup.heading_text}
+                      onChange={e => updateEntryPopupSetting('heading_text', e.target.value)} 
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Sub Text / Description</div>
+                    <textarea 
+                      className={styles.textAreaInput} 
+                      rows={3}
+                      value={s.entry_popup.sub_text}
+                      onChange={e => updateEntryPopupSetting('sub_text', e.target.value)} 
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>CTA Button Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.entry_popup.cta_text}
+                      onChange={e => updateEntryPopupSetting('cta_text', e.target.value)} 
+                    />
+                  </div>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Dismiss Text</div>
+                    <input 
+                      className={styles.textInput} 
+                      value={s.entry_popup.dismiss_text}
+                      onChange={e => updateEntryPopupSetting('dismiss_text', e.target.value)} 
+                    />
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+        </div>
+
+        {/* SAVE & RESET ACTIONS */}
+        <div className={styles.actionWrap}>
+          <button className={styles.saveBtn} onClick={handleSave} disabled={isSaving}>
+            {isSaving ? '⏳ Saving...' : '✓ Save & Publish'}
+          </button>
+          <div className={styles.resetLink} onClick={handleReset}>Reset to default settings</div>
+        </div>
+      </div>
+
+      {/* ════════════════════════════
+           MAIN PREVIEW AREA
+      ════════════════════════════ */}
+      <div className={styles.mainArea}>
+
+        {/* TOP BAR */}
+        <div className={styles.topBar}>
+          <div>
+            <div className={styles.tbTitle}>Live Preview</div>
+            <div className={styles.tbSub}>Customizing: {currentTabSubtitles[activeTab]}</div>
+          </div>
+          <div className={styles.tbRight}>
+            <div className={styles.viewTabs}>
+              <button 
+                className={`${styles.vtBtn} ${viewFilter === 'all' ? styles.vtBtnActive : ''}`}
+                onClick={() => setViewFilter('all')}
+              >All</button>
+              <button 
+                className={`${styles.vtBtn} ${viewFilter === 'flow' ? styles.vtBtnActive : ''}`}
+                onClick={() => setViewFilter('flow')}
+              >Try The Look Flow</button>
+              <button 
+                className={`${styles.vtBtn} ${viewFilter === 'popup' ? styles.vtBtnActive : ''}`}
+                onClick={() => setViewFilter('popup')}
+              >Entry Popup</button>
+            </div>
+            <div className={styles.liveBadge}>
+              <span className={styles.liveDot} />
+              Live Preview
+            </div>
+          </div>
+        </div>
+
+        {/* PREVIEWS CONTAINER */}
+        <div className={styles.previewContainer}>
+
+          {/* ── SECTION 1: TRY THE LOOK FLOW ── */}
+          {(viewFilter === 'all' || viewFilter === 'flow') && (
+            <div>
+              <div className={styles.sectionLabel}>
+                <div className={styles.slBadge}>🖱 Try The Look Flow</div>
+                <div className={styles.slLine} />
+                <div className={styles.slDesc}>Appears on the Product Detail Page</div>
+              </div>
+
+              <div className={styles.previewGrid}>
+
+                {/* PDP BUTTON CARD */}
+                <div className={styles.previewPanel}>
+                  <div className={styles.ppHead}>
+                    <span className={styles.ppTitle}>① Try The Look Button</span>
+                    <span className={styles.ppBadge}>Product Page</span>
+                  </div>
+                  <div className={styles.ppBody}>
+                    <div className={styles.fakePage}>
+                      <div className={styles.fpImgWrap}>
+                        <img 
+                          src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" 
+                          alt="Product preview" 
+                        />
+                      </div>
+                      <div className={styles.fpName}>Marshmellow Fluff Ringer Tee</div>
+                      <div className={styles.fpPrice}>Rs. 699.00</div>
+                      <button className={styles.fpAtc} style={{
+                        background: s.add_to_cart_button.bg_color,
+                        color: s.add_to_cart_button.text_color,
+                        borderRadius: `${s.add_to_cart_button.border_radius}px`,
+                      }}>
+                        {s.add_to_cart_button.text || 'Add to Cart'}
+                      </button>
+                      <button className={styles.brandBtn} style={{
+                        background: s.button.bg_color,
+                        color: s.button.text_color,
                         borderRadius: `${s.button.border_radius}px`,
-                      }}>{s.entry_popup.cta_text}</button>
-                      <button className={styles.epSkip}>{s.entry_popup.dismiss_text}</button>
+                      }}>
+                        📸 {s.button.text || 'See Before You Buy'}
+                      </button>
+                      <div className={styles.eduBanner} style={{
+                        background: `${s.button.bg_color}10`,
+                        borderColor: `${s.button.bg_color}30`
+                      }}>
+                        <div className={styles.ebIcon} style={{ background: s.button.bg_color }}>📸</div>
+                        <div>
+                          <div className={styles.ebTitle}>Not sure how this'll look on you?</div>
+                          <div className={styles.ebSub}>Upload photo → see yourself in 30 seconds</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* UPLOAD MODAL CARD */}
+                <div className={styles.previewPanel}>
+                  <div className={styles.ppHead}>
+                    <span className={styles.ppTitle}>② Upload Screen</span>
+                    <span className={styles.ppBadge}>Screen 1</span>
+                  </div>
+                  <div className={styles.ppBody}>
+                    <div className={styles.uploadModal}>
+                      <div className={styles.umTop}>
+                        <div>
+                          <div className={styles.umTitle}>{s.popup.title || 'Try The Look'}</div>
+                          <div className={styles.umSub}>See how it looks on you</div>
+                        </div>
+                        <button className={styles.umClose}>✕</button>
+                      </div>
+                      <div className={styles.umProductBar}>
+                        <div className={styles.umThumb}>
+                          <img src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" alt="" />
+                        </div>
+                        <div>
+                          <div className={styles.umPname}>Marshmellow Fluff Ringer Tee</div>
+                          <div className={styles.umCat} style={{ color: s.popup.header_bg_color }}>Casual Wear</div>
+                        </div>
+                      </div>
+                      <div className={styles.umBody}>
+                        <div className={styles.umAiBadge} style={{
+                          background: `${s.popup.header_bg_color}18`,
+                          borderColor: `${s.popup.header_bg_color}30`,
+                          color: s.popup.header_bg_color,
+                        }}>✦ AI PREVIEW</div>
+                        <div className={styles.umMain}>SEE IT ON YOU IN SECONDS</div>
+                        <div className={styles.umTip}>Upload a front-facing photo from the same angle as the product.</div>
+                        <button className={styles.umUploadBtn} style={{
+                          background: s.popup.upload_btn_bg_color,
+                          color: s.popup.upload_btn_text_color,
+                          borderRadius: `${s.button.border_radius}px`,
+                        }}>
+                          ↑ {s.popup.upload_button_text || 'Upload Your Photo'}
+                        </button>
+                        <div className={styles.umTipsGrid}>
+                          <div className={styles.umChip}><span>📏</span>Full body</div>
+                          <div className={styles.umChip}><span>☀️</span>Good lighting</div>
+                          <div className={styles.umChip}><span>👁</span>Face camera</div>
+                          <div className={styles.umChip}><span>📐</span>Stand straight</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RESULT CHECKLIST CARD */}
+                <div className={styles.previewPanel}>
+                  <div className={styles.ppHead}>
+                    <span className={styles.ppTitle}>③ Result Screen</span>
+                    <span className={styles.ppBadge}>Screen 2</span>
+                  </div>
+                  <div className={styles.ppBody}>
+                    <div className={styles.checklistCard}>
+                      <div className={styles.lcTop}>
+                        <div className={styles.lcTitle}>{s.popup.title}</div>
+                        <div className={styles.lcSub} style={{ color: s.popup.header_bg_color }}>Finalizing quality...</div>
+                      </div>
+                      {[
+                        { title: 'Fabric texture applied', sub: 'Folds and weight rendered' },
+                        { title: 'Print reproduced', sub: 'Graphic placed accurately' },
+                        { title: 'Lighting matched', sub: 'Ambient light blended' },
+                        { title: 'Face preserved', sub: 'Confirming face is unchanged' },
+                      ].map((item, idx) => (
+                        <div key={idx} className={styles.clItem} style={{
+                          background: `${s.popup.header_bg_color}0d`,
+                          borderColor: `${s.popup.header_bg_color}1a`
+                        }}>
+                          <div className={styles.clCheck} style={{ background: s.popup.header_bg_color }}>✓</div>
+                          <div>
+                            <div className={styles.clT}>{item.title}</div>
+                            <div className={styles.clS}>{item.sub}</div>
+                          </div>
+                          <div className={styles.clDone} style={{ color: s.popup.header_bg_color }}>done</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ marginTop: 12 }}>
+                      <button style={{
+                        width: '100%',
+                        background: s.popup.generate_btn_bg_color,
+                        color: s.popup.generate_btn_text_color,
+                        border: 'none',
+                        borderRadius: `${s.button.border_radius}px`,
+                        padding: '12px',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}>
+                        {s.popup.generate_button_text || 'Generate Preview'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ── SECTION 2: ENTRY POPUP ── */}
+          {(viewFilter === 'all' || viewFilter === 'popup') && (
+            <div style={{ marginTop: 24 }}>
+              <div className={styles.sectionLabel}>
+                <div className={styles.slBadge}>🔔 Entry Popup</div>
+                <div className={styles.slLine} />
+                <div className={styles.slDesc}>
+                  Auto-appears after {s.entry_popup.delay_seconds}s on initial visit
+                  {!s.entry_popup.enabled && <span className={styles.disabledBadge}> (DISABLED)</span>}
+                </div>
+              </div>
+
+              <div className={styles.previewGrid}>
+                <div className={styles.previewPanel} style={{ maxWidth: 320 }}>
+                  <div className={styles.ppHead}>
+                    <span className={styles.ppTitle}>④ Entry Teaser Popup</span>
+                    <span className={styles.ppBadge}>Auto Trigger</span>
+                  </div>
+                  <div className={styles.ppBody}>
+                    <div className={styles.entryPopupCard}>
+                      <div className={styles.epHeader} style={{ background: s.entry_popup.bg_color }}>
+                        <button className={styles.epClose}>✕</button>
+                        <div className={styles.epCards}>
+                          <div className={styles.epCardProduct}>
+                            <img src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" alt="" />
+                          </div>
+                          <div className={styles.epMerge} style={{ background: s.button.bg_color }}>✦</div>
+                          <div className={styles.epCardRight}>
+                            <div className={styles.epRightInner}>
+                              <div className={styles.epCam} style={{ background: s.button.bg_color }}>📸</div>
+                              <div className={styles.epRightLabel}>your photo</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles.epStrip} style={{
+                          background: `${s.button.bg_color}20`,
+                          borderColor: `${s.button.bg_color}40`,
+                        }}>
+                          <div className={styles.epStripThumb}>
+                            <img src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" alt="" />
+                          </div>
+                          <div>
+                            <div className={styles.epStripTitle}>See yourself wearing it</div>
+                            <div className={styles.epStripSub}>Before you add to cart</div>
+                          </div>
+                          <div className={styles.epStripBadge} style={{ background: s.button.bg_color }}>NEW ✦</div>
+                        </div>
+                        <div className={styles.epTrust}>Results ready in under 30 seconds</div>
+                      </div>
+
+                      <div className={styles.epBody}>
+                        <div className={styles.epTitle}>{s.entry_popup.heading_text}</div>
+                        <div className={styles.epDesc}>{s.entry_popup.sub_text}</div>
+                        <button className={styles.epCta} style={{
+                          background: s.entry_popup.cta_bg_color,
+                          color: s.entry_popup.cta_text_color,
+                          borderRadius: `${s.button.border_radius}px`,
+                        }}>
+                          {s.entry_popup.cta_text}
+                        </button>
+                        <button className={styles.epSkip}>{s.entry_popup.dismiss_text}</button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
-    </s-page>
+    </div>
   );
 }
