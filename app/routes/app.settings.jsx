@@ -2,7 +2,7 @@
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
-import styles from "./app.settings/setting.module.css";
+import styles from "./app.settings/settings.module.css";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -309,6 +309,7 @@ export default function Settings() {
               </div>
             </>}
 
+            {/* â”€â”€ POPUP TAB â”€â”€ */}
             {activeTab === 'popup' && <>
               <div className={styles.ctrlSection}>
                 <div className={styles.ctrlSectionTitle}>Header Colors</div>
