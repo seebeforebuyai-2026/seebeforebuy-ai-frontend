@@ -4,6 +4,7 @@
   min-height: calc(100vh - 60px);
   font-family: 'Poppins', -apple-system, sans-serif;
   background: #f0f2f5;
+  width:100%;
 }
 
 /* ══ SIDEBAR ══ */

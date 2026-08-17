@@ -2,7 +2,7 @@
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
-import styles from "./app.settings/settings.module.css";
+import styles from "./app.settings/setting.module.css";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -215,7 +215,6 @@ export default function Settings() {
     }
   };
 
-  // â”€â”€ Shared color control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const ColorCtrl = ({ label, value, onChange }) => (
     <div className={styles.ctrlRow}>
       <div>
@@ -231,7 +230,6 @@ export default function Settings() {
     </div>
   );
 
-  // â”€â”€ Shared text control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const TextCtrl = ({ label, value, onChange, placeholder }) => (
     <div className={styles.ctrlSection}>
       <div className={styles.ctrlSectionTitle}>{label}</div>
@@ -246,7 +244,6 @@ export default function Settings() {
     <s-page heading="Brand Customizer">
       <div className={styles.settingsRoot}>
 
-        {/* â”€â”€ SIDEBAR â”€â”€ */}
         <div className={styles.sidebar}>
           <div className={styles.sidebarHead}>
             <div className={styles.sidebarHeadTitle}>See Before Buy AI</div>
@@ -256,9 +253,9 @@ export default function Settings() {
           {/* Feature tabs */}
           <div className={styles.featureTabs}>
             {[
-              { id: 'button', icon: 'ðŸ”˜', title: 'Try The Look Button', sub: 'Product page trigger' },
-              { id: 'popup', icon: 'ðŸªŸ', title: 'Popup Modal', sub: 'Upload & generate screen' },
-              { id: 'entry_popup', icon: 'âœ¨', title: 'Entry Popup', sub: 'First-visit teaser' },
+              { id: 'button', icon: '🖱', title: 'Try The Look Button', sub: 'Product page trigger' },
+              { id: 'popup', icon: '🖱', title: 'Popup Modal', sub: 'Upload & generate screen' },
+              { id: 'entry_popup', icon: '✨', title: 'Entry Popup', sub: 'First-visit teaser' },
             ].map(ft => (
               <button key={ft.id}
                 className={`${styles.featureTab} ${activeTab === ft.id ? styles.featureTabActive : ''}`}
@@ -278,7 +275,6 @@ export default function Settings() {
           {/* Controls */}
           <div className={styles.controlsPanel}>
 
-            {/* â”€â”€ BUTTON TAB â”€â”€ */}
             {activeTab === 'button' && <>
               <div className={styles.ctrlSection}>
                 <div className={styles.ctrlSectionTitle}>Colors</div>
@@ -313,7 +309,6 @@ export default function Settings() {
               </div>
             </>}
 
-            {/* â”€â”€ POPUP TAB â”€â”€ */}
             {activeTab === 'popup' && <>
               <div className={styles.ctrlSection}>
                 <div className={styles.ctrlSectionTitle}>Header Colors</div>
