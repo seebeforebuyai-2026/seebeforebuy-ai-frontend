@@ -664,6 +664,8 @@ function updateCategoryUploadTip() {
   // ─── Add to cart ─────────────────────────────────────────
   async function addToCart() {
     var variantId = {{ default_variant.id | json }};
+    var productTitle = {{ current_product.title | json }};
+    var shopDomain = {{ sbb_shop_domain | json }} || window.Shopify?.shop || '';
     var btn = document.getElementById('vtl-add-to-cart-btn');
     if (!variantId || !btn) return;
     var orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Adding...';
@@ -675,6 +677,20 @@ function updateCategoryUploadTip() {
       if (r.ok) {
         btn.innerHTML = '\u2713 Added to Cart!'; btn.style.background = '#059669';
         document.dispatchEvent(new CustomEvent('cart:updated',{bubbles:true}));
+
+        // ── Track add_to_cart event in our backend ──────────
+        if (shopDomain) {
+          fetch('https://seebeforebuy.in/api/track-usage', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+              shop_domain: shopDomain,
+              event_type: 'add_to_cart',
+              product_name: productTitle,
+            }),
+          }).catch(function() {}); // fire-and-forget, don't block cart redirect
+        }
+
         setTimeout(function(){ window.location.href='/cart'; }, 1200);
       } else { throw new Error('Failed'); }
     } catch(err) {
