@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
@@ -8,7 +8,7 @@ export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const shopDomain = session.shop;
 
-  console.log('⚙️  Settings page loaded for:', shopDomain);
+  console.log('âš™ï¸  Settings page loaded for:', shopDomain);
 
   // Fetch current settings from backend
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
@@ -24,7 +24,7 @@ export const loader = async ({ request }) => {
       settings: data.settings || null,
     };
   } catch (error) {
-    console.error('❌ Error fetching settings:', error);
+    console.error('âŒ Error fetching settings:', error);
     return {
       shop: {
         domain: shopDomain,
@@ -43,7 +43,7 @@ export const action = async ({ request }) => {
     const shopDomain = session.shop;
     const settings = JSON.parse(formData.get('settings'));
 
-    console.log('💾 Saving settings...');
+    console.log('ðŸ’¾ Saving settings...');
     console.log('   Shop:', shopDomain);
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
@@ -60,20 +60,20 @@ export const action = async ({ request }) => {
       const data = await response.json();
 
       if (data.success) {
-        console.log('✅ Settings saved successfully!');
+        console.log('âœ… Settings saved successfully!');
         return {
           success: true,
           message: 'Settings saved successfully!',
         };
       } else {
-        console.error('❌ Failed to save settings:', data.error);
+        console.error('âŒ Failed to save settings:', data.error);
         return {
           success: false,
           error: data.error || 'Failed to save settings',
         };
       }
     } catch (error) {
-      console.error('❌ Error saving settings:', error);
+      console.error('âŒ Error saving settings:', error);
       return {
         success: false,
         error: error.message,
@@ -215,824 +215,379 @@ export default function Settings() {
     }
   };
 
-  return (
-    <s-page heading="Settings">
-      <div className={styles.settingsContainer}>
+  // â”€â”€ Shared color control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const ColorCtrl = ({ label, value, onChange }) => (
+    <div className={styles.ctrlRow}>
+      <div>
+        <div className={styles.ctrlLabel}>{label}</div>
+      </div>
+      <div className={styles.swatchWrap}>
+        <div className={styles.swatch} style={{ background: value }}>
+          <input type="color" value={value} onChange={e => onChange(e.target.value)} />
+        </div>
+        <input className={styles.hexInput} value={value}
+          onChange={e => onChange(e.target.value)} maxLength={7} />
+      </div>
+    </div>
+  );
 
-       
-        {/* Tabs */}
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'button' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('button')}
-          >
-            Button Settings
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'popup' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('popup')}
-          >
-            Popup Settings
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'entry_popup' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('entry_popup')}
-          >
-            Entry Popup
-          </button>
+  // â”€â”€ Shared text control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const TextCtrl = ({ label, value, onChange, placeholder }) => (
+    <div className={styles.ctrlSection}>
+      <div className={styles.ctrlSectionTitle}>{label}</div>
+      <input className={styles.textInput} value={value}
+        onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+    </div>
+  );
+
+  const s = settings;
+
+  return (
+    <s-page heading="Brand Customizer">
+      <div className={styles.settingsRoot}>
+
+        {/* â”€â”€ SIDEBAR â”€â”€ */}
+        <div className={styles.sidebar}>
+          <div className={styles.sidebarHead}>
+            <div className={styles.sidebarHeadTitle}>See Before Buy AI</div>
+            <div className={styles.sidebarHeadSub}>Customize your store experience</div>
+          </div>
+
+          {/* Feature tabs */}
+          <div className={styles.featureTabs}>
+            {[
+              { id: 'button', icon: 'ðŸ”˜', title: 'Try The Look Button', sub: 'Product page trigger' },
+              { id: 'popup', icon: 'ðŸªŸ', title: 'Popup Modal', sub: 'Upload & generate screen' },
+              { id: 'entry_popup', icon: 'âœ¨', title: 'Entry Popup', sub: 'First-visit teaser' },
+            ].map(ft => (
+              <button key={ft.id}
+                className={`${styles.featureTab} ${activeTab === ft.id ? styles.featureTabActive : ''}`}
+                onClick={() => setActiveTab(ft.id)}
+              >
+                <div className={styles.featureTabIcon}>{ft.icon}</div>
+                <div>
+                  <div className={styles.featureTabTitle}>{ft.title}</div>
+                  <div className={styles.featureTabSub}>{ft.sub}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.sidebarDivider} />
+
+          {/* Controls */}
+          <div className={styles.controlsPanel}>
+
+            {/* â”€â”€ BUTTON TAB â”€â”€ */}
+            {activeTab === 'button' && <>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Colors</div>
+                <ColorCtrl label="Button background" value={s.button.bg_color} onChange={v => updateButtonSetting('bg_color', v)} />
+                <ColorCtrl label="Button text color" value={s.button.text_color} onChange={v => updateButtonSetting('text_color', v)} />
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Style</div>
+                <div className={styles.ctrlRow}>
+                  <div className={styles.ctrlLabel}>Border radius: {s.button.border_radius}px</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input type="range" className={styles.radiusSlider} min={0} max={28} value={s.button.border_radius}
+                      onChange={e => updateButtonSetting('border_radius', parseInt(e.target.value))} />
+                    <span className={styles.radiusVal}>{s.button.border_radius}</span>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Text</div>
+                <input className={styles.textInput} value={s.button.text}
+                  onChange={e => updateButtonSetting('text', e.target.value)} placeholder="Try The Look" />
+              </div>
+              <div className={styles.sidebarDivider} />
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Add to Cart Button</div>
+                <ColorCtrl label="Background" value={s.add_to_cart_button.bg_color} onChange={v => updateAddToCartButtonSetting('bg_color', v)} />
+                <ColorCtrl label="Text color" value={s.add_to_cart_button.text_color} onChange={v => updateAddToCartButtonSetting('text_color', v)} />
+                <div style={{ marginTop: 8 }}>
+                  <input className={styles.textInput} value={s.add_to_cart_button.text}
+                    onChange={e => updateAddToCartButtonSetting('text', e.target.value)} placeholder="Add to Cart" />
+                </div>
+              </div>
+            </>}
+
+            {/* â”€â”€ POPUP TAB â”€â”€ */}
+            {activeTab === 'popup' && <>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Header Colors</div>
+                <ColorCtrl label="Header background" value={s.popup.header_bg_color} onChange={v => updatePopupSetting('header_bg_color', v)} />
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Upload Button</div>
+                <ColorCtrl label="Background" value={s.popup.upload_btn_bg_color} onChange={v => updatePopupSetting('upload_btn_bg_color', v)} />
+                <ColorCtrl label="Text color" value={s.popup.upload_btn_text_color} onChange={v => updatePopupSetting('upload_btn_text_color', v)} />
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Generate Button</div>
+                <ColorCtrl label="Background" value={s.popup.generate_btn_bg_color} onChange={v => updatePopupSetting('generate_btn_bg_color', v)} />
+                <ColorCtrl label="Text color" value={s.popup.generate_btn_text_color} onChange={v => updatePopupSetting('generate_btn_text_color', v)} />
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Text</div>
+                <div style={{ marginBottom: 8 }}>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Popup title</div>
+                  <input className={styles.textInput} value={s.popup.title}
+                    onChange={e => updatePopupSetting('title', e.target.value)} />
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Upload button text</div>
+                  <input className={styles.textInput} value={s.popup.upload_button_text}
+                    onChange={e => updatePopupSetting('upload_button_text', e.target.value)} />
+                </div>
+                <div>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Generate button text</div>
+                  <input className={styles.textInput} value={s.popup.generate_button_text}
+                    onChange={e => updatePopupSetting('generate_button_text', e.target.value)} />
+                </div>
+              </div>
+            </>}
+
+            {/* â”€â”€ ENTRY POPUP TAB â”€â”€ */}
+            {activeTab === 'entry_popup' && <>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Visibility</div>
+                <div className={styles.ctrlRow}>
+                  <div className={styles.ctrlLabel}>Show entry popup</div>
+                  <button className={`${styles.toggle} ${s.entry_popup.enabled ? styles.toggleOn : ''}`}
+                    onClick={() => updateEntryPopupSetting('enabled', !s.entry_popup.enabled)} />
+                </div>
+                <div className={styles.ctrlRow}>
+                  <div><div className={styles.ctrlLabel}>Delay</div></div>
+                  <select className={styles.selectInput} value={s.entry_popup.delay_seconds}
+                    onChange={e => updateEntryPopupSetting('delay_seconds', parseInt(e.target.value))}>
+                    {[2,3,4,5,7,10,15,20,30].map(d => <option key={d} value={d}>{d}s</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Colors</div>
+                <ColorCtrl label="Dark section background" value={s.entry_popup.bg_color} onChange={v => updateEntryPopupSetting('bg_color', v)} />
+                <ColorCtrl label="CTA button" value={s.entry_popup.cta_bg_color} onChange={v => updateEntryPopupSetting('cta_bg_color', v)} />
+                <ColorCtrl label="CTA text" value={s.entry_popup.cta_text_color} onChange={v => updateEntryPopupSetting('cta_text_color', v)} />
+              </div>
+              <div className={styles.ctrlSection}>
+                <div className={styles.ctrlSectionTitle}>Text</div>
+                <div style={{ marginBottom: 8 }}>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Heading</div>
+                  <input className={styles.textInput} value={s.entry_popup.heading_text}
+                    onChange={e => updateEntryPopupSetting('heading_text', e.target.value)} />
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Sub text</div>
+                  <input className={styles.textInput} value={s.entry_popup.sub_text}
+                    onChange={e => updateEntryPopupSetting('sub_text', e.target.value)} />
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>CTA button text</div>
+                  <input className={styles.textInput} value={s.entry_popup.cta_text}
+                    onChange={e => updateEntryPopupSetting('cta_text', e.target.value)} />
+                </div>
+                <div>
+                  <div className={styles.ctrlLabel} style={{ fontSize: 10, marginBottom: 4 }}>Dismiss text</div>
+                  <input className={styles.textInput} value={s.entry_popup.dismiss_text}
+                    onChange={e => updateEntryPopupSetting('dismiss_text', e.target.value)} />
+                </div>
+              </div>
+            </>}
+          </div>
+
+          {/* â”€â”€ Save button â”€â”€ */}
+          <div className={styles.saveWrap}>
+            <button className={styles.saveBtn} onClick={handleSave} disabled={isSaving}>
+              {isSaving ? 'â³ Saving...' : 'ðŸ’¾ Save Changes'}
+            </button>
+            <button className={styles.resetLink} onClick={handleReset}>Reset to defaults</button>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className={styles.content}>
-          
-          {/* Settings Form */}
-          <div className={styles.settingsForm}>
-            
-            {/* Button Settings Tab */}
-            {activeTab === 'button' && (
-              <div className={styles.formSection}>
-                <h2 className={styles.sectionTitle}>Button Customization</h2>
-                <p className={styles.sectionSubtitle}>
-                  Customize the "See Before You Buy" button that appears on your product pages.
-                </p>
+        {/* â”€â”€ MAIN PREVIEW AREA â”€â”€ */}
+        <div className={styles.mainArea}>
 
-                {/* Button Text */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Button Text</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.button.text}
-                    onChange={(e) => updateButtonSetting('text', e.target.value)}
-                    placeholder="See Before You Buy"
-                  />
+          {/* â”€â”€ Try The Look Button preview â”€â”€ */}
+          <div>
+            <div className={styles.sectionLabel}>
+              <div className={styles.sectionLabelBadge}>ðŸ”˜ Try The Look Button</div>
+              <div className={styles.sectionLabelLine} />
+            </div>
+            <div className={styles.previewRow}>
+              {/* Product page simulation */}
+              <div className={styles.previewPanel}>
+                <div className={styles.panelHead}>
+                  <span className={styles.panelTitle}>Product page</span>
+                  <span className={styles.panelBadge}>LIVE PREVIEW</span>
                 </div>
-
-                {/* Background Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.button.bg_color}
-                      onChange={(e) => updateButtonSetting('bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.button.bg_color}
-                      onChange={(e) => updateButtonSetting('bg_color', e.target.value)}
-                      placeholder="#329580"
-                    />
-                  </div>
-                </div>
-
-                {/* Text Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Text Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.button.text_color}
-                      onChange={(e) => updateButtonSetting('text_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.button.text_color}
-                      onChange={(e) => updateButtonSetting('text_color', e.target.value)}
-                      placeholder="#FFFFFF"
-                    />
-                  </div>
-                </div>
-
-                {/* Border Radius */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
-                    Border Radius: {settings.button.border_radius}px
-                  </label>
-                  <input
-                    type="range"
-                    className={styles.slider}
-                    min="0"
-                    max="20"
-                    value={settings.button.border_radius}
-                    onChange={(e) => updateButtonSetting('border_radius', parseInt(e.target.value))}
-                  />
-                </div>
-
-                {/* Button Size */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Button Size</label>
-                  <div className={styles.radioGroup}>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="buttonSize"
-                        value="small"
-                        checked={settings.button.size === 'small'}
-                        onChange={(e) => updateButtonSetting('size', e.target.value)}
-                      />
-                      Small
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="buttonSize"
-                        value="medium"
-                        checked={settings.button.size === 'medium'}
-                        onChange={(e) => updateButtonSetting('size', e.target.value)}
-                      />
-                      Medium
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="buttonSize"
-                        value="large"
-                        checked={settings.button.size === 'large'}
-                        onChange={(e) => updateButtonSetting('size', e.target.value)}
-                      />
-                      Large
-                    </label>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div style={{ borderTop: '2px solid #E5E7EB', margin: '32px 0', paddingTop: '32px' }}>
-                  <h3 className={styles.sectionTitle} style={{ fontSize: '18px', marginBottom: '8px' }}>
-                    Add to Cart Button
-                  </h3>
-                  <p className={styles.sectionSubtitle}>
-                    Customize the "Add to Cart" button that appears after the AI preview is generated.
-                  </p>
-                </div>
-
-                {/* Add to Cart Button Text */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Add to Cart Button Text</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.add_to_cart_button.text}
-                    onChange={(e) => updateAddToCartButtonSetting('text', e.target.value)}
-                    placeholder="Add to Cart"
-                  />
-                </div>
-
-                {/* Add to Cart Background Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Add to Cart Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.add_to_cart_button.bg_color}
-                      onChange={(e) => updateAddToCartButtonSetting('bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.add_to_cart_button.bg_color}
-                      onChange={(e) => updateAddToCartButtonSetting('bg_color', e.target.value)}
-                      placeholder="#2a7f6d"
-                    />
-                  </div>
-                </div>
-
-                {/* Add to Cart Text Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Add to Cart Text Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.add_to_cart_button.text_color}
-                      onChange={(e) => updateAddToCartButtonSetting('text_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.add_to_cart_button.text_color}
-                      onChange={(e) => updateAddToCartButtonSetting('text_color', e.target.value)}
-                      placeholder="#FFFFFF"
-                    />
-                  </div>
-                </div>
-
-                {/* Add to Cart Border Radius */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
-                    Add to Cart Border Radius: {settings.add_to_cart_button.border_radius}px
-                  </label>
-                  <input
-                    type="range"
-                    className={styles.slider}
-                    min="0"
-                    max="20"
-                    value={settings.add_to_cart_button.border_radius}
-                    onChange={(e) => updateAddToCartButtonSetting('border_radius', parseInt(e.target.value))}
-                  />
-                </div>
-
-                {/* Add to Cart Button Size */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Add to Cart Button Size</label>
-                  <div className={styles.radioGroup}>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="addToCartButtonSize"
-                        value="small"
-                        checked={settings.add_to_cart_button.size === 'small'}
-                        onChange={(e) => updateAddToCartButtonSetting('size', e.target.value)}
-                      />
-                      Small
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="addToCartButtonSize"
-                        value="medium"
-                        checked={settings.add_to_cart_button.size === 'medium'}
-                        onChange={(e) => updateAddToCartButtonSetting('size', e.target.value)}
-                      />
-                      Medium
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="addToCartButtonSize"
-                        value="large"
-                        checked={settings.add_to_cart_button.size === 'large'}
-                        onChange={(e) => updateAddToCartButtonSetting('size', e.target.value)}
-                      />
-                      Large
-                    </label>
+                <div className={styles.panelBody}>
+                  <div className={styles.fakePage}>
+                    <div className={styles.fakePageImg}>ðŸ‘—</div>
+                    <div className={styles.fakePageName}>Sample Product</div>
+                    <div className={styles.fakePagePrice}>â‚¹2,499</div>
+                    <button className={styles.fakePageAtc}>Add to Cart</button>
+                    <button className={styles.brandBtn} style={{
+                      background: s.button.bg_color,
+                      color: s.button.text_color,
+                      borderRadius: `${s.button.border_radius}px`,
+                    }}>
+                      âœ¦ {s.button.text || 'Try The Look'}
+                    </button>
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Popup Settings Tab */}
-            {activeTab === 'popup' && (
-              <div className={styles.formSection}>
-                <h2 className={styles.sectionTitle}>Popup Customization</h2>
-                <p className={styles.sectionSubtitle}>
-                  Customize the popup modal that appears when customers click the button.
-                </p>
-
-                {/* ── HEADER ── */}
-                <h3 className={styles.subSectionTitle}>Header</h3>
-
-                {/* Popup Title */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Popup Title</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.popup.title}
-                    onChange={(e) => updatePopupSetting('title', e.target.value)}
-                    placeholder="See Yourself in This Look"
-                  />
-                </div>
-
-                {/* Header Background Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Header Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.header_bg_color}
-                      onChange={(e) => updatePopupSetting('header_bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.header_bg_color}
-                      onChange={(e) => updatePopupSetting('header_bg_color', e.target.value)}
-                      placeholder="#329580"
-                    />
-                  </div>
-                </div>
-
-                {/* ── POPUP BODY ── */}
-                <div className={styles.subSectionDivider} />
-                <h3 className={styles.subSectionTitle}>Popup Body</h3>
-
-                {/* Background Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.bg_color}
-                      onChange={(e) => updatePopupSetting('bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.bg_color}
-                      onChange={(e) => updatePopupSetting('bg_color', e.target.value)}
-                      placeholder="#FFFFFF"
-                    />
-                  </div>
-                </div>
-
-                {/* Text Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Text Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.text_color}
-                      onChange={(e) => updatePopupSetting('text_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.text_color}
-                      onChange={(e) => updatePopupSetting('text_color', e.target.value)}
-                      placeholder="#000000"
-                    />
-                  </div>
-                </div>
-
-                {/* Border Radius */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
-                    Border Radius: {settings.popup.border_radius}px
-                  </label>
-                  <input
-                    type="range"
-                    className={styles.slider}
-                    min="0"
-                    max="20"
-                    value={settings.popup.border_radius}
-                    onChange={(e) => updatePopupSetting('border_radius', parseInt(e.target.value))}
-                  />
-                </div>
-
-                {/* ── UPLOAD AREA ── */}
-                <div className={styles.subSectionDivider} />
-                <h3 className={styles.subSectionTitle}>Upload Area</h3>
-
-                {/* Upload Area Background */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Upload Area Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.upload_area_bg_color}
-                      onChange={(e) => updatePopupSetting('upload_area_bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.upload_area_bg_color}
-                      onChange={(e) => updatePopupSetting('upload_area_bg_color', e.target.value)}
-                      placeholder="#F6F6F7"
-                    />
-                  </div>
-                </div>
-
-                {/* ── UPLOAD BUTTON ── */}
-                <div className={styles.subSectionDivider} />
-                <h3 className={styles.subSectionTitle}>Upload Photo Button</h3>
-
-                {/* Upload Button Text */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Upload Button Text</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.popup.upload_button_text}
-                    onChange={(e) => updatePopupSetting('upload_button_text', e.target.value)}
-                    placeholder="Upload Your Photo"
-                  />
-                </div>
-
-                {/* Upload Button Background */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Upload Button Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.upload_btn_bg_color}
-                      onChange={(e) => updatePopupSetting('upload_btn_bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.upload_btn_bg_color}
-                      onChange={(e) => updatePopupSetting('upload_btn_bg_color', e.target.value)}
-                      placeholder="#329580"
-                    />
-                  </div>
-                </div>
-
-                {/* Upload Button Text Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Upload Button Text Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.upload_btn_text_color}
-                      onChange={(e) => updatePopupSetting('upload_btn_text_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.upload_btn_text_color}
-                      onChange={(e) => updatePopupSetting('upload_btn_text_color', e.target.value)}
-                      placeholder="#FFFFFF"
-                    />
-                  </div>
-                </div>
-
-                {/* ── GENERATE BUTTON ── */}
-                <div className={styles.subSectionDivider} />
-                <h3 className={styles.subSectionTitle}>Generate Preview Button</h3>
-
-                {/* Generate Button Text */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Generate Button Text</label>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={settings.popup.generate_button_text}
-                    onChange={(e) => updatePopupSetting('generate_button_text', e.target.value)}
-                    placeholder="Generate Preview"
-                  />
-                </div>
-
-                {/* Generate Button Background */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Generate Button Background Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.generate_btn_bg_color}
-                      onChange={(e) => updatePopupSetting('generate_btn_bg_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.generate_btn_bg_color}
-                      onChange={(e) => updatePopupSetting('generate_btn_bg_color', e.target.value)}
-                      placeholder="#329580"
-                    />
-                  </div>
-                </div>
-
-                {/* Generate Button Text Color */}
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Generate Button Text Color</label>
-                  <div className={styles.colorInput}>
-                    <input
-                      type="color"
-                      className={styles.colorPicker}
-                      value={settings.popup.generate_btn_text_color}
-                      onChange={(e) => updatePopupSetting('generate_btn_text_color', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className={styles.colorText}
-                      value={settings.popup.generate_btn_text_color}
-                      onChange={(e) => updatePopupSetting('generate_btn_text_color', e.target.value)}
-                      placeholder="#FFFFFF"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Entry Popup form */}
-            {activeTab === 'entry_popup' && (
-              <div className={styles.formSection}>
-                <h2 className={styles.sectionTitle}>Entry Popup</h2>
-                <p className={styles.sectionSubtitle}>A teaser popup shown to first-time visitors on product pages.</p>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Show Entry Popup</label>
-                  <div className={styles.radioGroup}>
-                    <label className={styles.radioLabel}><input type="radio" checked={settings.entry_popup.enabled === true} onChange={() => updateEntryPopupSetting('enabled', true)} /> Enabled</label>
-                    <label className={styles.radioLabel}><input type="radio" checked={settings.entry_popup.enabled === false} onChange={() => updateEntryPopupSetting('enabled', false)} /> Disabled</label>
-                  </div>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Delay: {settings.entry_popup.delay_seconds} seconds</label>
-                  <input type="range" className={styles.slider} min="2" max="30" value={settings.entry_popup.delay_seconds} onChange={(e) => updateEntryPopupSetting('delay_seconds', parseInt(e.target.value))} />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Background Color (top section)</label>
-                  <div className={styles.colorInput}>
-                    <input type="color" className={styles.colorPicker} value={settings.entry_popup.bg_color} onChange={(e) => updateEntryPopupSetting('bg_color', e.target.value)} />
-                    <input type="text" className={styles.colorText} value={settings.entry_popup.bg_color} onChange={(e) => updateEntryPopupSetting('bg_color', e.target.value)} />
-                  </div>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Heading Text</label>
-                  <input type="text" className={styles.input} value={settings.entry_popup.heading_text} onChange={(e) => updateEntryPopupSetting('heading_text', e.target.value)} />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Sub Text</label>
-                  <input type="text" className={styles.input} value={settings.entry_popup.sub_text} onChange={(e) => updateEntryPopupSetting('sub_text', e.target.value)} />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>CTA Button Text</label>
-                  <input type="text" className={styles.input} value={settings.entry_popup.cta_text} onChange={(e) => updateEntryPopupSetting('cta_text', e.target.value)} />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>CTA Button Color</label>
-                  <div className={styles.colorInput}>
-                    <input type="color" className={styles.colorPicker} value={settings.entry_popup.cta_bg_color} onChange={(e) => updateEntryPopupSetting('cta_bg_color', e.target.value)} />
-                    <input type="text" className={styles.colorText} value={settings.entry_popup.cta_bg_color} onChange={(e) => updateEntryPopupSetting('cta_bg_color', e.target.value)} />
-                  </div>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>CTA Button Text Color</label>
-                  <div className={styles.colorInput}>
-                    <input type="color" className={styles.colorPicker} value={settings.entry_popup.cta_text_color} onChange={(e) => updateEntryPopupSetting('cta_text_color', e.target.value)} />
-                    <input type="text" className={styles.colorText} value={settings.entry_popup.cta_text_color} onChange={(e) => updateEntryPopupSetting('cta_text_color', e.target.value)} />
-                  </div>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Dismiss Link Text</label>
-                  <input type="text" className={styles.input} value={settings.entry_popup.dismiss_text} onChange={(e) => updateEntryPopupSetting('dismiss_text', e.target.value)} />
-                </div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className={styles.actions}>
-              <button className={styles.resetButton} onClick={handleReset} disabled={isSaving}>Reset to Defaults</button>
-              <button className={styles.saveButton} onClick={handleSave} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Changes'}</button>
             </div>
           </div>
 
-          {/* Live Preview */}
-          <div className={styles.preview}>
-            <h3 className={styles.previewTitle}>Live Preview</h3>
-
-            {/* Entry Popup Preview */}
-            {activeTab === 'entry_popup' && (
-              <div className={styles.previewContent}>
-                <p className={styles.previewLabel}>Entry Popup Preview:</p>
-                <div style={{ width: '100%', maxWidth: 300, margin: '0 auto', borderRadius: 20, overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', fontFamily: "'Poppins',-apple-system,sans-serif" }}>
-                  <div style={{ background: settings.entry_popup.bg_color, padding: '24px 18px 16px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                    <div style={{ position: 'absolute', top: 10, right: 12, width: 26, height: 26, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13 }}>×</div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', height: 110, width: '100%' }}>
-                      <div style={{ position: 'absolute', left: '20%', width: 74, height: 92, borderRadius: 10, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.18)', transform: 'rotate(-6deg)' }} />
-                      <div style={{ position: 'relative', width: 82, height: 100, borderRadius: 10, background: '#e8ddd0', border: '2px solid #fff', boxShadow: '0 6px 20px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
-                        <div style={{ fontSize: 20, color: '#888' }}>?</div>
-                        <div style={{ fontSize: 7, color: '#888', fontWeight: 600 }}>your photo here</div>
-                        <div style={{ position: 'absolute', top: -12, left: -12, width: 26, height: 26, borderRadius: '50%', background: '#008060', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}>✦</div>
+          {/* â”€â”€ Popup preview â”€â”€ */}
+          <div>
+            <div className={styles.sectionLabel}>
+              <div className={styles.sectionLabelBadge}>ðŸªŸ Popup Modal</div>
+              <div className={styles.sectionLabelLine} />
+            </div>
+            <div className={styles.previewRow}>
+              {/* Upload screen */}
+              <div className={styles.previewPanel}>
+                <div className={styles.panelHead}>
+                  <span className={styles.panelTitle}>Upload screen</span>
+                  <span className={styles.panelBadge}>Screen 1</span>
+                </div>
+                <div className={styles.panelBody}>
+                  <div className={styles.uploadModal}>
+                    <div className={styles.umTop}>
+                      <div>
+                        <div className={styles.umTitle}>{s.popup.title || 'Try The Look'}</div>
+                        <div className={styles.umSub}>See how it looks on you</div>
+                      </div>
+                      <button className={styles.umClose}>Ã—</button>
+                    </div>
+                    <div className={styles.umBody}>
+                      <div className={styles.umAiBadge} style={{
+                        background: `${s.popup.header_bg_color}1a`,
+                        border: `1px solid ${s.popup.header_bg_color}33`,
+                        color: s.popup.header_bg_color,
+                      }}>âœ¦ AI Preview</div>
+                      <div className={styles.umMain}>See it on you in seconds</div>
+                      <div className={styles.umTip}>Upload a clear photo and our AI creates a live preview.</div>
+                      <button className={styles.umUploadBtn} style={{
+                        background: s.popup.upload_btn_bg_color,
+                        color: s.popup.upload_btn_text_color,
+                        borderRadius: `${s.button.border_radius}px`,
+                      }}>â¬† {s.popup.upload_button_text || 'Choose Your Photo'}</button>
+                      <div className={styles.umTipsGrid}>
+                        {['Full body','Good lighting','Stand straight','Face camera'].map(t => (
+                          <div key={t} className={styles.umChip}>{t}</div>
+                        ))}
                       </div>
                     </div>
-                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 6, background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: '#fff', marginBottom: 1 }}>See yourself wearing it</div>
-                        <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.55)' }}>Before you add to cart</div>
-                      </div>
-                      <div style={{ background: '#008060', color: '#fff', fontSize: 8, fontWeight: 700, padding: '3px 7px', borderRadius: 5 }}>NEW ✦</div>
-                    </div>
-                    <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>· Results in under 30 seconds ·</div>
-                  </div>
-                  <div style={{ background: '#fff', padding: '14px 14px 12px' }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 5, lineHeight: 1.3 }}>{settings.entry_popup.heading_text}</div>
-                    <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{settings.entry_popup.sub_text}</div>
-                    <button style={{ width: '100%', background: settings.entry_popup.cta_bg_color, color: settings.entry_popup.cta_text_color, border: 'none', borderRadius: 10, padding: '11px', fontSize: 11, fontWeight: 700, cursor: 'pointer', marginBottom: 8 }}>{settings.entry_popup.cta_text}</button>
-                    <div style={{ textAlign: 'center', fontSize: 10, color: '#9CA3AF' }}>{settings.entry_popup.dismiss_text}</div>
                   </div>
                 </div>
               </div>
-            )}
 
-            {activeTab === 'button' && (
-              <div className={styles.previewContent}>
-                <p className={styles.previewLabel}>Trigger Button Preview:</p>
-                {/* Actual trigger button replica */}
-                <button style={{
-                  width: '100%',
-                  padding: settings.button.size === 'small' ? '10px 20px' : settings.button.size === 'large' ? '18px 28px' : '14px 24px',
-                  fontSize: settings.button.size === 'small' ? '13px' : settings.button.size === 'large' ? '17px' : '15px',
-                  fontWeight: 700,
-                  fontFamily: "'Poppins', -apple-system, sans-serif",
-                  background: settings.button.bg_color,
-                  color: settings.button.text_color,
-                  border: 'none',
-                  borderRadius: `${settings.button.border_radius}px`,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
-                }}>
-                  {settings.button.text || 'Try The Look'}
-                </button>
-
-                <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: '1px solid #E5E7EB' }}>
-                  <p className={styles.previewLabel}>Add to Cart Button Preview:</p>
-                  {/* Actual ATC button replica — shown inside the result sheet */}
-                  <div style={{
-                    background: '#111111',
-                    borderRadius: '16px',
-                    padding: '14px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 10,
-                    maxWidth: 340,
-                  }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button style={{
-                        flex: 1,
-                        background: settings.add_to_cart_button.bg_color,
-                        color: settings.add_to_cart_button.text_color,
-                        border: 'none',
-                        borderRadius: `${settings.add_to_cart_button.border_radius}px`,
-                        padding: settings.add_to_cart_button.size === 'small' ? '8px' : settings.add_to_cart_button.size === 'large' ? '16px' : '12px',
-                        fontWeight: 700,
-                        fontSize: settings.add_to_cart_button.size === 'small' ? '11px' : settings.add_to_cart_button.size === 'large' ? '15px' : '13px',
-                        fontFamily: "'Poppins', -apple-system, sans-serif",
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 6,
+              {/* Checklist / result screen */}
+              <div className={styles.previewPanel}>
+                <div className={styles.panelHead}>
+                  <span className={styles.panelTitle}>Result screen</span>
+                  <span className={styles.panelBadge}>Screen 4</span>
+                </div>
+                <div className={styles.panelBody}>
+                  <div className={styles.checklistCard}>
+                    {[
+                      { label: 'Lighting matched', sub: 'Ambient light blended' },
+                      { label: 'Fabric texture applied', sub: 'Folds and weight rendered' },
+                      { label: 'Shadow depth set', sub: 'Natural shadows added' },
+                      { label: 'Face preserved', sub: 'Your identity unchanged' },
+                    ].map((item, i) => (
+                      <div key={i} className={styles.clItem} style={{
+                        background: `${s.popup.header_bg_color}0d`,
+                        borderColor: `${s.popup.header_bg_color}1a`,
                       }}>
-                        🛒 {settings.add_to_cart_button.text || 'Add to Cart'}
-                      </button>
-                      <div style={{ width: 44, height: 44, background: '#F6F6F7', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⬇</div>
-                      <div style={{ width: 44, height: 44, background: '#F6F6F7', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>↗</div>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 8 }}>Shown on the result screen after AI preview is generated</p>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'popup' && (
-              <div className={styles.previewContent}>
-                <p className={styles.previewLabel}>Popup Preview:</p>
-
-                {/* ── Accurate replica of the actual popup modal ── */}
-                <div style={{
-                  width: '100%',
-                  maxWidth: '340px',
-                  margin: '0 auto',
-                  borderRadius: `${settings.popup.border_radius}px`,
-                  overflow: 'hidden',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
-                  fontFamily: "'Poppins', -apple-system, sans-serif",
-                  background: settings.popup.bg_color,
-                  color: settings.popup.text_color,
-                  border: '1px solid #E5E7EB',
-                }}>
-
-                  {/* Header */}
-                  <div style={{
-                    background: settings.popup.header_bg_color,
-                    padding: '14px 16px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#fff' }}>←</div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#fff', fontWeight: 800, fontSize: '13px', lineHeight: 1.2 }}>{settings.popup.title || 'Try The Look'}</div>
-                        <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '9px', marginTop: 1 }}>See how it looks on you</div>
+                        <div className={styles.clCheck} style={{ background: s.popup.header_bg_color }}>âœ“</div>
+                        <div>
+                          <div className={styles.clLabel}>{item.label}</div>
+                          <div className={styles.clSub}>{item.sub}</div>
+                        </div>
+                        <div className={styles.clDone} style={{ color: s.popup.header_bg_color }}>done</div>
                       </div>
-                    </div>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#fff', cursor: 'pointer' }}>×</div>
+                    ))}
                   </div>
-
-                  {/* Product strip */}
-                  <div style={{
-                    margin: '12px 14px 0',
-                    background: '#f8f9fa',
-                    borderRadius: '12px',
-                    padding: '10px 12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    border: '1px solid #E5E7EB',
-                  }}>
-                    <div style={{ width: 44, height: 56, borderRadius: '8px', background: 'linear-gradient(135deg, #f0f4ff, #EAF5EF)', flexShrink: 0, border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>👗</div>
-                    <div>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#111', marginBottom: 2 }}>Product Name</div>
-                      <div style={{ fontSize: '9px', color: '#6B7280' }}>Virtual try-on · <strong style={{ color: '#008060' }}>AI Try-On</strong></div>
-                    </div>
-                  </div>
-
-                  {/* Ready label */}
-                  <div style={{ textAlign: 'center', padding: '16px 14px 0' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 999, background: 'rgba(0,128,96,0.12)', color: '#008060', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>AI Preview</div>
-                    <div style={{ fontSize: '16px', fontWeight: 800, color: settings.popup.text_color || '#111', marginBottom: 4, letterSpacing: '-0.02em' }}>See it on you in seconds</div>
-                    <div style={{ fontSize: '10px', color: '#6B7280', lineHeight: 1.5 }}>Upload a clear photo and we'll create a live preview</div>
-                  </div>
-
-                  {/* Upload area */}
-                  <div style={{
-                    background: settings.popup.upload_area_bg_color,
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '12px',
-                    padding: '12px 14px',
-                    margin: '12px 14px 0',
-                  }}>
-                    {/* Upload button */}
+                  <div style={{ marginTop: 10 }}>
                     <button style={{
-                      width: '100%',
-                      background: settings.popup.upload_btn_bg_color,
-                      color: settings.popup.upload_btn_text_color,
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '11px',
-                      fontWeight: 700,
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 6,
-                      boxShadow: '0 3px 10px rgba(0,128,96,0.2)',
-                    }}>
-                      <span>⬆</span> {settings.popup.upload_button_text || 'Choose Your Photo'}
-                    </button>
-                    <div style={{ textAlign: 'center', marginTop: 6, fontSize: '9px', color: '#6B7280' }}>PNG or JPG • clear light • full body works best</div>
+                      width: '100%', background: s.add_to_cart_button.bg_color,
+                      color: s.add_to_cart_button.text_color, border: 'none',
+                      borderRadius: `${s.add_to_cart_button.border_radius}px`,
+                      padding: '11px', fontSize: 12, fontWeight: 700,
+                      cursor: 'pointer', fontFamily: 'inherit',
+                    }}>ðŸ›’ {s.add_to_cart_button.text || 'Add to Cart'}</button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                  {/* Generate button */}
-                  <div style={{ padding: '10px 14px' }}>
-                    <button style={{
-                      width: '100%',
-                      background: settings.popup.generate_btn_bg_color,
-                      color: settings.popup.generate_btn_text_color,
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '11px',
-                      fontWeight: 700,
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 6,
-                      boxShadow: '0 3px 10px rgba(0,128,96,0.2)',
-                    }}>
-                      <span>✦</span> {settings.popup.generate_button_text || 'Generate Preview'}
-                    </button>
-                  </div>
-
-                  {/* Tips */}
-                  <div style={{ padding: '0 14px 14px' }}>
-                    <div style={{ fontSize: '9px', fontWeight: 700, color: '#9CA3AF', textAlign: 'center', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tips for best results</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                      {['Full body photo', 'Good lighting', 'Stand straight', 'Front-facing'].map(tip => (
-                        <div key={tip} style={{ background: '#f8f9fa', border: '1px solid #E5E7EB', borderRadius: 8, padding: '6px 8px', fontSize: '9px', color: '#555', textAlign: 'center' }}>{tip}</div>
-                      ))}
+          {/* â”€â”€ Entry popup preview â”€â”€ */}
+          <div>
+            <div className={styles.sectionLabel}>
+              <div className={styles.sectionLabelBadge}>âœ¨ Entry Popup</div>
+              <div className={styles.sectionLabelLine} />
+              {!s.entry_popup.enabled && (
+                <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 600 }}>DISABLED</span>
+              )}
+            </div>
+            <div className={styles.previewRow}>
+              <div className={styles.previewPanel}>
+                <div className={styles.panelHead}>
+                  <span className={styles.panelTitle}>Entry popup</span>
+                  <span className={styles.panelBadge}>After {s.entry_popup.delay_seconds}s Â· First visit only</span>
+                </div>
+                <div className={styles.panelBody}>
+                  <div className={styles.entryPopupPreview}>
+                    {/* Dark top */}
+                    <div className={styles.epHeader} style={{ background: s.entry_popup.bg_color }}>
+                      <button className={styles.epClose}>Ã—</button>
+                      <div className={styles.epCards}>
+                        <div className={styles.epCardLeft}>ðŸ‘—</div>
+                        <div className={styles.epMerge} style={{ background: s.popup.header_bg_color }}>âœ¦</div>
+                        <div className={styles.epCardRight}>
+                          <div className={styles.epRightLabel}>your photo</div>
+                          <div className={styles.epCam} style={{ background: s.popup.header_bg_color }}>ðŸ“·</div>
+                        </div>
+                      </div>
+                      <div className={styles.epStrip} style={{
+                        background: `${s.popup.header_bg_color}18`,
+                        border: `1px solid ${s.popup.header_bg_color}28`,
+                      }}>
+                        <div className={styles.epStripThumb} />
+                        <div>
+                          <div className={styles.epStripTitle}>See yourself wearing it</div>
+                          <div className={styles.epStripSub}>Before you add to cart</div>
+                        </div>
+                        <div className={styles.epStripBadge} style={{ background: s.popup.header_bg_color }}>NEW âœ¦</div>
+                      </div>
+                      <div className={styles.epTrust}>Â· Results in under 30 seconds Â·</div>
+                    </div>
+                    {/* White bottom */}
+                    <div className={styles.epBody}>
+                      <div className={styles.epTitle}>{s.entry_popup.heading_text}</div>
+                      <div className={styles.epDesc}>{s.entry_popup.sub_text}</div>
+                      <button className={styles.epCta} style={{
+                        background: s.entry_popup.cta_bg_color,
+                        color: s.entry_popup.cta_text_color,
+                        borderRadius: `${s.button.border_radius}px`,
+                      }}>{s.entry_popup.cta_text}</button>
+                      <button className={styles.epSkip}>{s.entry_popup.dismiss_text}</button>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
+
         </div>
-
-
       </div>
-
-       <div style={{ textAlign: "center", marginTop: "32px" }}>
-        <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
-          How to Add the Try-On Block to Your Product Pages
-        </h3>
-        <video
-          src="https://cdn.shopify.com/videos/c/o/v/a071b075afb8477b94f7cf9c9d232957.mp4"
-          controls
-          style={{ maxWidth: "600px", width: "100%", borderRadius: "8px" }}
-        />
-      </div>
-        
     </s-page>
   );
 }
