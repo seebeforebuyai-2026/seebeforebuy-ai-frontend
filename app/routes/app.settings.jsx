@@ -5,31 +5,59 @@ import { authenticate } from "../shopify.server";
 import styles from "./app.settings/settings.module.css";
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, admin } = await authenticate.admin(request);
   const shopDomain = session.shop;
 
   console.log(' Settings page loaded for:', shopDomain);
 
   // Fetch current settings from backend
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+
+  // Fetch one real product from the store for the preview
+  let previewProduct = null;
+  try {
+    const productRes = await admin.graphql(`
+      query {
+        products(first: 1) {
+          nodes {
+            title
+            priceRangeV2 {
+              minVariantPrice { amount currencyCode }
+            }
+            featuredImage { url altText }
+          }
+        }
+      }
+    `);
+    const productData = await productRes.json();
+    const node = productData.data?.products?.nodes?.[0];
+    if (node) {
+      previewProduct = {
+        title: node.title,
+        price: `${node.priceRangeV2.minVariantPrice.currencyCode} ${parseFloat(node.priceRangeV2.minVariantPrice.amount).toFixed(2)}`,
+        image: node.featuredImage?.url || null,
+        imageAlt: node.featuredImage?.altText || node.title,
+      };
+    }
+  } catch (err) {
+    console.warn('Could not fetch preview product:', err.message);
+  }
   
   try {
     const response = await fetch(`${backendUrl}/api/settings/${shopDomain}`);
     const data = await response.json();
 
     return {
-      shop: {
-        domain: shopDomain,
-      },
+      shop: { domain: shopDomain },
       settings: data.settings || null,
+      previewProduct,
     };
   } catch (error) {
     console.error('❌ Error fetching settings:', error);
     return {
-      shop: {
-        domain: shopDomain,
-      },
+      shop: { domain: shopDomain },
       settings: null,
+      previewProduct,
     };
   }
 };
@@ -88,6 +116,7 @@ export default function Settings() {
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
+  const previewProduct = loaderData.previewProduct;
 
   // Default settings
   const defaultSettings = {
@@ -737,13 +766,14 @@ export default function Settings() {
                   <div className={styles.ppBody}>
                     <div className={styles.fakePage}>
                       <div className={styles.fpImgWrap}>
-                        <img 
-                          src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" 
-                          alt="Product preview" 
-                        />
+                        {previewProduct?.image ? (
+                          <img src={previewProduct.image} alt={previewProduct.imageAlt} />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#EAF5EF,#d1fae5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>👗</div>
+                        )}
                       </div>
-                      <div className={styles.fpName}>Marshmellow Fluff Ringer Tee</div>
-                      <div className={styles.fpPrice}>Rs. 699.00</div>
+                      <div className={styles.fpName}>{previewProduct?.title || 'Sample Product'}</div>
+                      <div className={styles.fpPrice}>{previewProduct?.price || '—'}</div>
                       <button className={styles.fpAtc} style={{
                         background: s.add_to_cart_button.bg_color,
                         color: s.add_to_cart_button.text_color,
