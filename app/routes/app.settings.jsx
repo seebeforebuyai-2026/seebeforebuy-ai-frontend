@@ -819,11 +819,11 @@ export default function Settings() {
                       </div>
                       <div className={styles.umProductBar}>
                         <div className={styles.umThumb}>
-                          <img src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" alt="" />
+                          <img src={previewProduct.image} alt="" />
                         </div>
                         <div>
-                          <div className={styles.umPname}>Marshmellow Fluff Ringer Tee</div>
-                          <div className={styles.umCat} style={{ color: s.popup.header_bg_color }}>Casual Wear</div>
+                          <div className={styles.umPname}>{previewProduct?.title}</div>
+                          <div className={styles.umCat} style={{ color: s.popup.header_bg_color }}>{previewProduct?.price || '—'}</div>
                         </div>
                       </div>
                       <div className={styles.umBody}>
@@ -929,7 +929,7 @@ export default function Settings() {
                         <button className={styles.epClose}>✕</button>
                         <div className={styles.epCards}>
                           <div className={styles.epCardProduct}>
-                            <img src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" alt="" />
+                            <img src={previewProduct.image} alt="" />
                           </div>
                           <div className={styles.epMerge} style={{ background: s.button.bg_color }}>✦</div>
                           <div className={styles.epCardRight}>
@@ -944,7 +944,7 @@ export default function Settings() {
                           borderColor: `${s.button.bg_color}40`,
                         }}>
                           <div className={styles.epStripThumb}>
-                            <img src="https://www.poolhousekora.com/cdn/shop/files/hf_20260609_071955_5ede0ac3-3937-4dce-8647-3e3c1251db55.png?v=1780993757" alt="" />
+                            <img src={previewProduct.image} alt="" />
                           </div>
                           <div>
                             <div className={styles.epStripTitle}>See yourself wearing it</div>
