@@ -704,11 +704,11 @@ function updateCategoryUploadTip() {
   function downloadGeneratedImage() {
     var img = document.getElementById('vtl-result-image');
     if (!img || !img.src) return;
-    // Route through our proxy to avoid CORS and prevent page navigation
     var a = document.createElement('a');
     a.href = 'https://seebeforebuy.in/api/download-image?url=' + encodeURIComponent(img.src);
     a.download = 'see-before-buy-preview.png';
-    // No target="_blank" — keeps user on page while downloading
+    a.target = '_blank';        // open in new tab
+    a.rel = 'noopener';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
   }
   window.downloadGeneratedImage = downloadGeneratedImage;
