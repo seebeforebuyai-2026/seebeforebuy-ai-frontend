@@ -125,7 +125,9 @@ export default function Settings() {
       bg_color: "#008060",
       text_color: "#FFFFFF",
       border_radius: 8,
-      size: "medium"
+      size: "medium",
+      show_education_banner: true,
+      show_button_emoji: true,
     },
     popup: {
       title: "See Yourself in This Look",
@@ -517,32 +519,58 @@ export default function Settings() {
               )}
             </>
           )}
-
           {/* ════ STYLE SUB-TAB ════ */}
           {subTab === 'style' && (
             <>
               {activeTab === 'button' && (
-                <div className={styles.ctrlSection}>
-                  <div className={styles.csTitle}>Button Corner Radius</div>
-                  <div className={styles.radiusRow}>
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>Square</span>
-                    <input 
-                      type="range" 
-                      className={styles.radiusSlider} 
-                      min={0} 
-                      max={28} 
-                      value={s.button.border_radius}
-                      onChange={e => updateButtonSetting('border_radius', parseInt(e.target.value))} 
-                    />
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>Round</span>
-                    <span className={styles.radiusVal}>{s.button.border_radius}px</span>
+                <>
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Visibility</div>
+                    <div className={styles.ctrlRow}>
+                      <div>
+                        <div className={styles.ctrlLabel}>Education banner</div>
+                        <div className={styles.ctrlSub}>Show "Not sure how this'll look on you?" banner below product details</div>
+                      </div>
+                      <button
+                        className={`${styles.toggle} ${s.button.show_education_banner ? styles.toggleOn : ''}`}
+                        onClick={() => updateButtonSetting('show_education_banner', !s.button.show_education_banner)}
+                      />
+                    </div>
+
+                    <div className={styles.ctrlRow} style={{ marginTop: 12 }}>
+                      <div>
+                        <div className={styles.ctrlLabel}>Button emoji icon</div>
+                        <div className={styles.ctrlSub}>Show 📸 before the button text</div>
+                      </div>
+                      <button
+                        className={`${styles.toggle} ${s.button.show_button_emoji ? styles.toggleOn : ''}`}
+                        onClick={() => updateButtonSetting('show_button_emoji', !s.button.show_button_emoji)}
+                      />
+                    </div>
                   </div>
-                  <div className={styles.radiusPresets}>
-                    <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 0)}>Square (0px)</button>
-                    <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 8)}>Soft (8px)</button>
-                    <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 28)}>Pill (28px)</button>
+
+                  <div className={styles.ctrlSection}>
+                    <div className={styles.csTitle}>Button Corner Radius</div>
+                    <div className={styles.radiusRow}>
+                      <span style={{ fontSize: 10, color: 'var(--muted)' }}>Square</span>
+                      <input 
+                        type="range" 
+                        className={styles.radiusSlider} 
+                        min={0} 
+                        max={28} 
+                        value={s.button.border_radius}
+                        onChange={e => updateButtonSetting('border_radius', parseInt(e.target.value))} 
+                      />
+                      <span style={{ fontSize: 10, color: 'var(--muted)' }}>Round</span>
+                      <span className={styles.radiusVal}>{s.button.border_radius}px</span>
+                    </div>
+                    <div className={styles.radiusPresets}>
+                      <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 0)}>Square (0px)</button>
+                      <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 8)}>Soft (8px)</button>
+                      <button className={styles.rpBtn} onClick={() => updateButtonSetting('border_radius', 28)}>Pill (28px)</button>
+                    </div>
                   </div>
-                </div>
+                </>
               )}
 
               {activeTab === 'entry_popup' && (
@@ -662,7 +690,7 @@ export default function Settings() {
               {activeTab === 'entry_popup' && (
                 <>
                   <div className={styles.ctrlSection}>
-                    <div className={styles.csTitle}>Headline Text</div>
+                    <div className={styles.csTitle}>Popup headline</div>
                     <input 
                       className={styles.textInput} 
                       value={s.entry_popup.heading_text}
@@ -670,7 +698,7 @@ export default function Settings() {
                     />
                   </div>
                   <div className={styles.ctrlSection}>
-                    <div className={styles.csTitle}>Sub Text / Description</div>
+                    <div className={styles.csTitle}>Popup description</div>
                     <textarea 
                       className={styles.textAreaInput} 
                       rows={3}
@@ -679,7 +707,7 @@ export default function Settings() {
                     />
                   </div>
                   <div className={styles.ctrlSection}>
-                    <div className={styles.csTitle}>CTA Button Text</div>
+                    <div className={styles.csTitle}>Popup button</div>
                     <input 
                       className={styles.textInput} 
                       value={s.entry_popup.cta_text}
@@ -700,6 +728,10 @@ export default function Settings() {
           )}
 
         </div>
+
+
+
+
 
         {/* SAVE & RESET ACTIONS */}
         <div className={styles.actionWrap}>
@@ -786,18 +818,20 @@ export default function Settings() {
                         color: s.button.text_color,
                         borderRadius: `${s.button.border_radius}px`,
                       }}>
-                        📸 {s.button.text || 'See Before You Buy'}
+                        {s.button.show_button_emoji ? '📸 ' : ''}{s.button.text || 'See Before You Buy'}
                       </button>
-                      <div className={styles.eduBanner} style={{
-                        background: `${s.button.bg_color}10`,
-                        borderColor: `${s.button.bg_color}30`
-                      }}>
-                        <div className={styles.ebIcon} style={{ background: s.button.bg_color }}>📸</div>
-                        <div>
-                          <div className={styles.ebTitle}>Not sure how this'll look on you?</div>
-                          <div className={styles.ebSub}>Upload photo → see yourself in 30 seconds</div>
+                      {s.button.show_education_banner && (
+                        <div className={styles.eduBanner} style={{
+                          background: `${s.button.bg_color}10`,
+                          borderColor: `${s.button.bg_color}30`
+                        }}>
+                          <div className={styles.ebIcon} style={{ background: s.button.bg_color }}>{s.button.show_button_emoji ? '📸' : '✓'}</div>
+                          <div>
+                            <div className={styles.ebTitle}>Not sure how this'll look on you?</div>
+                            <div className={styles.ebSub}>Upload photo → see yourself in 30 seconds</div>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
