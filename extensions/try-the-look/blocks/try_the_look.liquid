@@ -901,7 +901,14 @@ function applyInlineTryOnSettings(settings) {
                settings.inlineTryon;
 
   var button = document.getElementById('sbb-inline-tryon');
-  if (!button || !banner) return;
+  if (!button) return;
+
+  // If no inline_tryon setting exists, check entry_popup.enabled as fallback
+  if (!banner) {
+    // Show by default if no specific setting — hide only if explicitly disabled
+    button.style.display = 'flex';
+    return;
+  }
 
   var enabled =
     banner.enabled === true ||
@@ -1078,6 +1085,38 @@ function applyInlineTryOnSettings(settings) {
     });
   }
 
+  // ─── Entry popup — defined BEFORE fetchAndApplySettings so it can call them ──
+  var EP_KEY = 'sbb_ep_shown';
+
+  function applyEntryPopupSettings(ep) {
+    if (!ep) return;
+    var top = document.getElementById('sbb-ep-top');
+    if (top && ep.bg_color) top.style.background = ep.bg_color;
+    var heading = document.getElementById('sbb-ep-heading');
+    if (heading && ep.heading_text) heading.textContent = ep.heading_text;
+    var sub = document.getElementById('sbb-ep-sub');
+    if (sub && ep.sub_text) sub.textContent = ep.sub_text;
+    var cta = document.getElementById('sbb-ep-cta');
+    if (cta) {
+      if (ep.cta_text) cta.textContent = ep.cta_text;
+      if (ep.cta_bg_color) cta.style.background = ep.cta_bg_color;
+      if (ep.cta_text_color) cta.style.color = ep.cta_text_color;
+    }
+    var dismiss = document.getElementById('sbb-ep-dismiss');
+    if (dismiss && ep.dismiss_text) dismiss.textContent = ep.dismiss_text;
+  }
+
+  function showEntryPopup() {
+    var overlay = document.getElementById('sbb-ep-overlay');
+    if (overlay) overlay.classList.add('sbb-ep-active');
+    localStorage.setItem(EP_KEY, '1');
+  }
+
+  function hideEntryPopup() {
+    var overlay = document.getElementById('sbb-ep-overlay');
+    if (overlay) overlay.classList.remove('sbb-ep-active');
+  }
+
   // ─── Fetch settings + shop categories from backend ──────
   async function fetchAndApplySettings() {
     var shopDomain = {{ sbb_shop_domain | json }} || window.Shopify?.shop || 'see-before-buy-ai.myshopify.com';
@@ -1136,6 +1175,7 @@ function applyInlineTryOnSettings(settings) {
   }
 
   // ─── Init ────────────────────────────────────────────────
+
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeVTLPopupDirect(); });
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -1146,61 +1186,21 @@ function applyInlineTryOnSettings(settings) {
     // Fetch settings AFTER popup is in body so element lookups work
     fetchAndApplySettings();
 
-    // ── Entry popup: show after delay, first visit only ──────
-    var EP_KEY = 'sbb_ep_shown';
-
-    function applyEntryPopupSettings(ep) {
-      if (!ep) return;
-      var top = document.getElementById('sbb-ep-top');
-      if (top && ep.bg_color) top.style.background = ep.bg_color;
-      var heading = document.getElementById('sbb-ep-heading');
-      if (heading && ep.heading_text) heading.textContent = ep.heading_text;
-      var sub = document.getElementById('sbb-ep-sub');
-      if (sub && ep.sub_text) sub.textContent = ep.sub_text;
-      var cta = document.getElementById('sbb-ep-cta');
-      if (cta) {
-        if (ep.cta_text) cta.textContent = ep.cta_text;
-        if (ep.cta_bg_color) cta.style.background = ep.cta_bg_color;
-        if (ep.cta_text_color) cta.style.color = ep.cta_text_color;
-      }
-      var dismiss = document.getElementById('sbb-ep-dismiss');
-      if (dismiss && ep.dismiss_text) dismiss.textContent = ep.dismiss_text;
-    }
-
-    function showEntryPopup() {
-      var overlay = document.getElementById('sbb-ep-overlay');
-      if (overlay) overlay.classList.add('sbb-ep-active');
-      localStorage.setItem(EP_KEY, '1');
-    }
-
-    function hideEntryPopup() {
-      var overlay = document.getElementById('sbb-ep-overlay');
-      if (overlay) overlay.classList.remove('sbb-ep-active');
-    }
-
-    // Only show if not seen before
+    // Wire entry popup buttons (functions defined at top level above)
     if (!localStorage.getItem(EP_KEY)) {
-      // Wire close button
       var epClose = document.getElementById('sbb-ep-close');
       if (epClose) epClose.addEventListener('click', hideEntryPopup);
-
-      // Wire dismiss link
       var epDismiss = document.getElementById('sbb-ep-dismiss');
       if (epDismiss) epDismiss.addEventListener('click', hideEntryPopup);
-
-      // Wire CTA → open main try-on popup
       var epCta = document.getElementById('sbb-ep-cta');
-      if (epCta) epCta.addEventListener('click', function() {
-        hideEntryPopup();
-        openVTLPopup();
-      });
-
-      // Close on overlay background click
+      if (epCta) epCta.addEventListener('click', function() { hideEntryPopup(); openVTLPopup(); });
       var epOverlay = document.getElementById('sbb-ep-overlay');
-      if (epOverlay) epOverlay.addEventListener('click', function(e) {
-        if (e.target === epOverlay) hideEntryPopup();
-      });
+      if (epOverlay) epOverlay.addEventListener('click', function(e) { if (e.target === epOverlay) hideEntryPopup(); });
     }
+
+    // Wire inline try-on button
+    var inlineBtn = document.getElementById('sbb-inline-tryon');
+    if (inlineBtn) inlineBtn.addEventListener('click', openVTLPopup);
   });
 </script>
 
