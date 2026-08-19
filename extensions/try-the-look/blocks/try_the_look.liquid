@@ -11,6 +11,13 @@
   <button class="vtl-trigger-btn" onclick="openVTLPopup()" type="button">
     <span id="vtl-trigger-btn-label">Try The Look</span>
   </button>
+
+  <button class="sbb-inline-tryon" id="sbb-inline-tryon" onclick="openVTLPopup()" type="button" style="display:none;">
+    <span class="sbb-inline-tryon-title" id="sbb-inline-tryon-title">Not sure how this'll look on you?</span>
+    <span class="sbb-inline-tryon-sub" id="sbb-inline-tryon-sub">Upload photo → see yourself in 30 seconds</span>
+  </button>
+
+  
 </div>
 
 <div id="vtl-popup" class="vtl-overlay" onclick="closeVTLPopup(event)">
@@ -285,6 +292,10 @@ Tip: Upload a photo from the same angle as the product — front for front, back
     --vtl-atc-btn-bg:#111; --vtl-atc-btn-color:#fff; --vtl-atc-btn-radius:12px;
   }
   .vtl-trigger-wrap{margin:20px 0}
+  .sbb-inline-tryon{width:100%;margin:10px 0 0;padding:14px 16px;background:#f7faf8;border:1px solid #dce9e1;border-radius:14px;text-align:left;cursor:pointer;font-family:'Poppins',-apple-system,sans-serif;display:flex;flex-direction:column;gap:3px;transition:all .2s}
+  .sbb-inline-tryon:hover{border-color:#008060;background:#eef8f2;transform:translateY(-1px)}
+  .sbb-inline-tryon-title{font-size:13px;font-weight:700;color:#111827;line-height:1.35}
+  .sbb-inline-tryon-sub{font-size:11px;color:#008060;line-height:1.4}
   .vtl-trigger-btn{width:100%;padding:14px 24px;font-family:'Poppins',-apple-system,sans-serif;font-size:15px;font-weight:700;background:var(--vtl-trigger-bg);color:var(--vtl-trigger-color);border:none;border-radius:var(--vtl-trigger-radius);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s ease;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
   .vtl-trigger-btn:hover{opacity:0.9;transform:translateY(-1px)}
   .vtl-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background-color:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:9999999 !important;padding:16px;box-sizing:border-box;align-items:center;justify-content:center}

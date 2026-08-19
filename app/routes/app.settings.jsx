@@ -830,7 +830,7 @@ export default function Settings() {
                             <div className={styles.ebTitle}>Not sure how this'll look on you?</div>
                             <div className={styles.ebSub}>Upload photo → see yourself in 30 seconds</div>
                           </div>
-                        </div>
+                        </div> 
                       )}
                     </div>
                   </div>
