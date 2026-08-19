@@ -17,7 +17,6 @@
     <span class="sbb-inline-tryon-sub" id="sbb-inline-tryon-sub">Upload photo → see yourself in 30 seconds</span>
   </button>
 
-  
 </div>
 
 <div id="vtl-popup" class="vtl-overlay" onclick="closeVTLPopup(event)">
@@ -857,6 +856,8 @@ function updateCategoryUploadTip() {
   // ─── Settings: apply to CSS variables ───────────────────
   function applySettings(settings) {
     if (!settings) return;
+      applyInlineTryOnSettings(settings);
+
     var root = document.documentElement;
     console.log('[SBB] applySettings called with:', JSON.stringify(settings));
     if (settings.button) {
@@ -892,6 +893,41 @@ function updateCategoryUploadTip() {
       if (al && settings.add_to_cart_button.text) al.textContent = settings.add_to_cart_button.text;
     }
   }
+
+function applyInlineTryOnSettings(settings) {
+  var banner = settings.education_banner ||
+               settings.educationBanner ||
+               settings.inline_tryon ||
+               settings.inlineTryon;
+
+  var button = document.getElementById('sbb-inline-tryon');
+  if (!button || !banner) return;
+
+  var enabled =
+    banner.enabled === true ||
+    banner.enabled === 1 ||
+    banner.enabled === 'true' ||
+    banner.show === true ||
+    banner.show_banner === true ||
+    banner.is_enabled === true;
+
+  button.style.display = enabled ? 'flex' : 'none';
+
+  var title = document.getElementById('sbb-inline-tryon-title');
+  var sub = document.getElementById('sbb-inline-tryon-sub');
+
+  if (title && (banner.title || banner.heading_text)) {
+    title.textContent = banner.title || banner.heading_text;
+  }
+
+  if (sub && (banner.subtitle || banner.sub_text)) {
+    sub.textContent = banner.subtitle || banner.sub_text;
+  }
+
+  if (banner.bg_color) button.style.background = banner.bg_color;
+  if (banner.border_color) button.style.borderColor = banner.border_color;
+}
+
 
   // ─── Category Copy — messages per category ──────────────
   var CATEGORY_COPY = {
