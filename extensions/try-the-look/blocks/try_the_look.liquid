@@ -13,8 +13,12 @@
   </button>
 
   <button class="sbb-inline-tryon" id="sbb-inline-tryon" onclick="openVTLPopup()" type="button" style="display:none;">
-    <span class="sbb-inline-tryon-title" id="sbb-inline-tryon-title">Not sure how this'll look on you?</span>
-    <span class="sbb-inline-tryon-sub" id="sbb-inline-tryon-sub">Upload photo → see yourself in 30 seconds</span>
+    <div class="sbb-inline-tryon-icon" id="sbb-inline-tryon-icon">📸</div>
+    <div class="sbb-inline-tryon-content">
+      <span class="sbb-inline-tryon-title" id="sbb-inline-tryon-title">Not sure how this'll look on you?</span>
+      <span class="sbb-inline-tryon-sub" id="sbb-inline-tryon-sub">Upload photo → see yourself in 30 seconds</span>
+    </div>
+    <div class="sbb-inline-tryon-arrow">→</div>
   </button>
 
 </div>
@@ -247,7 +251,7 @@ Tip: Upload a photo from the same angle as the product — front for front, back
 
 <style>
   /* ── SBB Entry Popup — unique IDs, no CSS class collisions ── */
-  #sbb-ep-overlay{display:none;position:fixed;inset:0;z-index:9999997;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;padding:16px;box-sizing:border-box;}
+  #sbb-ep-overlay{display:none;position:fixed;inset:0;z-index:9999997;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
   #sbb-ep-overlay.sbb-ep-active{display:flex!important;}
   #sbb-ep-modal{position:relative;width:100%;max-width:400px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);font-family:'Poppins',-apple-system,sans-serif;animation:sbb-ep-up 0.4s cubic-bezier(0.16,1,0.3,1) both;}
   @keyframes sbb-ep-up{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
@@ -291,10 +295,13 @@ Tip: Upload a photo from the same angle as the product — front for front, back
     --vtl-atc-btn-bg:#111; --vtl-atc-btn-color:#fff; --vtl-atc-btn-radius:12px;
   }
   .vtl-trigger-wrap{margin:20px 0}
-  .sbb-inline-tryon{width:100%;margin:10px 0 0;padding:14px 16px;background:#f7faf8;border:1px solid #dce9e1;border-radius:14px;text-align:left;cursor:pointer;font-family:'Poppins',-apple-system,sans-serif;display:flex;flex-direction:column;gap:3px;transition:all .2s}
-  .sbb-inline-tryon:hover{border-color:#008060;background:#eef8f2;transform:translateY(-1px)}
-  .sbb-inline-tryon-title{font-size:13px;font-weight:700;color:#111827;line-height:1.35}
-  .sbb-inline-tryon-sub{font-size:11px;color:#008060;line-height:1.4}
+  .sbb-inline-tryon{width:100%;margin:10px 0 0;padding:12px 14px;background:rgba(0,128,96,0.07);border:1px solid rgba(0,128,96,0.25);border-radius:12px;cursor:pointer;font-family:'Poppins',-apple-system,sans-serif;display:flex;align-items:center;gap:12px;transition:all .2s;text-align:left}
+  .sbb-inline-tryon:hover{border-color:rgba(0,128,96,0.5);background:rgba(0,128,96,0.12);transform:translateY(-1px)}
+  .sbb-inline-tryon-icon{width:32px;height:32px;border-radius:8px;background:var(--vtl-trigger-bg,#008060);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .sbb-inline-tryon-content{flex:1;display:flex;flex-direction:column;gap:2px}
+  .sbb-inline-tryon-title{font-size:12px;font-weight:700;color:#111827;line-height:1.35}
+  .sbb-inline-tryon-sub{font-size:10px;color:#008060;line-height:1.4;font-weight:500}
+  .sbb-inline-tryon-arrow{font-size:14px;color:#008060;font-weight:700;flex-shrink:0}
   .vtl-trigger-btn{width:100%;padding:14px 24px;font-family:'Poppins',-apple-system,sans-serif;font-size:15px;font-weight:700;background:var(--vtl-trigger-bg);color:var(--vtl-trigger-color);border:none;border-radius:var(--vtl-trigger-radius);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s ease;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
   .vtl-trigger-btn:hover{opacity:0.9;transform:translateY(-1px)}
   .vtl-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background-color:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:9999999 !important;padding:16px;box-sizing:border-box;align-items:center;justify-content:center}
@@ -898,38 +905,39 @@ function applyInlineTryOnSettings(settings) {
   var button = document.getElementById('sbb-inline-tryon');
   if (!button) return;
 
-  // Check all possible locations for the banner toggle
-  var banner = settings.education_banner ||
-               settings.educationBanner ||
-               settings.inline_tryon ||
-               settings.inlineTryon;
+  var banner = settings.education_banner || settings.educationBanner ||
+               settings.inline_tryon || settings.inlineTryon || null;
+  var btnSettings = settings.button || {};
 
-  // Also check settings.button.show_education_banner (new settings format)
+  // Determine visibility
   var showBanner = false;
   if (banner) {
     showBanner = banner.enabled === true || banner.show === true || banner.is_enabled === true;
-  } else if (settings.button && settings.button.show_education_banner === true) {
+  } else if (btnSettings.show_education_banner === true) {
     showBanner = true;
   } else if (!banner) {
-    // No explicit setting found — show by default
-    showBanner = true;
+    showBanner = true; // default show
   }
 
   button.style.display = showBanner ? 'flex' : 'none';
 
-  var title = document.getElementById('sbb-inline-tryon-title');
-  var sub = document.getElementById('sbb-inline-tryon-sub');
-
-  if (title && (banner.title || banner.heading_text)) {
-    title.textContent = banner.title || banner.heading_text;
+  // Apply text only if banner object exists — otherwise keep HTML defaults
+  if (banner) {
+    var title = document.getElementById('sbb-inline-tryon-title');
+    var sub = document.getElementById('sbb-inline-tryon-sub');
+    if (title && (banner.title || banner.heading_text)) title.textContent = banner.title || banner.heading_text;
+    if (sub && (banner.subtitle || banner.sub_text)) sub.textContent = banner.subtitle || banner.sub_text;
+    if (banner.bg_color) button.style.background = banner.bg_color;
+    if (banner.border_color) button.style.borderColor = banner.border_color;
+  } else {
+    // Apply brand colors from button settings so it matches
+    var bg = btnSettings.bg_color || '#008060';
+    button.style.background = bg + '10';
+    button.style.borderColor = bg + '40';
+    var titleEl = document.getElementById('sbb-inline-tryon-title');
+    var subEl = document.getElementById('sbb-inline-tryon-sub');
+    if (subEl) subEl.style.color = bg;
   }
-
-  if (sub && (banner.subtitle || banner.sub_text)) {
-    sub.textContent = banner.subtitle || banner.sub_text;
-  }
-
-  if (banner.bg_color) button.style.background = banner.bg_color;
-  if (banner.border_color) button.style.borderColor = banner.border_color;
 }
 
 
