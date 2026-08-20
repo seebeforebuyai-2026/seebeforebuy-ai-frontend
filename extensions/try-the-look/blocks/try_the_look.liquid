@@ -1187,6 +1187,11 @@ function applyInlineTryOnSettings(settings) {
     // Move popup to body so z-index works above all theme elements
     var popup = document.getElementById('vtl-popup');
     if (popup && popup.parentNode !== document.body) document.body.appendChild(popup);
+
+    // Move entry popup overlay to body — same reason: position:fixed needs body as parent
+    var epOverlayEl = document.getElementById('sbb-ep-overlay');
+    if (epOverlayEl && epOverlayEl.parentNode !== document.body) document.body.appendChild(epOverlayEl);
+
     setVTLScreen(0);
     // Fetch settings AFTER popup is in body so element lookups work
     fetchAndApplySettings();
