@@ -264,36 +264,36 @@ Tip: Upload a photo from the same angle as the product — front for front, back
   /* ── SBB Entry Popup — unique IDs, no CSS class collisions ── */
   #sbb-ep-overlay{display:none;position:fixed;inset:0;z-index:9999997;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
   #sbb-ep-overlay.sbb-ep-active{display:flex!important;}
-  #sbb-ep-modal{position:relative;width:100%;max-width:400px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);font-family:'Poppins',-apple-system,sans-serif;animation:sbb-ep-up 0.4s cubic-bezier(0.16,1,0.3,1) both;}
+  #sbb-ep-modal{position:relative;width:100%;max-width:360px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);font-family:'Poppins',-apple-system,sans-serif;animation:sbb-ep-up 0.4s cubic-bezier(0.16,1,0.3,1) both;}
   @keyframes sbb-ep-up{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
   /* Dark top */
   #sbb-ep-top{background:#0D2B1E;padding:28px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;}
   #sbb-ep-close{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
   #sbb-ep-close:hover{background:rgba(255,255,255,0.2);}
   /* Two-card visual */
-  #sbb-ep-cards{position:relative;height:110px;width:100%;display:flex;align-items:center;justify-content:center;}
-  #sbb-ep-card-product{position:absolute;left:calc(50% - 55px);width:72px;height:90px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,0.15);box-shadow:0 6px 20px rgba(0,0,0,0.35);transform:rotate(-5deg) translateX(9px);z-index:1;background:rgba(255,255,255,0.08);}
-  #sbb-ep-card-product-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;}
+  #sbb-ep-cards{position:relative;height:138px;width:100%;display:flex;align-items:center;justify-content:center;}
+  #sbb-ep-card-product{position:absolute;left:calc(50% - 65px);width:94px;height:118px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,0.15);box-shadow:0 6px 20px rgba(0,0,0,0.35);transform:rotate(-5deg) translateX(9px);z-index:1;background:rgba(255,255,255,0.08);}
+  #sbb-ep-card-product-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;}
   #sbb-ep-merge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
-  #sbb-ep-card-right{position:absolute;left:calc(50% - 10px);width:76px;height:96px;border-radius:12px;z-index:2;overflow:hidden;border:2px solid rgba(255,255,255,0.2);box-shadow:0 6px 20px rgba(0,0,0,0.35);transform:rotate(4deg) translateX(-9px);}
-  #sbb-ep-card-right-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(255,255,255,0.06);}
-  #sbb-ep-cam{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;}
-  #sbb-ep-right-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.02em;}
+  #sbb-ep-card-right{position:absolute;left:calc(50% - 10px);width:98px;height:122px;border-radius:12px;z-index:2;overflow:hidden;border:2px solid rgba(255,255,255,0.2);box-shadow:0 6px 20px rgba(0,0,0,0.35);transform:rotate(4deg) translateX(-9px);}
+  #sbb-ep-card-right-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(255,255,255,0.1);}
+  #sbb-ep-cam{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;}
+  #sbb-ep-right-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.02em;}
   /* Strip */
   #sbb-ep-strip{width:100%;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
-  #sbb-ep-strip-thumb{width:28px;height:34px;border-radius:6px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.1);}
+  #sbb-ep-strip-thumb{width:36px;height:44px;border-radius:6px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.1);}
   #sbb-ep-strip-text{flex:1;display:flex;flex-direction:column;gap:2px;}
-  #sbb-ep-strip-title{font-size:10px;font-weight:700;color:#fff;}
-  #sbb-ep-strip-sub{font-size:8px;color:rgba(255,255,255,0.45);}
-  #sbb-ep-strip-badge{font-size:7px;font-weight:800;border-radius:4px;padding:2px 6px;color:#fff;white-space:nowrap;flex-shrink:0;}
-  #sbb-ep-results-tag{font-size:9px;color:rgba(255,255,255,0.3);font-weight:500;}
+  #sbb-ep-strip-title{font-size:12px;font-weight:700;color:#fff;}
+  #sbb-ep-strip-sub{font-size:10px;color:rgba(255,255,255,0.45);}
+  #sbb-ep-strip-badge{font-size:8px;font-weight:800;border-radius:4px;padding:2px 6px;color:#fff;white-space:nowrap;flex-shrink:0;}
+  #sbb-ep-results-tag{font-size:10px;color:rgba(255,255,255,0.3);font-weight:500;}
   /* White bottom */
   #sbb-ep-bottom{background:#fff;padding:18px 18px 16px;}
-  #sbb-ep-heading{font-size:17px;font-weight:800;color:#111827;margin-bottom:6px;line-height:1.25;letter-spacing:-0.02em;}
-  #sbb-ep-sub{font-size:12px;color:#6B7280;margin-bottom:13px;line-height:1.55;}
-  #sbb-ep-cta{width:100%;border:none;cursor:pointer;font-family:'Poppins',-apple-system,sans-serif;font-size:13px;font-weight:700;padding:13px;margin-bottom:9px;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;}
+  #sbb-ep-heading{font-size:19px;font-weight:800;color:#111827;margin-bottom:7px;line-height:1.25;letter-spacing:-0.02em;}
+  #sbb-ep-sub{font-size:13px;color:#6B7280;margin-bottom:14px;line-height:1.55;}
+  #sbb-ep-cta{width:100%;border:none;cursor:pointer;font-family:'Poppins',-apple-system,sans-serif;font-size:14px;font-weight:700;padding:14px;margin-bottom:9px;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;}
   #sbb-ep-cta:hover{opacity:0.9;}
-  #sbb-ep-dismiss{width:100%;background:none;border:none;font-family:'Poppins',-apple-system,sans-serif;font-size:11px;color:#9CA3AF;cursor:pointer;padding:3px;display:block;text-align:center;}
+  #sbb-ep-dismiss{width:100%;background:none;border:none;font-family:'Poppins',-apple-system,sans-serif;font-size:12px;color:#9CA3AF;cursor:pointer;padding:3px;display:block;text-align:center;}
   #sbb-ep-dismiss:hover{color:#374151;}
 </style>
 
