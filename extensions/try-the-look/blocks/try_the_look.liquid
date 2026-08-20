@@ -208,26 +208,37 @@ Tip: Upload a photo from the same angle as the product — front for front, back
 <!-- ── SBB Entry Popup (first-visit only, settings-driven) ── -->
 <div id="sbb-ep-overlay">
   <div id="sbb-ep-modal">
-    <button id="sbb-ep-close" aria-label="Close">×</button>
 
     <!-- Dark top section -->
     <div id="sbb-ep-top">
-      <!-- Two-card visual -->
+      <button id="sbb-ep-close" aria-label="Close">✕</button>
+
+      <!-- Two overlapping cards — matches settings page design -->
       <div id="sbb-ep-cards">
-        <div id="sbb-ep-card-back"></div>
-        <div id="sbb-ep-card-front">
-          <span id="sbb-ep-card-icon">✦</span>
-          <div id="sbb-ep-card-body">
-            <div id="sbb-ep-qmark">?</div>
-            <div id="sbb-ep-photo-label">your photo here</div>
+        <!-- Left card: product image -->
+        <div id="sbb-ep-card-product">
+          {% if current_product.featured_image %}
+            <img src="{{ current_product.featured_image | image_url: width: 160 }}" alt="{{ current_product.title | escape }}" width="72" height="90" style="width:100%;height:100%;object-fit:cover;">
+          {% else %}
+            <div id="sbb-ep-card-product-placeholder">👗</div>
+          {% endif %}
+        </div>
+        <!-- Merge icon -->
+        <div id="sbb-ep-merge">✦</div>
+        <!-- Right card: "your photo" placeholder -->
+        <div id="sbb-ep-card-right">
+          <div id="sbb-ep-card-right-inner">
+            <div id="sbb-ep-cam">📸</div>
+            <div id="sbb-ep-right-label">your photo</div>
           </div>
         </div>
       </div>
+
       <!-- Product strip -->
       <div id="sbb-ep-strip">
         <div id="sbb-ep-strip-thumb">
           {% if current_product.featured_image %}
-            <img src="{{ current_product.featured_image | image_url: width: 80 }}" alt="{{ current_product.title | escape }}" width="36" height="36" style="width:100%;height:100%;object-fit:cover;">
+            <img src="{{ current_product.featured_image | image_url: width: 80 }}" alt="{{ current_product.title | escape }}" width="28" height="34" style="width:100%;height:100%;object-fit:cover;">
           {% endif %}
         </div>
         <div id="sbb-ep-strip-text">
@@ -236,15 +247,15 @@ Tip: Upload a photo from the same angle as the product — front for front, back
         </div>
         <div id="sbb-ep-strip-badge">NEW ✦</div>
       </div>
-      <div id="sbb-ep-results-tag">· Results in under 30 seconds ·</div>
+      <div id="sbb-ep-results-tag">Results ready in under 30 seconds</div>
     </div>
 
     <!-- White bottom section -->
     <div id="sbb-ep-bottom">
       <div id="sbb-ep-heading">See yourself in it before you buy</div>
       <div id="sbb-ep-sub">Upload your photo. Our AI shows you wearing this exact product in seconds. Free — no sign-up needed.</div>
-      <button id="sbb-ep-cta">📷 Try it on now →</button>
-      <div id="sbb-ep-dismiss">Maybe later</div>
+      <button id="sbb-ep-cta">Try it on now →</button>
+      <button id="sbb-ep-dismiss">Maybe later</button>
     </div>
   </div>
 </div>
@@ -255,28 +266,34 @@ Tip: Upload a photo from the same angle as the product — front for front, back
   #sbb-ep-overlay.sbb-ep-active{display:flex!important;}
   #sbb-ep-modal{position:relative;width:100%;max-width:400px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);font-family:'Poppins',-apple-system,sans-serif;animation:sbb-ep-up 0.4s cubic-bezier(0.16,1,0.3,1) both;}
   @keyframes sbb-ep-up{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
-  #sbb-ep-close{position:absolute;top:12px;right:14px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#ffffff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:background 0.2s;}
-  #sbb-ep-close:hover{background:rgba(255,255,255,0.28);}
-  #sbb-ep-top{background:#0D2B1E;padding:32px 20px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;}
-  #sbb-ep-cards{position:relative;height:130px;width:100%;display:flex;align-items:center;justify-content:center;}
-  #sbb-ep-card-back{position:absolute;left:calc(50% - 70px);width:85px;height:108px;border-radius:14px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.18);transform:rotate(-6deg);}
-  #sbb-ep-card-front{position:relative;width:94px;height:116px;border-radius:14px;background:#e8ddd0;border:2.5px solid #ffffff;box-shadow:0 8px 28px rgba(0,0,0,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
-  #sbb-ep-card-icon{position:absolute;top:-15px;left:-15px;width:30px;height:30px;border-radius:50%;background:#008060;color:#ffffff;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);}
-  #sbb-ep-qmark{font-size:26px;color:#888;}
-  #sbb-ep-photo-label{font-size:9px;color:#888;font-weight:600;}
-  #sbb-ep-strip{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
-  #sbb-ep-strip-thumb{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.12);flex-shrink:0;overflow:hidden;}
+  /* Dark top */
+  #sbb-ep-top{background:#0D2B1E;padding:28px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;}
+  #sbb-ep-close{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+  #sbb-ep-close:hover{background:rgba(255,255,255,0.2);}
+  /* Two-card visual */
+  #sbb-ep-cards{position:relative;height:110px;width:100%;display:flex;align-items:center;justify-content:center;}
+  #sbb-ep-card-product{position:absolute;left:calc(50% - 55px);width:72px;height:90px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,0.15);box-shadow:0 6px 20px rgba(0,0,0,0.35);transform:rotate(-5deg) translateX(9px);z-index:1;background:rgba(255,255,255,0.08);}
+  #sbb-ep-card-product-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;}
+  #sbb-ep-merge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+  #sbb-ep-card-right{position:absolute;left:calc(50% - 10px);width:76px;height:96px;border-radius:12px;z-index:2;overflow:hidden;border:2px solid rgba(255,255,255,0.2);box-shadow:0 6px 20px rgba(0,0,0,0.35);transform:rotate(4deg) translateX(-9px);}
+  #sbb-ep-card-right-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(255,255,255,0.06);}
+  #sbb-ep-cam{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;}
+  #sbb-ep-right-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.02em;}
+  /* Strip */
+  #sbb-ep-strip{width:100%;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
+  #sbb-ep-strip-thumb{width:28px;height:34px;border-radius:6px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.1);}
   #sbb-ep-strip-text{flex:1;display:flex;flex-direction:column;gap:2px;}
-  #sbb-ep-strip-title{font-size:12px;font-weight:700;color:#ffffff;}
-  #sbb-ep-strip-sub{font-size:10px;color:rgba(255,255,255,0.55);}
-  #sbb-ep-strip-badge{background:#008060;color:#ffffff;font-size:9px;font-weight:700;padding:4px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;}
-  #sbb-ep-results-tag{font-size:10px;color:rgba(255,255,255,0.4);}
-  #sbb-ep-bottom{background:#ffffff;padding:20px 20px 18px;}
-  #sbb-ep-heading{font-size:19px;font-weight:800;color:#111;margin-bottom:8px;line-height:1.3;}
-  #sbb-ep-sub{font-size:13px;color:#6B7280;margin-bottom:16px;line-height:1.55;}
-  #sbb-ep-cta{width:100%;background:#111;color:#ffffff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;font-family:'Poppins',-apple-system,sans-serif;cursor:pointer;margin-bottom:12px;transition:background 0.2s;}
-  #sbb-ep-cta:hover{background:#333;}
-  #sbb-ep-dismiss{text-align:center;font-size:13px;color:#9CA3AF;cursor:pointer;padding:4px;transition:color 0.2s;}
+  #sbb-ep-strip-title{font-size:10px;font-weight:700;color:#fff;}
+  #sbb-ep-strip-sub{font-size:8px;color:rgba(255,255,255,0.45);}
+  #sbb-ep-strip-badge{font-size:7px;font-weight:800;border-radius:4px;padding:2px 6px;color:#fff;white-space:nowrap;flex-shrink:0;}
+  #sbb-ep-results-tag{font-size:9px;color:rgba(255,255,255,0.3);font-weight:500;}
+  /* White bottom */
+  #sbb-ep-bottom{background:#fff;padding:18px 18px 16px;}
+  #sbb-ep-heading{font-size:17px;font-weight:800;color:#111827;margin-bottom:6px;line-height:1.25;letter-spacing:-0.02em;}
+  #sbb-ep-sub{font-size:12px;color:#6B7280;margin-bottom:13px;line-height:1.55;}
+  #sbb-ep-cta{width:100%;border:none;cursor:pointer;font-family:'Poppins',-apple-system,sans-serif;font-size:13px;font-weight:700;padding:13px;margin-bottom:9px;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;}
+  #sbb-ep-cta:hover{opacity:0.9;}
+  #sbb-ep-dismiss{width:100%;background:none;border:none;font-family:'Poppins',-apple-system,sans-serif;font-size:11px;color:#9CA3AF;cursor:pointer;padding:3px;display:block;text-align:center;}
   #sbb-ep-dismiss:hover{color:#374151;}
 </style>
 
@@ -1109,6 +1126,7 @@ function applyInlineTryOnSettings(settings) {
       if (ep.cta_text) cta.textContent = ep.cta_text;
       if (ep.cta_bg_color) cta.style.background = ep.cta_bg_color;
       if (ep.cta_text_color) cta.style.color = ep.cta_text_color;
+      if (ep.cta_bg_color) cta.style.borderRadius = '12px';
     }
     var dismiss = document.getElementById('sbb-ep-dismiss');
     if (dismiss && ep.dismiss_text) dismiss.textContent = ep.dismiss_text;
@@ -1145,6 +1163,18 @@ function applyInlineTryOnSettings(settings) {
           if (sd.settings.entry_popup) {
             window._sbbEntryPopupSettings = sd.settings.entry_popup;
             applyEntryPopupSettings(sd.settings.entry_popup);
+          }
+          // Apply button brand color to entry popup merge/badge/cam icons
+          if (sd.settings.button && sd.settings.button.bg_color) {
+            var brandColor = sd.settings.button.bg_color;
+            var merge = document.getElementById('sbb-ep-merge');
+            if (merge) merge.style.background = brandColor;
+            var badge = document.getElementById('sbb-ep-strip-badge');
+            if (badge) badge.style.background = brandColor;
+            var strip = document.getElementById('sbb-ep-strip');
+            if (strip) { strip.style.background = brandColor + '20'; strip.style.border = '1px solid ' + brandColor + '40'; }
+            var cam = document.getElementById('sbb-ep-cam');
+            if (cam) cam.style.background = brandColor;
           }
         }
       } else {
