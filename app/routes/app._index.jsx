@@ -768,6 +768,8 @@ export default function Index() {
         </div>
       )}
 
+      
+
       {/* Phone Number Step - After Account Created, Before Category */}
       {showPhoneStep && (
         <div className={styles.categorySection}>
@@ -842,7 +844,7 @@ export default function Index() {
 
       {/* Category Selection - After Phone Step OR if no category selected */}
       {(showCategorySelection ||
-        (loaderData.accountExists && !hasCategory && !isActive)) && (
+        (!showPhoneStep && loaderData.accountExists && !hasCategory && !isActive)) && (
         <div style={{ textAlign: "center", marginTop: "32px" }}>
           <h3
             style={{
@@ -862,7 +864,7 @@ export default function Index() {
       )}
 
       {(showCategorySelection ||
-        (loaderData.accountExists && !hasCategory && !isActive)) && (
+        (!showPhoneStep && loaderData.accountExists && !hasCategory && !isActive)) && (
         <div className={styles.categorySection}>
           <h2 className={styles.categoryTitle}>
             Select Your Product Categories
