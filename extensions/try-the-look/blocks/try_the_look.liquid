@@ -895,30 +895,27 @@ function updateCategoryUploadTip() {
   }
 
 function applyInlineTryOnSettings(settings) {
+  var button = document.getElementById('sbb-inline-tryon');
+  if (!button) return;
+
+  // Check all possible locations for the banner toggle
   var banner = settings.education_banner ||
                settings.educationBanner ||
                settings.inline_tryon ||
                settings.inlineTryon;
 
-  var button = document.getElementById('sbb-inline-tryon');
-  if (!button) return;
-
-  // If no inline_tryon setting exists, check entry_popup.enabled as fallback
-  if (!banner) {
-    // Show by default if no specific setting — hide only if explicitly disabled
-    button.style.display = 'flex';
-    return;
+  // Also check settings.button.show_education_banner (new settings format)
+  var showBanner = false;
+  if (banner) {
+    showBanner = banner.enabled === true || banner.show === true || banner.is_enabled === true;
+  } else if (settings.button && settings.button.show_education_banner === true) {
+    showBanner = true;
+  } else if (!banner) {
+    // No explicit setting found — show by default
+    showBanner = true;
   }
 
-  var enabled =
-    banner.enabled === true ||
-    banner.enabled === 1 ||
-    banner.enabled === 'true' ||
-    banner.show === true ||
-    banner.show_banner === true ||
-    banner.is_enabled === true;
-
-  button.style.display = enabled ? 'flex' : 'none';
+  button.style.display = showBanner ? 'flex' : 'none';
 
   var title = document.getElementById('sbb-inline-tryon-title');
   var sub = document.getElementById('sbb-inline-tryon-sub');
