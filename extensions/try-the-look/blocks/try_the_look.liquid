@@ -909,14 +909,17 @@ function applyInlineTryOnSettings(settings) {
                settings.inline_tryon || settings.inlineTryon || null;
   var btnSettings = settings.button || {};
 
-  // Determine visibility
+  // Determine visibility — check settings.button.show_education_banner directly
   var showBanner = false;
   if (banner) {
+    // Separate education_banner object controls it
     showBanner = banner.enabled === true || banner.show === true || banner.is_enabled === true;
-  } else if (btnSettings.show_education_banner === true) {
+  } else if (btnSettings.show_education_banner !== undefined) {
+    // Explicit toggle in button settings — respect it exactly
+    showBanner = btnSettings.show_education_banner === true;
+  } else {
+    // No setting found at all — show by default
     showBanner = true;
-  } else if (!banner) {
-    showBanner = true; // default show
   }
 
   button.style.display = showBanner ? 'flex' : 'none';
