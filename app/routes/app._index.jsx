@@ -342,6 +342,13 @@ export default function DashboardIndex() {
     if (hasAccount) return 1;
     return 0;
   });
+  // Once the dashboard has been opened, the completed setup steps stay locked.
+  const [dashboardLocked, setDashboardLocked] = useState(isActive);
+
+  const openStep = (step) => {
+    if (dashboardLocked || isActive) return;
+    setCurrentStep(step);
+  };
 
   // Category selection state
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -564,7 +571,7 @@ export default function DashboardIndex() {
 
           <div
             className={`${styles.stepItem} ${currentStep === 0 ? styles.stepAct : ""} ${currentStep > 0 ? styles.stepDone : ""}`}
-            onClick={() => setCurrentStep(0)}
+            onClick={() => openStep(0)}
           >
             <div className={styles.siDot}>{currentStep > 0 ? "✓" : "1"}</div>
             <div className={styles.siLabel}>Get Started</div>
@@ -572,7 +579,7 @@ export default function DashboardIndex() {
 
           <div
             className={`${styles.stepItem} ${currentStep === 1 ? styles.stepAct : ""} ${currentStep > 1 ? styles.stepDone : ""}`}
-            onClick={() => hasAccount && setCurrentStep(1)}
+            onClick={() => hasAccount && openStep(1)}
           >
             <div className={styles.siDot}>{currentStep > 1 ? "✓" : "2"}</div>
             <div className={styles.siLabel}>Categories</div>
@@ -580,7 +587,7 @@ export default function DashboardIndex() {
 
           <div
             className={`${styles.stepItem} ${currentStep === 2 ? styles.stepAct : ""} ${currentStep > 2 ? styles.stepDone : ""}`}
-            onClick={() => hasAccount && setCurrentStep(2)}
+            onClick={() => hasAccount && openStep(2)}
           >
             <div className={styles.siDot}>{currentStep > 2 ? "✓" : "3"}</div>
             <div className={styles.siLabel}>Contact info</div>
@@ -588,7 +595,7 @@ export default function DashboardIndex() {
 
           <div
             className={`${styles.stepItem} ${currentStep === 3 ? styles.stepAct : ""} ${currentStep > 3 ? styles.stepDone : ""}`}
-            onClick={() => hasAccount && setCurrentStep(3)}
+            onClick={() => hasAccount && openStep(3)}
           >
             <div className={styles.siDot}>{currentStep > 3 ? "✓" : "4"}</div>
             <div className={styles.siLabel}>Try it on</div>
@@ -596,7 +603,7 @@ export default function DashboardIndex() {
 
           <div
             className={`${styles.stepItem} ${currentStep === 4 ? styles.stepAct : ""} ${isActive ? styles.stepDone : ""}`}
-            onClick={() => hasAccount && setCurrentStep(4)}
+            onClick={() => hasAccount && openStep(4)}
           >
             <div className={styles.siDot}>{isActive ? "✓" : "5"}</div>
             <div className={styles.siLabel}>Add button</div>
@@ -1240,13 +1247,19 @@ export default function DashboardIndex() {
                 >
                   <button
                     className={styles.btnGhost}
-                    onClick={() => navigate("/app/settings")}
+                    onClick={() => {
+                      navigate("/app/settings");
+                      setDashboardLocked(true);
+                    }}
                   >
                     🎨 Customize button
                   </button>
                   <button
                     className={styles.tealButton}
-                    onClick={() => setCurrentStep(6)}
+                    onClick={() => {
+                      setDashboardLocked(true);
+                      setCurrentStep(6);
+                    }}
                   >
                     📊 Go to dashboard
                   </button>
