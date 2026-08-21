@@ -788,6 +788,7 @@ export default function DashboardIndex() {
           )}
 
           {/* ════ SCREEN 2: PHONE & WHATSAPP ════ */}
+
           {currentStep === 2 && (
             <div className={styles.panel}>
               <div className={styles.panelHead}>
@@ -813,8 +814,8 @@ export default function DashboardIndex() {
                     </div>
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.45)",
-                        padding: "10px 12px",
+                        background: "rgba(255,255,255,0.25)",
+                        padding: "5px 12px",
                         borderRadius: "8px",
                         color: "#ffffff",
                         fontSize: "12px",
@@ -832,14 +833,14 @@ export default function DashboardIndex() {
                         on your product.
                       </p>
                     </div>
-
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.45)",
-                        padding: "10px 12px",
+                        background: "rgba(255,255,255,0.25)",
+                        padding: "5px 12px",
                         borderRadius: "8px",
                         color: "#ffffff",
                         fontSize: "12px",
+                        marginTop: "12px",
                       }}
                     >
                       <p>80% of credits used</p>
@@ -938,7 +939,13 @@ export default function DashboardIndex() {
                 <div className={styles.tryonGrid}>
                   {/* Left Column: Product Selection & Photo Upload */}
                   <div>
-                    <div style="grid-gap: 16px; display: grid; grid-template-columns: 1fr 1fr;">
+                    <div
+                      style={{
+                        gap: "16px",
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                      }}
+                    >
                       <div>
                         <div className={styles.tgHead}>1. Your products</div>
                         <div
