@@ -378,7 +378,7 @@ export default function DashboardIndex() {
         setCurrentStep(3); // Move to Try-On Demo
       } else if (fetcher.data.step === "appStatusUpdated") {
         shopify.toast.show("App activated!");
-        setCurrentStep(6); // Move to Dashboard
+        setCurrentStep(5); // Show live confirmation and quick links
         setTimeout(() => revalidator.revalidate(), 1000);
       } else if (fetcher.data.step === "ordersSynced") {
         const newOrders = fetcher.data.new_orders || 0;
