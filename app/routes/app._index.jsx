@@ -328,9 +328,10 @@ export default function DashboardIndex() {
   // 2: Phone / WhatsApp Contact
   // 3: Virtual Try-On Demo
   // 4: Add Button to Store
-  // 5: Dashboard
+  // 5: Live confirmation / quick links
+  // 6: Dashboard
   const [currentStep, setCurrentStep] = useState(() => {
-    if (isActive) return 5;
+    if (isActive) return 6;
     if (hasAccount && hasCategory) return 4;
     if (hasAccount) return 1;
     return 0;
@@ -377,7 +378,7 @@ export default function DashboardIndex() {
         setCurrentStep(3); // Move to Try-On Demo
       } else if (fetcher.data.step === "appStatusUpdated") {
         shopify.toast.show("App activated!");
-        setCurrentStep(5); // Move to Dashboard
+        setCurrentStep(6); // Move to Dashboard
         setTimeout(() => revalidator.revalidate(), 1000);
       } else if (fetcher.data.step === "ordersSynced") {
         const newOrders = fetcher.data.new_orders || 0;
@@ -952,7 +953,6 @@ export default function DashboardIndex() {
                           style={{
                             display: "flex",
                             gap: "8px",
-                            marginBottom: "16px",
                           }}
                         >
                           {sampleProducts.map((p, idx) => (
@@ -1208,8 +1208,49 @@ export default function DashboardIndex() {
             </div>
           )}
 
-          {/* ════ SCREEN 5: MAIN DASHBOARD ════ */}
+          {/* Screen 5: live confirmation and quick links */}
           {currentStep === 5 && (
+            <div
+              className={styles.panel}
+              style={{ maxWidth: "620px", margin: "40px auto" }}
+            >
+              <div
+                className={styles.panelBody}
+                style={{ textAlign: "center", padding: "48px 32px" }}
+              >
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>✓</div>
+                <div className={styles.phTitle}>🎉 You're live!</div>
+                <div className={styles.phSub} style={{ margin: "12px 0 28px" }}>
+                  Try The Look is now active on all your product pages.
+                  <br />What do you want to do next?
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <button
+                    className={styles.btnGhost}
+                    onClick={() => setCurrentStep(6)}
+                  >
+                    🎨 Customize button
+                  </button>
+                  <button
+                    className={styles.tealButton}
+                    onClick={() => setCurrentStep(6)}
+                  >
+                    📊 Go to dashboard
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ════ SCREEN 6: MAIN DASHBOARD ════ */}
+          {currentStep === 6 && (
             <div>
               {/* Top Summary Bar */}
               <div
