@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { useFetcher, useLoaderData, useRevalidator } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useRevalidator,
+} from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
@@ -310,6 +315,7 @@ export const action = async ({ request }) => {
 export default function DashboardIndex() {
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const revalidator = useRevalidator();
   const shopify = useAppBridge();
 
@@ -1234,7 +1240,7 @@ export default function DashboardIndex() {
                 >
                   <button
                     className={styles.btnGhost}
-                    onClick={() => setCurrentStep(6)}
+                    onClick={() => navigate("/app/settings")}
                   >
                     🎨 Customize button
                   </button>
