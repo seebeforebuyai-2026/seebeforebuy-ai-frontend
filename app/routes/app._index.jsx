@@ -1207,7 +1207,7 @@ export default function DashboardIndex() {
                     style={{ border: "1px solid #E5E7EB" }}
                     onClick={openThemeEditor}
                   >
-                    🎨 Open Theme Editor
+                     Open Theme Editor
                   </button>
                   <button
                     className={styles.tealButton}
@@ -1252,7 +1252,7 @@ export default function DashboardIndex() {
                       setDashboardLocked(true);
                     }}
                   >
-                    🎨 Customize button
+                     Customize button
                   </button>
                   <button
                     className={styles.tealButton}
@@ -1261,7 +1261,7 @@ export default function DashboardIndex() {
                       setCurrentStep(6);
                     }}
                   >
-                    📊 Go to dashboard
+                     Go to dashboard
                   </button>
                 </div>
               </div>
@@ -1315,14 +1315,14 @@ export default function DashboardIndex() {
                     <div
                       className={`${styles.statusBadge} ${isActive ? styles.statusActive : styles.statusDisabled}`}
                     >
-                      {isActive ? "✅ Active" : "⚠️ Inactive"}
+                      {isActive ? " Active" : " Inactive"}
                     </div>
                     <button
                       className={styles.tealButton}
                       onClick={handleSyncOrders}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "Syncing..." : "🔄 Sync Orders"}
+                      {isSubmitting ? "Syncing..." : " Sync Orders"}
                     </button>
                   </div>
                 </div>
@@ -1434,7 +1434,7 @@ export default function DashboardIndex() {
                         marginBottom: "16px",
                       }}
                     >
-                      🏆 Top Products by Try-On
+                       Top Products by Try-On
                     </h3>
                     <div style={{ overflowX: "auto" }}>
                       <table
