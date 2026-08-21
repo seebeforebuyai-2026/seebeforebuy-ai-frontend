@@ -813,48 +813,46 @@ export default function DashboardIndex() {
                     </div>
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.15)",
+                        background: "rgba(255,255,255,0.45)",
                         padding: "10px 12px",
                         borderRadius: "8px",
-                        color: "#fff",
+                        color: "#ffffff",
                         fontSize: "12px",
                       }}
                     >
-                      First try-on on your store!
+                      <p> First try-on on your store!</p>
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          color: "#ffffff",
+                          marginTop: "4px",
+                        }}
+                      >
+                        We'll send you a WhatsApp message when a shopper tries
+                        on your product.
+                      </p>
                     </div>
-                    <p
-                      style={{
-                        fontSize: "10px",
-                        color: "#9CA3AF",
-                        marginTop: "4px",
-                      }}
-                    >
-                      We'll send you a WhatsApp message when a shopper tries on
-                      your product for the first time. You can also receive
-                      alerts for every try-on.
-                    </p>
+
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.15)",
+                        background: "rgba(255,255,255,0.45)",
                         padding: "10px 12px",
                         borderRadius: "8px",
-                        color: "#fff",
+                        color: "#ffffff",
                         fontSize: "12px",
                       }}
                     >
-                      80% of credits used
+                      <p>80% of credits used</p>
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          color: "#ffffff",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Upgrade to keep your button live all month
+                      </p>
                     </div>
-                    <p
-                      style={{
-                        fontSize: "10px",
-                        color: "#9CA3AF",
-                        marginTop: "4px",
-                      }}
-                    >
-                      We'll send you a WhatsApp message when your try-on credits
-                      are running low. You can also receive alerts for every
-                      try-on.
-                    </p>
                   </div>
 
                   <div style={{ marginBottom: "20px" }}>
