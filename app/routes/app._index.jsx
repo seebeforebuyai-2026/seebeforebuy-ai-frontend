@@ -15,11 +15,13 @@ export const loader = async ({ request }) => {
   const planHandle = url.searchParams.get("plan_handle");
 
   if (chargeId && planHandle) {
-    console.log(`💳 Plan activated — shop: ${shopDomain} | plan: ${planHandle} | charge: ${chargeId}`);
+    console.log(
+      `💳 Plan activated — shop: ${shopDomain} | plan: ${planHandle} | charge: ${chargeId}`,
+    );
     const planMap = {
       standard: { plan_type: "Starter", images_limit: 500 },
-      growth:   { plan_type: "growth",  images_limit: 1000 },
-      scale:    { plan_type: "pro",     images_limit: 10000 },
+      growth: { plan_type: "growth", images_limit: 1000 },
+      scale: { plan_type: "pro", images_limit: 10000 },
     };
     const planConfig = planMap[planHandle.toLowerCase()] || planMap.standard;
 
@@ -56,7 +58,8 @@ export const loader = async ({ request }) => {
     `);
     const data = await response.json();
     if (data.data?.shop) {
-      shopEmail = data.data.shop.contactEmail || data.data.shop.email || shopEmail;
+      shopEmail =
+        data.data.shop.contactEmail || data.data.shop.email || shopEmail;
       shopName = data.data.shop.name || shopName;
     }
   } catch (error) {
@@ -72,7 +75,9 @@ export const loader = async ({ request }) => {
 
     let predicted = null;
     try {
-      const predRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}/predicted-impact`);
+      const predRes = await fetch(
+        `${backendUrl}/api/shop-status/${shopDomain}/predicted-impact`,
+      );
       if (predRes.ok) {
         const predData = await predRes.json();
         predicted = predData.predicted || null;
@@ -140,7 +145,8 @@ export const action = async ({ request }) => {
       `);
       const data = await response.json();
       if (data.data?.shop) {
-        shopEmail = data.data.shop.contactEmail || data.data.shop.email || shopEmail;
+        shopEmail =
+          data.data.shop.contactEmail || data.data.shop.email || shopEmail;
         shopName = data.data.shop.name || shopName;
       }
     } catch (error) {
@@ -152,13 +158,20 @@ export const action = async ({ request }) => {
       const response = await fetch(`${backendUrl}/api/merchant/onboard`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shop_domain: shopDomain, shop_email: shopEmail, shop_name: shopName }),
+        body: JSON.stringify({
+          shop_domain: shopDomain,
+          shop_email: shopEmail,
+          shop_name: shopName,
+        }),
       });
       const data = await response.json();
       if (data.success) {
         return { success: true, step: "accountCreated" };
       }
-      return { success: false, error: data.error || "Failed to create account" };
+      return {
+        success: false,
+        error: data.error || "Failed to create account",
+      };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -174,13 +187,20 @@ export const action = async ({ request }) => {
       const response = await fetch(`${backendUrl}/api/merchant/save-phone`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shop_domain: shopDomain, phone_number: phoneNumber, whatsapp_number: whatsappNumber }),
+        body: JSON.stringify({
+          shop_domain: shopDomain,
+          phone_number: phoneNumber,
+          whatsapp_number: whatsappNumber,
+        }),
       });
       const data = await response.json();
       if (data.success) {
         return { success: true, step: "phoneSaved" };
       }
-      return { success: false, error: data.error || "Failed to save phone numbers" };
+      return {
+        success: false,
+        error: data.error || "Failed to save phone numbers",
+      };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -193,27 +213,37 @@ export const action = async ({ request }) => {
 
     let categories = [];
     if (categoriesValue) {
-      try { categories = JSON.parse(categoriesValue); } catch { categories = []; }
+      try {
+        categories = JSON.parse(categoriesValue);
+      } catch {
+        categories = [];
+      }
     } else if (categoryValue) {
       categories = [{ main_category: categoryValue, subcategories: [] }];
     }
 
     const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
     try {
-      const response = await fetch(`${backendUrl}/api/merchant/save-categories`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shop_domain: shopDomain,
-          categories,
-          category: categories[0]?.main_category || categoryValue,
-        }),
-      });
+      const response = await fetch(
+        `${backendUrl}/api/merchant/save-categories`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shop_domain: shopDomain,
+            categories,
+            category: categories[0]?.main_category || categoryValue,
+          }),
+        },
+      );
       const data = await response.json();
       if (data.success) {
         return { success: true, step: "categoriesSaved" };
       }
-      return { success: false, error: data.error || "Failed to save categories" };
+      return {
+        success: false,
+        error: data.error || "Failed to save categories",
+      };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -225,16 +255,22 @@ export const action = async ({ request }) => {
 
     const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
     try {
-      const response = await fetch(`${backendUrl}/api/merchant/update-app-status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shop_domain: shopDomain, status }),
-      });
+      const response = await fetch(
+        `${backendUrl}/api/merchant/update-app-status`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ shop_domain: shopDomain, status }),
+        },
+      );
       const data = await response.json();
       if (data.success) {
         return { success: true, step: "appStatusUpdated" };
       }
-      return { success: false, error: data.error || "Failed to update app status" };
+      return {
+        success: false,
+        error: data.error || "Failed to update app status",
+      };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -283,7 +319,7 @@ export default function DashboardIndex() {
   const hasAccount = loaderData.accountExists;
   const hasCategory = Boolean(
     loaderData.shopStatus?.product_category ||
-    loaderData.shopStatus?.product_categories?.length
+    loaderData.shopStatus?.product_categories?.length,
   );
 
   // Wizard Step State
@@ -304,14 +340,16 @@ export default function DashboardIndex() {
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   // Contact details state
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
 
   // Try-on Demo State
   const sampleProducts = [
-    { name: "White Ringer Tee", price: "₹699", img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300&auto=format&fit=crop" },
-    { name: "Maroon Polo Shirt", price: "₹799", img: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=300&auto=format&fit=crop" },
-    { name: "Yellow Ringer Tee", price: "₹699", img: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=300&auto=format&fit=crop" },
+    {
+      name: "White Ringer Tee",
+      price: "₹699",
+      img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300&auto=format&fit=crop",
+    },
   ];
   const [selectedProdIdx, setSelectedProdIdx] = useState(0);
   const [userPhoto, setUserPhoto] = useState(null);
@@ -353,7 +391,10 @@ export default function DashboardIndex() {
 
   // Open theme editor
   const openThemeEditor = () => {
-    const params = new URLSearchParams({ template: "product", context: "apps" });
+    const params = new URLSearchParams({
+      template: "product",
+      context: "apps",
+    });
     const themeEditorUrl = `https://${loaderData.shop.domain}/admin/themes/current/editor?${params.toString()}`;
     window.open(themeEditorUrl);
   };
@@ -366,7 +407,9 @@ export default function DashboardIndex() {
   // Submit Categories
   const handleSaveCategories = () => {
     if (!selectedCategories.length) {
-      shopify.toast.show("Please select at least one category", { isError: true });
+      shopify.toast.show("Please select at least one category", {
+        isError: true,
+      });
       return;
     }
     fetcher.submit(
@@ -375,14 +418,16 @@ export default function DashboardIndex() {
         categories: JSON.stringify(selectedCategories),
         shop_domain: loaderData.shop.domain,
       },
-      { method: "POST" }
+      { method: "POST" },
     );
   };
 
   // Submit Phone Numbers
   const handleSavePhone = () => {
     if (!phoneNumber.trim() || !whatsappNumber.trim()) {
-      shopify.toast.show("Please enter both phone and WhatsApp numbers", { isError: true });
+      shopify.toast.show("Please enter both phone and WhatsApp numbers", {
+        isError: true,
+      });
       return;
     }
     fetcher.submit(
@@ -392,7 +437,7 @@ export default function DashboardIndex() {
         phone_number: phoneNumber.trim(),
         whatsapp_number: whatsappNumber.trim(),
       },
-      { method: "POST" }
+      { method: "POST" },
     );
   };
 
@@ -404,7 +449,7 @@ export default function DashboardIndex() {
         shop_domain: loaderData.shop.domain,
         status: "active",
       },
-      { method: "POST" }
+      { method: "POST" },
     );
   };
 
@@ -416,12 +461,17 @@ export default function DashboardIndex() {
   // Category Toggle Helper
   const toggleCategory = (mainCategory, allSubcategories = []) => {
     setSelectedCategories((current) => {
-      const exists = current.find((entry) => entry.main_category === mainCategory);
+      const exists = current.find(
+        (entry) => entry.main_category === mainCategory,
+      );
       if (exists) {
         return current.filter((entry) => entry.main_category !== mainCategory);
       }
       const subKeys = allSubcategories.map((s) => s[0]);
-      return [...current, { main_category: mainCategory, subcategories: subKeys }];
+      return [
+        ...current,
+        { main_category: mainCategory, subcategories: subKeys },
+      ];
     });
   };
 
@@ -468,7 +518,9 @@ export default function DashboardIndex() {
   const getTimeSinceSync = () => {
     const lastSyncTime = loaderData.shopStatus?.order_sync?.last_sync_time;
     if (!lastSyncTime) return "Never";
-    const diffMins = Math.floor((Date.now() - new Date(lastSyncTime).getTime()) / 60000);
+    const diffMins = Math.floor(
+      (Date.now() - new Date(lastSyncTime).getTime()) / 60000,
+    );
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins} min ago`;
     const diffHours = Math.floor(diffMins / 60);
@@ -478,7 +530,6 @@ export default function DashboardIndex() {
 
   return (
     <div className={styles.appContainer}>
-
       {/* TOP BAR */}
       <div className={styles.topBar}>
         <div className={styles.tbLogo}>
@@ -491,94 +542,95 @@ export default function DashboardIndex() {
         </div>
         <div className={styles.tbRight}>
           <span className={styles.tbCredits}>
-            {loaderData.usage ? `${loaderData.usage.limit - loaderData.usage.used} credits left` : '50 free credits'}
+            {loaderData.usage
+              ? `${loaderData.usage.limit - loaderData.usage.used} credits left`
+              : "50 free credits"}
           </span>
         </div>
       </div>
 
       {/* MAIN LAYOUT */}
       <div className={styles.layout}>
-
         {/* LEFT SIDEBAR (WIZARD STEPS) */}
         <div className={styles.sidebar}>
-          <div className={styles.ssLabel}>Setup Wizard</div>
+          <div className={styles.ssLabel}>Setup in 1 minute</div>
 
           <div
-            className={`${styles.stepItem} ${currentStep === 0 ? styles.stepAct : ''} ${currentStep > 0 ? styles.stepDone : ''}`}
+            className={`${styles.stepItem} ${currentStep === 0 ? styles.stepAct : ""} ${currentStep > 0 ? styles.stepDone : ""}`}
             onClick={() => setCurrentStep(0)}
           >
-            <div className={styles.siDot}>{currentStep > 0 ? '✓' : '1'}</div>
+            <div className={styles.siDot}>{currentStep > 0 ? "✓" : "1"}</div>
             <div className={styles.siLabel}>Get Started</div>
           </div>
 
           <div
-            className={`${styles.stepItem} ${currentStep === 1 ? styles.stepAct : ''} ${currentStep > 1 ? styles.stepDone : ''}`}
+            className={`${styles.stepItem} ${currentStep === 1 ? styles.stepAct : ""} ${currentStep > 1 ? styles.stepDone : ""}`}
             onClick={() => hasAccount && setCurrentStep(1)}
           >
-            <div className={styles.siDot}>{currentStep > 1 ? '✓' : '2'}</div>
+            <div className={styles.siDot}>{currentStep > 1 ? "✓" : "2"}</div>
             <div className={styles.siLabel}>Categories</div>
           </div>
 
           <div
-            className={`${styles.stepItem} ${currentStep === 2 ? styles.stepAct : ''} ${currentStep > 2 ? styles.stepDone : ''}`}
+            className={`${styles.stepItem} ${currentStep === 2 ? styles.stepAct : ""} ${currentStep > 2 ? styles.stepDone : ""}`}
             onClick={() => hasAccount && setCurrentStep(2)}
           >
-            <div className={styles.siDot}>{currentStep > 2 ? '✓' : '3'}</div>
+            <div className={styles.siDot}>{currentStep > 2 ? "✓" : "3"}</div>
             <div className={styles.siLabel}>Contact info</div>
           </div>
 
           <div
-            className={`${styles.stepItem} ${currentStep === 3 ? styles.stepAct : ''} ${currentStep > 3 ? styles.stepDone : ''}`}
+            className={`${styles.stepItem} ${currentStep === 3 ? styles.stepAct : ""} ${currentStep > 3 ? styles.stepDone : ""}`}
             onClick={() => hasAccount && setCurrentStep(3)}
           >
-            <div className={styles.siDot}>{currentStep > 3 ? '✓' : '4'}</div>
+            <div className={styles.siDot}>{currentStep > 3 ? "✓" : "4"}</div>
             <div className={styles.siLabel}>Try it on</div>
           </div>
 
           <div
-            className={`${styles.stepItem} ${currentStep === 4 ? styles.stepAct : ''} ${isActive ? styles.stepDone : ''}`}
+            className={`${styles.stepItem} ${currentStep === 4 ? styles.stepAct : ""} ${isActive ? styles.stepDone : ""}`}
             onClick={() => hasAccount && setCurrentStep(4)}
           >
-            <div className={styles.siDot}>{isActive ? '✓' : '5'}</div>
+            <div className={styles.siDot}>{isActive ? "✓" : "5"}</div>
             <div className={styles.siLabel}>Add button</div>
-          </div>
-
-          <div className={styles.ssDivider} />
-          <div className={styles.ssLabel}>Main App</div>
-
-          <div
-            className={`${styles.stepItem} ${currentStep === 5 ? styles.stepAct : ''}`}
-            onClick={() => isActive && setCurrentStep(5)}
-          >
-            <div className={styles.siDot}>📊</div>
-            <div className={styles.siLabel}>Dashboard</div>
           </div>
         </div>
 
         {/* MAIN PANEL CONTENT */}
         <div className={styles.mainArea}>
-
           {/* ════ SCREEN 0: WELCOME / HERO ════ */}
           {currentStep === 0 && (
             <div className={styles.panel}>
               <div className={styles.welcomeHero}>
-                <div className={styles.wsEyebrow}>✦ AI Virtual Try-On for Shopify</div>
+                <div className={styles.wsEyebrow}>
+                  ✦ AI Virtual Try-On for Shopify
+                </div>
                 <h1 className={styles.heroTitle}>
-                  Let shoppers see themselves in your products — <span>before they buy</span>
+                  Let shoppers see themselves in your products —{" "}
+                  <span>before they buy</span>
                 </h1>
                 <p className={styles.heroSubtitle}>
-                  Boost conversions by +72% and reduce returns. 50 free try-ons included. Setup takes under 3 minutes.
+                  Boost conversions by +72% and reduce returns. 50 free try-ons
+                  included. Setup takes under 3 minutes.
                 </p>
 
-                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                <div style={{ textAlign: "center", marginBottom: "28px" }}>
                   <button
                     className={styles.tealButton}
                     onClick={handleStartOnboarding}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Setting up account..." : "Get Started Now →"}
+                    {isSubmitting
+                      ? "Setting up account..."
+                      : "Get Started Now →"}
                   </button>
-                  <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '8px' }}>
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#9CA3AF",
+                      marginTop: "8px",
+                    }}
+                  >
                     No credit card required · Free 50 try-on credits
                   </p>
                 </div>
@@ -610,31 +662,104 @@ export default function DashboardIndex() {
             <div className={styles.panel}>
               <div className={styles.panelHead}>
                 <div className={styles.phEyebrow}>Step 1 of 4</div>
-                <div className={styles.phTitle}>Select Your Product Categories</div>
+                <div className={styles.phTitle}>
+                  Select Your Product Categories
+                </div>
                 <div className={styles.phSub}>
-                  Select the product categories you sell. Our AI model adapts to these garments.
+                  Select the product categories you sell. Our AI model adapts to
+                  these garments.
                 </div>
               </div>
               <div className={styles.panelBody}>
                 <div className={styles.categoryGrid}>
                   {[
-                    { value: "indo_western", label: "Indo Western", examples: "Jacket kurti, fusion dress, dhoti pant, crop top lehenga", subcategories: [["jacket_kurti", "Jacket Kurti"], ["crop_top_lehenga", "Crop Top Lehenga"]] },
-                    { value: "party_wear", label: "Party Wear", examples: "Cocktail dress, evening gown, designer lehenga", subcategories: [["party_saree", "Party Saree"], ["designer_lehenga", "Designer Lehenga"]] },
-                    { value: "winter_wear", label: "Winter Wear", examples: "Puffer jacket, hoodie, sweater, leather jacket", subcategories: [["hoodie", "Hoodie"], ["sweater", "Sweater"]] },
-                    { value: "casual", label: "Casual Wear", examples: "T-shirts, polo shirts, kurtis, daily sarees", subcategories: [["tshirt", "T-Shirt"], ["kurti", "Kurti"]] },
-                    { value: "watch", label: "Watches", examples: "Wristwatches, smartwatches, luxury timepieces", subcategories: [] },
-                    { value: "jewellery", label: "Jewellery", examples: "Rings, necklaces, earrings, bangles", subcategories: [["ring", "Ring"], ["necklace", "Necklace"]] },
-                    { value: "activewear", label: "Activewear & Gym Wear", examples: "Compression wear, sports bra, joggers, tracksuit", subcategories: [["sports_bra", "Sports Bra"], ["jogger_pants", "Jogger Pants"]] },
-                    { value: "headwear_caps", label: "Headwear & Caps", examples: "Baseball cap, snapback, trucker hat, beanie", subcategories: [] },
+                    {
+                      value: "indo_western",
+                      label: "Indo Western",
+                      examples:
+                        "Jacket kurti, fusion dress, dhoti pant, crop top lehenga",
+                      subcategories: [
+                        ["jacket_kurti", "Jacket Kurti"],
+                        ["crop_top_lehenga", "Crop Top Lehenga"],
+                      ],
+                    },
+                    {
+                      value: "party_wear",
+                      label: "Party Wear",
+                      examples:
+                        "Cocktail dress, evening gown, designer lehenga",
+                      subcategories: [
+                        ["party_saree", "Party Saree"],
+                        ["designer_lehenga", "Designer Lehenga"],
+                      ],
+                    },
+                    {
+                      value: "winter_wear",
+                      label: "Winter Wear",
+                      examples:
+                        "Puffer jacket, hoodie, sweater, leather jacket",
+                      subcategories: [
+                        ["hoodie", "Hoodie"],
+                        ["sweater", "Sweater"],
+                      ],
+                    },
+                    {
+                      value: "casual",
+                      label: "Casual Wear",
+                      examples: "T-shirts, polo shirts, kurtis, daily sarees",
+                      subcategories: [
+                        ["tshirt", "T-Shirt"],
+                        ["kurti", "Kurti"],
+                      ],
+                    },
+                    {
+                      value: "watch",
+                      label: "Watches",
+                      examples: "Wristwatches, smartwatches, luxury timepieces",
+                      subcategories: [],
+                    },
+                    {
+                      value: "jewellery",
+                      label: "Jewellery",
+                      examples: "Rings, necklaces, earrings, bangles",
+                      subcategories: [
+                        ["ring", "Ring"],
+                        ["necklace", "Necklace"],
+                      ],
+                    },
+                    {
+                      value: "activewear",
+                      label: "Activewear & Gym Wear",
+                      examples:
+                        "Compression wear, sports bra, joggers, tracksuit",
+                      subcategories: [
+                        ["sports_bra", "Sports Bra"],
+                        ["jogger_pants", "Jogger Pants"],
+                      ],
+                    },
+                    {
+                      value: "headwear_caps",
+                      label: "Headwear & Caps",
+                      examples: "Baseball cap, snapback, trucker hat, beanie",
+                      subcategories: [],
+                    },
                   ].map((cat) => {
-                    const isSelected = Boolean(selectedCategories.find((c) => c.main_category === cat.value));
+                    const isSelected = Boolean(
+                      selectedCategories.find(
+                        (c) => c.main_category === cat.value,
+                      ),
+                    );
                     return (
                       <div
                         key={cat.value}
-                        className={`${styles.catCard} ${isSelected ? styles.catCardOn : ''}`}
-                        onClick={() => toggleCategory(cat.value, cat.subcategories)}
+                        className={`${styles.catCard} ${isSelected ? styles.catCardOn : ""}`}
+                        onClick={() =>
+                          toggleCategory(cat.value, cat.subcategories)
+                        }
                       >
-                        <div className={styles.catCheck}>{isSelected ? '✓' : ''}</div>
+                        <div className={styles.catCheck}>
+                          {isSelected ? "✓" : ""}
+                        </div>
                         <div>
                           <div className={styles.catName}>{cat.label}</div>
                           <div className={styles.catHint}>{cat.examples}</div>
@@ -645,8 +770,11 @@ export default function DashboardIndex() {
                 </div>
               </div>
               <div className={styles.panelFoot}>
-                <span style={{ fontSize: '12px', color: '#6B7280' }}>
-                  <b style={{ color: '#008060' }}>{selectedCategories.length}</b> category selected
+                <span style={{ fontSize: "12px", color: "#6B7280" }}>
+                  <b style={{ color: "#008060" }}>
+                    {selectedCategories.length}
+                  </b>{" "}
+                  category selected
                 </span>
                 <button
                   className={styles.tealButton}
@@ -664,26 +792,81 @@ export default function DashboardIndex() {
             <div className={styles.panel}>
               <div className={styles.panelHead}>
                 <div className={styles.phEyebrow}>Step 2 of 4</div>
-                <div className={styles.phTitle}>Contact Information</div>
+                <div className={styles.phTitle}>Get alerts on WhatsApp</div>
                 <div className={styles.phSub}>
-                  Required: Enter your phone and WhatsApp number for setup support and try-on alerts.
+                  Know the moment a shopper tries on your product.
                 </div>
               </div>
               <div className={styles.panelBody}>
-                <div style={{ maxWidth: '440px', margin: '0 auto' }}>
-
+                <div style={{ maxWidth: "580px", margin: "0 auto" }}>
                   <div className={styles.waAlertBanner}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        color: "rgba(255,255,255,0.7)",
+                        textTransform: "uppercase",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Alerts you'll receive
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.15)', padding: '10px 12px', borderRadius: '8px', color: '#fff', fontSize: '12px' }}>
-                      💬 "First try-on generated on your store for White Ringer Tee!"
+                    <div
+                      style={{
+                        background: "rgba(255,255,255,0.15)",
+                        padding: "10px 12px",
+                        borderRadius: "8px",
+                        color: "#fff",
+                        fontSize: "12px",
+                      }}
+                    >
+                      First try-on on your store!
                     </div>
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "#9CA3AF",
+                        marginTop: "4px",
+                      }}
+                    >
+                      We'll send you a WhatsApp message when a shopper tries on
+                      your product for the first time. You can also receive
+                      alerts for every try-on.
+                    </p>
+                    <div
+                      style={{
+                        background: "rgba(255,255,255,0.15)",
+                        padding: "10px 12px",
+                        borderRadius: "8px",
+                        color: "#fff",
+                        fontSize: "12px",
+                      }}
+                    >
+                      80% of credits used
+                    </div>
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "#9CA3AF",
+                        marginTop: "4px",
+                      }}
+                    >
+                      We'll send you a WhatsApp message when your try-on credits
+                      are running low. You can also receive alerts for every
+                      try-on.
+                    </p>
                   </div>
 
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
-                      Phone Number <span style={{ color: '#EF4444' }}>*</span>
+                  <div style={{ marginBottom: "20px" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        marginBottom: "6px",
+                      }}
+                    >
+                      Phone Number <span style={{ color: "#EF4444" }}>*</span>
                     </label>
                     <input
                       type="tel"
@@ -694,9 +877,17 @@ export default function DashboardIndex() {
                     />
                   </div>
 
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
-                      WhatsApp Number <span style={{ color: '#EF4444' }}>*</span>
+                  <div style={{ marginBottom: "24px" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        marginBottom: "6px",
+                      }}
+                    >
+                      WhatsApp Number{" "}
+                      <span style={{ color: "#EF4444" }}>*</span>
                     </label>
                     <input
                       type="tel"
@@ -709,13 +900,20 @@ export default function DashboardIndex() {
                 </div>
               </div>
               <div className={styles.panelFoot}>
-                <button className={styles.btnGhost} onClick={() => setCurrentStep(1)}>
+                <button
+                  className={styles.btnGhost}
+                  onClick={() => setCurrentStep(1)}
+                >
                   ← Back
                 </button>
                 <button
                   className={styles.tealButton}
                   onClick={handleSavePhone}
-                  disabled={isSubmitting || !phoneNumber.trim() || !whatsappNumber.trim()}
+                  disabled={
+                    isSubmitting ||
+                    !phoneNumber.trim() ||
+                    !whatsappNumber.trim()
+                  }
                 >
                   {isSubmitting ? "Saving..." : "Save & Continue →"}
                 </button>
@@ -727,64 +925,105 @@ export default function DashboardIndex() {
           {currentStep === 3 && (
             <div className={styles.panel}>
               <div className={styles.panelHead}>
-                <div className={styles.phEyebrow}>Step 3 of 4 — Interactive Demo</div>
-                <div className={styles.phTitle}>Test the Try-On Experience</div>
+                <div className={styles.phEyebrow}>
+                  Step 3 of 4 — The best part
+                </div>
+                <div className={styles.phTitle}>
+                  See it work on your products
+                </div>
                 <div className={styles.phSub}>
-                  Select a product, upload a photo, and click Generate. This is what your shoppers experience.
+                  Pick a product → upload a photo → generate. This is exactly
+                  what your shoppers do.
                 </div>
               </div>
               <div className={styles.panelBody}>
                 <div className={styles.tryonGrid}>
                   {/* Left Column: Product Selection & Photo Upload */}
                   <div>
-                    <div className={styles.tgHead}>1. Select Sample Product</div>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                      {sampleProducts.map((p, idx) => (
+                    <div style="grid-gap: 16px; display: grid; grid-template-columns: 1fr 1fr;">
+                      <div>
+                        <div className={styles.tgHead}>1. Your products</div>
                         <div
-                          key={idx}
-                          className={`${styles.prodThumb} ${selectedProdIdx === idx ? styles.prodThumbOn : ''}`}
-                          onClick={() => setSelectedProdIdx(idx)}
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            marginBottom: "16px",
+                          }}
                         >
-                          <img src={p.img} alt={p.name} />
-                          <div className={styles.ptName}>{p.name}</div>
+                          {sampleProducts.map((p, idx) => (
+                            <div
+                              key={idx}
+                              className={`${styles.prodThumb} ${selectedProdIdx === idx ? styles.prodThumbOn : ""}`}
+                              onClick={() => setSelectedProdIdx(idx)}
+                            >
+                              <img src={p.img} alt={p.name} />
+                              <div className={styles.ptName}>{p.name}</div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-
-                    <div className={styles.tgHead}>2. Upload Model Photo</div>
-                    <div
-                      className={`${styles.uploadBox} ${userPhoto ? styles.uploadBoxHas : ''}`}
-                      onClick={() => document.getElementById('demo-file-input').click()}
-                    >
-                      <input
-                        type="file"
-                        id="demo-file-input"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={handleFileUpload}
-                      />
-                      {userPhoto ? (
-                        <img src={userPhoto} alt="Uploaded" className={styles.uploadPreviewImg} />
-                      ) : (
-                        <div>
-                          <div style={{ fontSize: '24px', marginBottom: '4px' }}>📸</div>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#4B5563' }}>
-                            Click to upload photo
-                          </div>
-                          <div style={{ fontSize: '10px', color: '#9CA3AF' }}>
-                            Full body / Front facing
-                          </div>
+                      </div>
+                      <div>
+                        <div className={styles.tgHead}>
+                          2. Upload Model Photo
                         </div>
-                      )}
+                        <div
+                          className={`${styles.uploadBox} ${userPhoto ? styles.uploadBoxHas : ""}`}
+                          onClick={() =>
+                            document.getElementById("demo-file-input").click()
+                          }
+                        >
+                          <input
+                            type="file"
+                            id="demo-file-input"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                          />
+                          {userPhoto ? (
+                            <img
+                              src={userPhoto}
+                              alt="Uploaded"
+                              className={styles.uploadPreviewImg}
+                            />
+                          ) : (
+                            <div>
+                              <div
+                                style={{
+                                  fontSize: "24px",
+                                  marginBottom: "4px",
+                                }}
+                              >
+                                📸
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  color: "#4B5563",
+                                }}
+                              >
+                                Click to upload photo
+                              </div>
+                              <div
+                                style={{ fontSize: "10px", color: "#9CA3AF" }}
+                              >
+                                Full body / Front facing
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <button
                       className={styles.tealButton}
-                      style={{ width: '100%', marginTop: '16px' }}
+                      style={{ width: "100%", marginTop: "16px" }}
                       disabled={!userPhoto || isGenerating}
                       onClick={runDemoGeneration}
                     >
-                      {isGenerating ? "Generating..." : "✨ Generate Virtual Try-On"}
+                      {isGenerating
+                        ? "Generating..."
+                        : "✨ Generate Virtual Try-On"}
                     </button>
                   </div>
 
@@ -793,11 +1032,19 @@ export default function DashboardIndex() {
                     <div className={styles.tgHead}>Try-On Result</div>
                     {!isGenerating && !tryonDone && (
                       <div className={styles.raEmpty}>
-                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>✨</div>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#6B7280' }}>
+                        <div style={{ fontSize: "32px", marginBottom: "8px" }}>
+                          ✨
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            color: "#6B7280",
+                          }}
+                        >
                           Result will appear here
                         </div>
-                        <div style={{ fontSize: '10px', color: '#9CA3AF' }}>
+                        <div style={{ fontSize: "10px", color: "#9CA3AF" }}>
                           Upload photo and click Generate
                         </div>
                       </div>
@@ -806,23 +1053,40 @@ export default function DashboardIndex() {
                     {isGenerating && (
                       <div className={styles.raEmpty}>
                         <div className={styles.spinner} />
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#111827', marginTop: '12px' }}>
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 700,
+                            color: "#111827",
+                            marginTop: "12px",
+                          }}
+                        >
                           {genStageText}
                         </div>
                         <div className={styles.progressBarTrack}>
-                          <div className={styles.progressBarFill} style={{ width: `${genProgress}%` }} />
+                          <div
+                            className={styles.progressBarFill}
+                            style={{ width: `${genProgress}%` }}
+                          />
                         </div>
                       </div>
                     )}
 
                     {tryonDone && !isGenerating && (
-                      <div style={{ textAlign: 'center' }}>
+                      <div style={{ textAlign: "center" }}>
                         <img
                           src={sampleProducts[selectedProdIdx].img}
                           alt="Result"
                           className={styles.resultImg}
                         />
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#008060', marginTop: '8px' }}>
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 700,
+                            color: "#008060",
+                            marginTop: "8px",
+                          }}
+                        >
                           ✓ AI Try-On Generated Successfully!
                         </div>
                       </div>
@@ -831,7 +1095,10 @@ export default function DashboardIndex() {
                 </div>
               </div>
               <div class={styles.panelFoot}>
-                <button className={styles.btnGhost} onClick={() => setCurrentStep(2)}>
+                <button
+                  className={styles.btnGhost}
+                  onClick={() => setCurrentStep(2)}
+                >
                   ← Back
                 </button>
                 <button
@@ -850,17 +1117,25 @@ export default function DashboardIndex() {
             <div className={styles.panel}>
               <div className={styles.panelHead}>
                 <div className={styles.phEyebrow}>Step 4 of 4</div>
-                <div className={styles.phTitle}>Add "Try the Look" Button to Theme</div>
+                <div className={styles.phTitle}>
+                  Add "Try the Look" Button to Theme
+                </div>
                 <div className={styles.phSub}>
-                  Follow the video guide below to place the try-on button on your product pages.
+                  Follow the video guide below to place the try-on button on
+                  your product pages.
                 </div>
               </div>
               <div className={styles.panelBody}>
-                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <div style={{ textAlign: "center", marginBottom: "24px" }}>
                   <video
                     src="https://cdn.shopify.com/videos/c/o/v/8d3ec3a22a01482ca376ea8d8b7b6b0b.mp4"
                     controls
-                    style={{ maxWidth: '580px', width: '100%', borderRadius: '12px', border: '1px solid #E5E7EB' }}
+                    style={{
+                      maxWidth: "580px",
+                      width: "100%",
+                      borderRadius: "12px",
+                      border: "1px solid #E5E7EB",
+                    }}
                   />
                 </div>
 
@@ -868,35 +1143,59 @@ export default function DashboardIndex() {
                   <div className={styles.isRow}>
                     <div className={styles.isNum}>1</div>
                     <div>
-                      <div className={styles.isTitle}>Click "Open Theme Editor" below</div>
-                      <div className={styles.isSub}>It opens your Shopify Product Page template in a new tab.</div>
+                      <div className={styles.isTitle}>
+                        Click "Open Theme Editor" below
+                      </div>
+                      <div className={styles.isSub}>
+                        It opens your Shopify Product Page template in a new
+                        tab.
+                      </div>
                     </div>
                   </div>
                   <div className={styles.isRow}>
                     <div className={styles.isNum}>2</div>
                     <div>
-                      <div className={styles.isTitle}>Add block → Apps → "Try the Look"</div>
-                      <div className={styles.isSub}>Drag the block below your Add to Cart button.</div>
+                      <div className={styles.isTitle}>
+                        Add block → Apps → "Try the Look"
+                      </div>
+                      <div className={styles.isSub}>
+                        Drag the block below your Add to Cart button.
+                      </div>
                     </div>
                   </div>
                   <div className={styles.isRow}>
                     <div className={styles.isNum}>3</div>
                     <div>
-                      <div className={styles.isTitle}>Click Save in top right</div>
-                      <div className={styles.isSub}>Your button goes live instantly for all shoppers.</div>
+                      <div className={styles.isTitle}>
+                        Click Save in top right
+                      </div>
+                      <div className={styles.isSub}>
+                        Your button goes live instantly for all shoppers.
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div className={styles.panelFoot}>
-                <button className={styles.btnGhost} onClick={() => setCurrentStep(3)}>
+                <button
+                  className={styles.btnGhost}
+                  onClick={() => setCurrentStep(3)}
+                >
                   ← Back
                 </button>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button className={styles.btnGhost} style={{ border: '1px solid #E5E7EB' }} onClick={openThemeEditor}>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    className={styles.btnGhost}
+                    style={{ border: "1px solid #E5E7EB" }}
+                    onClick={openThemeEditor}
+                  >
                     🎨 Open Theme Editor
                   </button>
-                  <button className={styles.tealButton} onClick={handleConfirmActivation} disabled={isSubmitting}>
+                  <button
+                    className={styles.tealButton}
+                    onClick={handleConfirmActivation}
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "Activating..." : "✓ I've Added the Block"}
                   </button>
                 </div>
@@ -908,33 +1207,76 @@ export default function DashboardIndex() {
           {currentStep === 5 && (
             <div>
               {/* Top Summary Bar */}
-              <div className={styles.statsCard} style={{ marginBottom: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <div
+                className={styles.statsCard}
+                style={{ marginBottom: "20px" }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "20px",
+                  }}
+                >
                   <div>
-                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#111827', margin: 0 }}>
+                    <h2
+                      style={{
+                        fontSize: "22px",
+                        fontWeight: 800,
+                        color: "#111827",
+                        margin: 0,
+                      }}
+                    >
                       Store Performance
                     </h2>
-                    <p style={{ fontSize: '13px', color: '#6B7280', margin: '4px 0 0' }}>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "#6B7280",
+                        margin: "4px 0 0",
+                      }}
+                    >
                       Last order sync: {getTimeSinceSync()}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div className={`${styles.statusBadge} ${isActive ? styles.statusActive : styles.statusDisabled}`}>
-                      {isActive ? '✅ Active' : '⚠️ Inactive'}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <div
+                      className={`${styles.statusBadge} ${isActive ? styles.statusActive : styles.statusDisabled}`}
+                    >
+                      {isActive ? "✅ Active" : "⚠️ Inactive"}
                     </div>
-                    <button className={styles.tealButton} onClick={handleSyncOrders} disabled={isSubmitting}>
-                      {isSubmitting ? 'Syncing...' : '🔄 Sync Orders'}
+                    <button
+                      className={styles.tealButton}
+                      onClick={handleSyncOrders}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Syncing..." : "🔄 Sync Orders"}
                     </button>
                   </div>
                 </div>
 
                 {/* Date Filter */}
                 <div className={styles.dateRangeBar}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#4B5563' }}>Period:</span>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: "#4B5563",
+                    }}
+                  >
+                    Period:
+                  </span>
                   {[7, 30, 90].map((d) => (
                     <button
                       key={d}
-                      className={`${styles.dateBtn} ${selectedDays === d ? styles.dateBtnActive : ''}`}
+                      className={`${styles.dateBtn} ${selectedDays === d ? styles.dateBtnActive : ""}`}
                       onClick={() => setSelectedDays(d)}
                     >
                       Last {d} Days
@@ -946,79 +1288,190 @@ export default function DashboardIndex() {
                 <div className={styles.statsGrid}>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Try-Ons Generated</div>
-                    <div className={styles.statValue}>{loaderData.metrics?.try_on_generated || 0}</div>
+                    <div className={styles.statValue}>
+                      {loaderData.metrics?.try_on_generated || 0}
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Unique Users</div>
-                    <div className={styles.statValue}>{loaderData.metrics?.unique_users || 0}</div>
+                    <div className={styles.statValue}>
+                      {loaderData.metrics?.unique_users || 0}
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Add to Cart Rate</div>
-                    <div className={styles.statValue}>{loaderData.metrics?.add_to_cart_rate || 0}%</div>
+                    <div className={styles.statValue}>
+                      {loaderData.metrics?.add_to_cart_rate || 0}%
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Total Revenue</div>
-                    <div className={styles.statValue} style={{ color: '#008060' }}>
-                      ₹{loaderData.metrics?.total_revenue?.toFixed(2) || '0.00'}
+                    <div
+                      className={styles.statValue}
+                      style={{ color: "#008060" }}
+                    >
+                      ₹{loaderData.metrics?.total_revenue?.toFixed(2) || "0.00"}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Token / Usage Details */}
-              <div className={styles.statsCard} style={{ marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>Plan & Credit Usage</h3>
+              <div
+                className={styles.statsCard}
+                style={{ marginBottom: "20px" }}
+              >
+                <h3
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    marginBottom: "16px",
+                  }}
+                >
+                  Plan & Credit Usage
+                </h3>
                 <div className={styles.statsGrid}>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Plan Type</div>
-                    <div className={styles.statValue}>{loaderData.shopStatus?.plan_type || 'Free Trial'}</div>
+                    <div className={styles.statValue}>
+                      {loaderData.shopStatus?.plan_type || "Free Trial"}
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Credits Remaining</div>
-                    <div className={styles.statValue}>{loaderData.metrics?.credit_remaining || 0}</div>
+                    <div className={styles.statValue}>
+                      {loaderData.metrics?.credit_remaining || 0}
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Credits Used</div>
-                    <div className={styles.statValue}>{loaderData.metrics?.credit_used || 0}</div>
+                    <div className={styles.statValue}>
+                      {loaderData.metrics?.credit_used || 0}
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Monthly Limit</div>
-                    <div className={styles.statValue}>{loaderData.usage?.limit || 50}</div>
+                    <div className={styles.statValue}>
+                      {loaderData.usage?.limit || 50}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Top 5 Products Table */}
-              {loaderData.top_products && loaderData.top_products.length > 0 && (
-                <div className={styles.statsCard}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>🏆 Top Products by Try-On</h3>
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
-                          <th style={{ padding: '10px', textAlign: 'left', fontSize: '12px', color: '#6B7280' }}>Product Name</th>
-                          <th style={{ padding: '10px', textAlign: 'center', fontSize: '12px', color: '#6B7280' }}>Try-Ons</th>
-                          <th style={{ padding: '10px', textAlign: 'center', fontSize: '12px', color: '#6B7280' }}>ATC Rate</th>
-                          <th style={{ padding: '10px', textAlign: 'center', fontSize: '12px', color: '#6B7280' }}>ATC Count</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {loaderData.top_products.map((prod, idx) => (
-                          <tr key={idx} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                            <td style={{ padding: '10px', fontSize: '13px', fontWeight: 600 }}>{prod.product_name}</td>
-                            <td style={{ padding: '10px', textAlign: 'center', fontSize: '13px', color: '#008060', fontWeight: 700 }}>{prod.try_on_count}</td>
-                            <td style={{ padding: '10px', textAlign: 'center', fontSize: '13px' }}>{prod.conversion_rate}%</td>
-                            <td style={{ padding: '10px', textAlign: 'center', fontSize: '13px' }}>{prod.add_to_cart_count}</td>
+              {loaderData.top_products &&
+                loaderData.top_products.length > 0 && (
+                  <div className={styles.statsCard}>
+                    <h3
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 700,
+                        marginBottom: "16px",
+                      }}
+                    >
+                      🏆 Top Products by Try-On
+                    </h3>
+                    <div style={{ overflowX: "auto" }}>
+                      <table
+                        style={{ width: "100%", borderCollapse: "collapse" }}
+                      >
+                        <thead>
+                          <tr style={{ borderBottom: "2px solid #E5E7EB" }}>
+                            <th
+                              style={{
+                                padding: "10px",
+                                textAlign: "left",
+                                fontSize: "12px",
+                                color: "#6B7280",
+                              }}
+                            >
+                              Product Name
+                            </th>
+                            <th
+                              style={{
+                                padding: "10px",
+                                textAlign: "center",
+                                fontSize: "12px",
+                                color: "#6B7280",
+                              }}
+                            >
+                              Try-Ons
+                            </th>
+                            <th
+                              style={{
+                                padding: "10px",
+                                textAlign: "center",
+                                fontSize: "12px",
+                                color: "#6B7280",
+                              }}
+                            >
+                              ATC Rate
+                            </th>
+                            <th
+                              style={{
+                                padding: "10px",
+                                textAlign: "center",
+                                fontSize: "12px",
+                                color: "#6B7280",
+                              }}
+                            >
+                              ATC Count
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {loaderData.top_products.map((prod, idx) => (
+                            <tr
+                              key={idx}
+                              style={{ borderBottom: "1px solid #F3F4F6" }}
+                            >
+                              <td
+                                style={{
+                                  padding: "10px",
+                                  fontSize: "13px",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {prod.product_name}
+                              </td>
+                              <td
+                                style={{
+                                  padding: "10px",
+                                  textAlign: "center",
+                                  fontSize: "13px",
+                                  color: "#008060",
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {prod.try_on_count}
+                              </td>
+                              <td
+                                style={{
+                                  padding: "10px",
+                                  textAlign: "center",
+                                  fontSize: "13px",
+                                }}
+                              >
+                                {prod.conversion_rate}%
+                              </td>
+                              <td
+                                style={{
+                                  padding: "10px",
+                                  textAlign: "center",
+                                  fontSize: "13px",
+                                }}
+                              >
+                                {prod.add_to_cart_count}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
-
         </div>
       </div>
     </div>
