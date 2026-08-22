@@ -121,6 +121,12 @@ export default function PlansPage() {
     if (searchParams.get("activated") === "1") {
       shopify.toast.show("🎉 Plan activated successfully! Credits added to your account.");
     }
+    if (searchParams.get("declined") === "1") {
+      shopify.toast.show("Plan not activated — you cancelled the subscription.", { isError: true });
+    }
+    if (searchParams.get("error")) {
+      shopify.toast.show("Something went wrong with billing. Please try again.", { isError: true });
+    }
   }, [searchParams, shopify]);
 
   // Show error if purchase failed
