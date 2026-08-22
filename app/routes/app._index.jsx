@@ -413,7 +413,12 @@ export default function DashboardIndex() {
   const [demoResultImage, setDemoResultImage] = useState(null);
   const [demoError, setDemoError] = useState(null);
   // Checklist items that tick off during generation (mirrors real popup screen 4)
-  const [checklistDone, setChecklistDone] = useState([false, false, false, false]);
+  const [checklistDone, setChecklistDone] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   // Date range metrics
   const [selectedDays, setSelectedDays] = useState(30);
@@ -605,7 +610,9 @@ export default function DashboardIndex() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.message || data.error || "Image generation failed");
+        throw new Error(
+          data.message || data.error || "Image generation failed",
+        );
       }
 
       setGenProgress(100);
@@ -1165,9 +1172,7 @@ export default function DashboardIndex() {
                       className={styles.tealButton}
                       style={{ width: "100%", marginTop: "16px" }}
                       disabled={
-                        !userPhoto ||
-                        !demoProduct ||
-                        demoStep === "generating"
+                        !userPhoto || !demoProduct || demoStep === "generating"
                       }
                       onClick={runDemoGeneration}
                     >
@@ -1201,27 +1206,77 @@ export default function DashboardIndex() {
                     <div className={styles.phoneFrame}>
                       <div className={styles.phoneNotch} />
                       <div className={styles.phoneScreen}>
-
                         {/* Idle state */}
                         {demoStep === "idle" && (
-                          <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#fff" }}>
-                            <div style={{ padding: "16px 14px 10px", fontSize: "10px", fontWeight: 800, color: "#111827" }}>
+                          <div
+                            style={{
+                              height: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              background: "#fff",
+                            }}
+                          >
+                            <div
+                              style={{
+                                padding: "16px 14px 10px",
+                                fontSize: "10px",
+                                fontWeight: 800,
+                                color: "#111827",
+                              }}
+                            >
                               Product preview
                             </div>
-                            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 18px" }}>
+                            <div
+                              style={{
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: "12px 18px",
+                              }}
+                            >
                               {demoProduct?.image ? (
                                 <img
                                   src={demoProduct.image}
                                   alt={demoProduct.title}
-                                  style={{ width: "100%", height: "190px", objectFit: "contain", borderRadius: "10px", marginBottom: "14px" }}
+                                  style={{
+                                    width: "100%",
+                                    height: "190px",
+                                    objectFit: "contain",
+                                    borderRadius: "10px",
+                                    marginBottom: "14px",
+                                  }}
                                 />
                               ) : (
-                                <div style={{ fontSize: "28px", marginBottom: "14px" }}>✨</div>
+                                <div
+                                  style={{
+                                    fontSize: "28px",
+                                    marginBottom: "14px",
+                                  }}
+                                >
+                                  ✨
+                                </div>
                               )}
-                              <div style={{ width: "100%", fontSize: "12px", fontWeight: 800, color: "#111827", textAlign: "center", marginBottom: "5px" }}>
+                              <div
+                                style={{
+                                  width: "100%",
+                                  fontSize: "12px",
+                                  fontWeight: 800,
+                                  color: "#111827",
+                                  textAlign: "center",
+                                  marginBottom: "5px",
+                                }}
+                              >
                                 {demoProduct?.title || "Your product"}
                               </div>
-                              <div style={{ fontSize: "9px", color: "#6B7280", textAlign: "center" }}>
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  color: "#6B7280",
+                                  textAlign: "center",
+                                }}
+                              >
                                 See how it looks on you
                               </div>
                             </div>
@@ -1241,25 +1296,33 @@ export default function DashboardIndex() {
                         {demoStep === "generating" && (
                           <div className={styles.phoneGenerating}>
                             {/* Two-card visual */}
-                            <div className={styles.demoCardPair} style={{ position: "relative" }}>
+                            <div
+                              className={styles.demoCardPair}
+                              style={{ position: "relative" }}
+                            >
                               {demoProduct?.image && (
                                 <div className={styles.demoCardProduct}>
-                                  <img src={demoProduct.image} alt={demoProduct.title} />
+                                  <img
+                                    src={demoProduct.image}
+                                    alt={demoProduct.title}
+                                  />
                                 </div>
                               )}
-                              <div
-                                className={styles.demoCardSync}
-                                style={{
-                                  position: "absolute",
-                                  left: "50%",
-                                  top: "50%",
-                                  transform: "translate(-50%, -50%)",
-                                  zIndex: 2,
-                                }}
-                              >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12">
-                                  <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-                                  <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                              <div>
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  width="12"
+                                  height="12"
+                                >
+                                  <path d="M21 2v6h-6" />
+                                  <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                                  <path d="M3 22v-6h6" />
+                                  <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
                                 </svg>
                               </div>
                               {userPhoto && (
@@ -1270,31 +1333,67 @@ export default function DashboardIndex() {
                             </div>
 
                             {/* Stage title + progress */}
-                            <div style={{ textAlign: "center", marginBottom: "8px" }}>
-                              <div style={{ fontSize: "11px", fontWeight: 800, color: "#111827", marginBottom: "3px" }}>
+                            <div
+                              style={{
+                                textAlign: "center",
+                                marginBottom: "8px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "11px",
+                                  fontWeight: 800,
+                                  color: "#111827",
+                                  marginBottom: "3px",
+                                }}
+                              >
                                 {genStageText}
                               </div>
-                              <div style={{ fontSize: "9px", color: "#9CA3AF" }}>
+                              <div
+                                style={{ fontSize: "9px", color: "#9CA3AF" }}
+                              >
                                 AI is working on your try-on
                               </div>
                             </div>
                             <div className={styles.demoProgressTrack}>
                               <div
                                 className={styles.demoProgressFill}
-                                style={{ width: `${genProgress}%`, transition: "width 0.8s ease" }}
+                                style={{
+                                  width: `${genProgress}%`,
+                                  transition: "width 0.8s ease",
+                                }}
                               />
                             </div>
-                            <div style={{ fontSize: "9px", color: "#9CA3AF", textAlign: "center", margin: "4px 0 10px" }}>
+                            <div
+                              style={{
+                                fontSize: "9px",
+                                color: "#9CA3AF",
+                                textAlign: "center",
+                                margin: "4px 0 10px",
+                              }}
+                            >
                               {genProgress}%
                             </div>
 
                             {/* Checklist (mirrors screen 4 of real popup) */}
                             <div className={styles.demoChecklist}>
                               {[
-                                { label: "Lighting matched", desc: "Ambient light blended" },
-                                { label: "Analysing photo", desc: "Folds and weight rendered" },
-                                { label: "Shadow depth set", desc: "Natural shadows added" },
-                                { label: "Identity preserved", desc: "Face unchanged ✓" },
+                                {
+                                  label: "Lighting matched",
+                                  desc: "Ambient light blended",
+                                },
+                                {
+                                  label: "Analysing photo",
+                                  desc: "Folds and weight rendered",
+                                },
+                                {
+                                  label: "Shadow depth set",
+                                  desc: "Natural shadows added",
+                                },
+                                {
+                                  label: "Identity preserved",
+                                  desc: "Face unchanged ✓",
+                                },
                               ].map((item, i) => (
                                 <div
                                   key={i}
@@ -1302,19 +1401,34 @@ export default function DashboardIndex() {
                                 >
                                   <div className={styles.demoCheckIcon}>
                                     {checklistDone[i] ? (
-                                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="10" height="10">
-                                        <polyline points="20 6 9 17 4 12"/>
+                                      <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        width="10"
+                                        height="10"
+                                      >
+                                        <polyline points="20 6 9 17 4 12" />
                                       </svg>
                                     ) : (
                                       <div className={styles.demoCheckDot} />
                                     )}
                                   </div>
                                   <div style={{ flex: 1 }}>
-                                    <div className={styles.demoCheckLabel}>{item.label}</div>
-                                    <div className={styles.demoCheckDesc}>{item.desc}</div>
+                                    <div className={styles.demoCheckLabel}>
+                                      {item.label}
+                                    </div>
+                                    <div className={styles.demoCheckDesc}>
+                                      {item.desc}
+                                    </div>
                                   </div>
                                   {checklistDone[i] && (
-                                    <div className={styles.demoCheckBadge}>done</div>
+                                    <div className={styles.demoCheckBadge}>
+                                      done
+                                    </div>
                                   )}
                                 </div>
                               ))}
@@ -1325,11 +1439,29 @@ export default function DashboardIndex() {
                         {/* Error state */}
                         {demoStep === "error" && (
                           <div className={styles.phoneIdle}>
-                            <div style={{ fontSize: "28px", marginBottom: "6px" }}>😕</div>
-                            <div style={{ fontSize: "11px", fontWeight: 600, color: "#6B7280" }}>
+                            <div
+                              style={{ fontSize: "28px", marginBottom: "6px" }}
+                            >
+                              😕
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "11px",
+                                fontWeight: 600,
+                                color: "#6B7280",
+                              }}
+                            >
                               Generation failed
                             </div>
-                            <div style={{ fontSize: "9px", color: "#DC2626", marginTop: "4px", padding: "0 8px", textAlign: "center" }}>
+                            <div
+                              style={{
+                                fontSize: "9px",
+                                color: "#DC2626",
+                                marginTop: "4px",
+                                padding: "0 8px",
+                                textAlign: "center",
+                              }}
+                            >
                               {demoError}
                             </div>
                           </div>
@@ -1343,10 +1475,34 @@ export default function DashboardIndex() {
                               {/* Gradient header overlay */}
                               <div className={styles.phoneResultOverlay}>
                                 <div>
-                                  <div style={{ fontSize: "11px", fontWeight: 800, color: "#fff" }}>Your Try-On</div>
-                                  <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.6)" }}>AI generated</div>
+                                  <div
+                                    style={{
+                                      fontSize: "11px",
+                                      fontWeight: 800,
+                                      color: "#fff",
+                                    }}
+                                  >
+                                    Your Try-On
+                                  </div>
+                                  <div
+                                    style={{
+                                      fontSize: "8px",
+                                      color: "rgba(255,255,255,0.6)",
+                                    }}
+                                  >
+                                    AI generated
+                                  </div>
                                 </div>
-                                <div style={{ background: "#059669", color: "#fff", fontSize: "8px", fontWeight: 700, padding: "2px 6px", borderRadius: "999px" }}>
+                                <div
+                                  style={{
+                                    background: "#059669",
+                                    color: "#fff",
+                                    fontSize: "8px",
+                                    fontWeight: 700,
+                                    padding: "2px 6px",
+                                    borderRadius: "999px",
+                                  }}
+                                >
                                   ✓ Ready
                                 </div>
                               </div>
@@ -1359,7 +1515,15 @@ export default function DashboardIndex() {
                               {/* PiP thumbnail */}
                               {demoProduct?.image && (
                                 <div className={styles.phoneResultPip}>
-                                  <img src={demoProduct.image} alt={demoProduct.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                  <img
+                                    src={demoProduct.image}
+                                    alt={demoProduct.title}
+                                    style={{
+                                      width: "100%",
+                                      height: "100%",
+                                      objectFit: "cover",
+                                    }}
+                                  />
                                 </div>
                               )}
                             </div>
@@ -1367,8 +1531,16 @@ export default function DashboardIndex() {
                             {/* White bottom sheet */}
                             <div className={styles.phoneResultSheet}>
                               <div className={styles.phoneSheetHandle} />
-                              <div className={styles.phoneSheetProductName}>{demoProduct?.title}</div>
-                              <div style={{ fontSize: "9px", color: "#6B7280", marginBottom: "8px" }}>
+                              <div className={styles.phoneSheetProductName}>
+                                {demoProduct?.title}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  color: "#6B7280",
+                                  marginBottom: "8px",
+                                }}
+                              >
                                 This is what your shoppers see ✨
                               </div>
                               {/* Add to Card Buttion , Donwload image and share Icons  */}
@@ -1379,24 +1551,49 @@ export default function DashboardIndex() {
                                 >
                                   Add to Cart
                                 </button>
-                                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    gap: "8px",
+                                  }}
+                                >
                                   <button
                                     className={styles.btnGhost}
                                     style={{ flex: 1 }}
                                   >
                                     {/* icons */}
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12" aria-label="Download image">
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      width="12"
+                                      height="12"
+                                      aria-label="Download image"
+                                    >
                                       <path d="M12 3v12" />
                                       <path d="m7 10 5 5 5-5" />
                                       <path d="M5 21h14" />
                                     </svg>
-                              
                                   </button>
                                   <button
                                     className={styles.btnGhost}
                                     style={{ flex: 1 }}
                                   >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12" aria-label="Share image">
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      width="12"
+                                      height="12"
+                                      aria-label="Share image"
+                                    >
                                       <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                                       <path d="M16 6a4 4 0 0 1-4-4" />
                                       <path d="M16.59 13.59L7.41 4.41" />
@@ -1411,7 +1608,12 @@ export default function DashboardIndex() {
                                   setDemoResultImage(null);
                                   setUserPhoto(null);
                                   setUserPhotoFile(null);
-                                  setChecklistDone([false, false, false, false]);
+                                  setChecklistDone([
+                                    false,
+                                    false,
+                                    false,
+                                    false,
+                                  ]);
                                 }}
                               >
                                 Try another photo
@@ -1419,7 +1621,6 @@ export default function DashboardIndex() {
                             </div>
                           </div>
                         )}
-
                       </div>
                       <div className={styles.phoneHomeBar} />
                     </div>
@@ -1513,7 +1714,7 @@ export default function DashboardIndex() {
                     style={{ border: "1px solid #E5E7EB" }}
                     onClick={openThemeEditor}
                   >
-                     Open Theme Editor
+                    Open Theme Editor
                   </button>
                   <button
                     className={styles.tealButton}
@@ -1541,7 +1742,8 @@ export default function DashboardIndex() {
                 <div className={styles.phTitle}>🎉 You're live!</div>
                 <div className={styles.phSub} style={{ margin: "12px 0 28px" }}>
                   Try The Look is now active on all your product pages.
-                  <br />What do you want to do next?
+                  <br />
+                  What do you want to do next?
                 </div>
                 <div
                   style={{
@@ -1558,7 +1760,7 @@ export default function DashboardIndex() {
                       setDashboardLocked(true);
                     }}
                   >
-                     Customize button
+                    Customize button
                   </button>
                   <button
                     className={styles.tealButton}
@@ -1567,7 +1769,7 @@ export default function DashboardIndex() {
                       setCurrentStep(6);
                     }}
                   >
-                     Go to dashboard
+                    Go to dashboard
                   </button>
                 </div>
               </div>
@@ -1740,7 +1942,7 @@ export default function DashboardIndex() {
                         marginBottom: "16px",
                       }}
                     >
-                       Top Products by Try-On
+                      Top Products by Try-On
                     </h3>
                     <div style={{ overflowX: "auto" }}>
                       <table
