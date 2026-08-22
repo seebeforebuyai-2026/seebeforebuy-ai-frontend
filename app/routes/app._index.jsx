@@ -1340,6 +1340,39 @@ export default function DashboardIndex() {
                               <div style={{ fontSize: "9px", color: "#6B7280", marginBottom: "8px" }}>
                                 This is what your shoppers see ✨
                               </div>
+                              {/* Add to Card Buttion , Donwload image and share Icons  */}
+                              <div>
+                                <button
+                                  className={styles.tealButton}
+                                  style={{ width: "100%", marginBottom: "8px" }}
+                                >
+                                  Add to Cart
+                                </button>
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+                                  <button
+                                    className={styles.btnGhost}
+                                    style={{ flex: 1 }}
+                                  >
+                                    {/* icons */}
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12" aria-label="Download image">
+                                      <path d="M12 3v12" />
+                                      <path d="m7 10 5 5 5-5" />
+                                      <path d="M5 21h14" />
+                                    </svg>
+                              
+                                  </button>
+                                  <button
+                                    className={styles.btnGhost}
+                                    style={{ flex: 1 }}
+                                  >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12" aria-label="Share image">
+                                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                      <path d="M16 6a4 4 0 0 1-4-4" />
+                                      <path d="M16.59 13.59L7.41 4.41" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
                               <button
                                 className={styles.phoneSheetRetry}
                                 onClick={() => {
