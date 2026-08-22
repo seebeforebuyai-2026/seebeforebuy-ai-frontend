@@ -734,7 +734,7 @@ export default function DashboardIndex() {
                     style={{
                       fontSize: "12px",
                       color: "#9CA3AF",
-                      marginTop: "8px",
+                      marginTop: "18px",
                     }}
                   >
                     No credit card required · Free 50 try-on credits
