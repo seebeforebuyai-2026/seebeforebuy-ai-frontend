@@ -1241,13 +1241,22 @@ export default function DashboardIndex() {
                         {demoStep === "generating" && (
                           <div className={styles.phoneGenerating}>
                             {/* Two-card visual */}
-                            <div className={styles.demoCardPair}>
+                            <div className={styles.demoCardPair} style={{ position: "relative" }}>
                               {demoProduct?.image && (
                                 <div className={styles.demoCardProduct}>
                                   <img src={demoProduct.image} alt={demoProduct.title} />
                                 </div>
                               )}
-                              <div className={styles.demoCardSync}>
+                              <div
+                                className={styles.demoCardSync}
+                                style={{
+                                  position: "absolute",
+                                  left: "50%",
+                                  top: "50%",
+                                  transform: "translate(-50%, -50%)",
+                                  zIndex: 2,
+                                }}
+                              >
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12">
                                   <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
                                   <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
