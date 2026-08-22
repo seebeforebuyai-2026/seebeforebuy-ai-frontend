@@ -2,37 +2,59 @@ import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
 export const action = async ({ request }) => {
-  const { shop, session, topic } = await authenticate.webhook(request);
+  // Clone the request so we can read the body for shop domain
+  // even if authenticate.webhook throws (e.g. session already deleted)
+  const clonedRequest = request.clone();
 
-  console.log(`Received ${topic} webhook for ${shop}`);
+  let shop = null;
 
-  // Webhook requests can trigger multiple times and after an app has already been uninstalled.
-  // If this webhook already ran, the session may have been deleted previously.
-  if (session) {
-    await db.session.deleteMany({ where: { shop } });
-  }
-
-  // ── Shopify requirement: on uninstall, reset billing plan to free ──────────
-  // This ensures that on reinstall the merchant gets a clean free plan,
-  // satisfying Shopify's review requirement: "plan must be reverted to free on reinstall".
-  const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
   try {
-    await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        shop_domain: shop,
-        plan_name: "free",
-        images_limit: 50,
-        charge_id: null,
-        reason: "app_uninstalled",
-      }),
-    });
-    console.log(`✅ Plan reset to free on uninstall: ${shop}`);
+    const result = await authenticate.webhook(request);
+    shop = result.shop;
+
+    console.log(`Received ${result.topic} webhook for ${shop}`);
+
+    // Delete sessions — only if session exists
+    if (result.session) {
+      await db.session.deleteMany({ where: { shop } });
+    }
   } catch (err) {
-    // Non-critical — log and continue (Shopify needs 200 back quickly)
-    console.error(`⚠️  Could not reset plan on uninstall for ${shop}:`, err.message);
+    // authenticate.webhook can throw when the app is already uninstalled
+    // and the session is gone. Extract shop from the raw payload instead.
+    console.warn(`⚠️  authenticate.webhook error (expected on reinstall): ${err.message}`);
+    try {
+      const body = await clonedRequest.json();
+      shop = body?.myshopify_domain || body?.shop_domain || null;
+      console.log(`   Extracted shop from payload: ${shop}`);
+    } catch {
+      console.error("❌ Could not extract shop domain from webhook payload");
+    }
   }
 
-  return new Response();
+  // ── Reset billing plan to free regardless of auth errors ──────────────────
+  // This MUST run even when the session is gone (which is normal for uninstall).
+  // Shopify requirement: plan must revert to free on reinstall.
+  if (shop) {
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    try {
+      const res = await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop_domain: shop,
+          plan_name: "free",
+          images_limit: 50,
+          charge_id: null,
+          reason: "app_uninstalled",
+        }),
+      });
+      const data = await res.json();
+      console.log(`✅ Plan reset to free on uninstall: ${shop}`, data);
+    } catch (fetchErr) {
+      console.error(`❌ Could not reset plan for ${shop}:`, fetchErr.message);
+    }
+  }
+
+  // Always return 200 — Shopify requires this even on errors
+  return new Response(null, { status: 200 });
 };
