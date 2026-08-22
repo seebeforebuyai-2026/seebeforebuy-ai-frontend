@@ -1204,13 +1204,35 @@ export default function DashboardIndex() {
 
                         {/* Idle state */}
                         {demoStep === "idle" && (
-                          <div className={styles.phoneIdle}>
-                            <div style={{ fontSize: "28px", marginBottom: "6px" }}>✨</div>
-                            <div style={{ fontSize: "11px", fontWeight: 700, color: "#6B7280" }}>
-                              Result will appear here
+                          <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#fff" }}>
+                            <div style={{ padding: "16px 14px 10px", fontSize: "10px", fontWeight: 800, color: "#111827" }}>
+                              Product preview
                             </div>
-                            <div style={{ fontSize: "9px", color: "#9CA3AF", marginTop: "3px" }}>
-                              Upload photo and click Generate
+                            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 18px" }}>
+                              {demoProduct?.image ? (
+                                <img
+                                  src={demoProduct.image}
+                                  alt={demoProduct.title}
+                                  style={{ width: "100%", height: "190px", objectFit: "contain", borderRadius: "10px", marginBottom: "14px" }}
+                                />
+                              ) : (
+                                <div style={{ fontSize: "28px", marginBottom: "14px" }}>✨</div>
+                              )}
+                              <div style={{ width: "100%", fontSize: "12px", fontWeight: 800, color: "#111827", textAlign: "center", marginBottom: "5px" }}>
+                                {demoProduct?.title || "Your product"}
+                              </div>
+                              <div style={{ fontSize: "9px", color: "#6B7280", textAlign: "center" }}>
+                                See how it looks on you
+                              </div>
+                            </div>
+                            <div style={{ padding: "12px 14px 16px" }}>
+                              <button
+                                className={styles.tealButton}
+                                onClick={runDemoGeneration}
+                                style={{ width: "100%", fontSize: "11px" }}
+                              >
+                                ✨ Try the Look
+                              </button>
                             </div>
                           </div>
                         )}
