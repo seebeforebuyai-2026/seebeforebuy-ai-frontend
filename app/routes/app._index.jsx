@@ -376,9 +376,23 @@ export default function DashboardIndex() {
   });
   // Once the dashboard has been opened, the completed setup steps stay locked.
   const [dashboardLocked, setDashboardLocked] = useState(isActive);
+  // Track the highest step reached — can't go back once you pass a step
+  const [maxStep, setMaxStep] = useState(() => {
+    if (isActive) return 6;
+    if (hasAccount && hasCategory) return 4;
+    if (hasAccount) return 1;
+    return 0;
+  });
+
+  const goToStep = (step) => {
+    setCurrentStep(step);
+    setMaxStep((prev) => Math.max(prev, step));
+  };
 
   const openStep = (step) => {
     if (dashboardLocked || isActive) return;
+    // Only allow going to steps already reached — no going back
+    if (step > maxStep) return;
     setCurrentStep(step);
   };
 
@@ -398,6 +412,8 @@ export default function DashboardIndex() {
   const [genStageText, setGenStageText] = useState("");
   const [demoResultImage, setDemoResultImage] = useState(null);
   const [demoError, setDemoError] = useState(null);
+  // Checklist items that tick off during generation (mirrors real popup screen 4)
+  const [checklistDone, setChecklistDone] = useState([false, false, false, false]);
 
   // Date range metrics
   const [selectedDays, setSelectedDays] = useState(30);
@@ -409,16 +425,16 @@ export default function DashboardIndex() {
     if (fetcher.data?.success) {
       if (fetcher.data.step === "accountCreated") {
         shopify.toast.show("Account created successfully!");
-        setCurrentStep(1); // Move to Categories
+        goToStep(1); // Move to Categories
       } else if (fetcher.data.step === "categoriesSaved") {
         shopify.toast.show("Categories saved!");
-        setCurrentStep(2); // Move to Phone / WhatsApp
+        goToStep(2); // Move to Phone / WhatsApp
       } else if (fetcher.data.step === "phoneSaved") {
         shopify.toast.show("Contact details saved!");
-        setCurrentStep(3); // Move to Try-On Demo
+        goToStep(3); // Move to Try-On Demo
       } else if (fetcher.data.step === "appStatusUpdated") {
         shopify.toast.show("App activated!");
-        setCurrentStep(5); // Show live confirmation and quick links
+        goToStep(5); // Show live confirmation and quick links
         setTimeout(() => revalidator.revalidate(), 1000);
       } else if (fetcher.data.step === "ordersSynced") {
         const newOrders = fetcher.data.new_orders || 0;
@@ -536,6 +552,7 @@ export default function DashboardIndex() {
     setDemoResultImage(null);
     setGenProgress(0);
     setGenStageText("Analyzing your photo...");
+    setChecklistDone([false, false, false, false]);
 
     // Animate through loading stages while API runs in background
     const stages = [
@@ -545,12 +562,25 @@ export default function DashboardIndex() {
       { text: "Placing it on you...", p: 68, delay: 7500 },
       { text: "Finalizing the look...", p: 85, delay: 11000 },
     ];
-    const timers = stages.map(({ text, p, delay }) =>
-      setTimeout(() => {
-        setGenStageText(text);
-        setGenProgress(p);
-      }, delay),
-    );
+    // Checklist ticks at staggered intervals (mirrors screen 4 of real popup)
+    const checklistTimes = [3000, 6000, 9500, 13000];
+    const timers = [
+      ...stages.map(({ text, p, delay }) =>
+        setTimeout(() => {
+          setGenStageText(text);
+          setGenProgress(p);
+        }, delay),
+      ),
+      ...checklistTimes.map((delay, i) =>
+        setTimeout(() => {
+          setChecklistDone((prev) => {
+            const next = [...prev];
+            next[i] = true;
+            return next;
+          });
+        }, delay),
+      ),
+    ];
 
     try {
       const formData = new FormData();
@@ -570,6 +600,8 @@ export default function DashboardIndex() {
       });
 
       timers.forEach(clearTimeout);
+      // Tick all checklist items done before revealing result
+      setChecklistDone([true, true, true, true]);
 
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -974,12 +1006,6 @@ export default function DashboardIndex() {
               </div>
               <div className={styles.panelFoot}>
                 <button
-                  className={styles.btnGhost}
-                  onClick={() => setCurrentStep(1)}
-                >
-                  ← Back
-                </button>
-                <button
                   className={styles.tealButton}
                   onClick={handleSavePhone}
                   disabled={
@@ -1167,343 +1193,183 @@ export default function DashboardIndex() {
                     )}
                   </div>
 
-                  {/* ── Right Column: Result ── */}
-                  <div className={styles.resultArea}>
+                  {/* ── Right Column: Result (inside a phone frame) ── */}
+                  <div>
                     <div className={styles.tgHead}>Try-On Result</div>
 
-                    {/* Idle state */}
-                    {demoStep === "idle" && (
-                      <div className={styles.raEmpty}>
-                        <div style={{ fontSize: "32px", marginBottom: "8px" }}>
-                          ✨
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: "#6B7280",
-                          }}
-                        >
-                          Result will appear here
-                        </div>
-                        <div style={{ fontSize: "10px", color: "#9CA3AF" }}>
-                          Upload photo and click Generate
-                        </div>
-                      </div>
-                    )}
+                    {/* ── Phone frame wrapper ── */}
+                    <div className={styles.phoneFrame}>
+                      <div className={styles.phoneNotch} />
+                      <div className={styles.phoneScreen}>
 
-                    {/* Generating state */}
-                    {demoStep === "generating" && (
-                      <div className={styles.raEmpty}>
-                        <div className={styles.spinner} />
-                        <div
-                          style={{
-                            fontSize: "12px",
-                            fontWeight: 700,
-                            color: "#111827",
-                            marginTop: "12px",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          {genStageText}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "10px",
-                            color: "#9CA3AF",
-                            marginBottom: "12px",
-                          }}
-                        >
-                          This is exactly what your shoppers experience
-                        </div>
-                        <div className={styles.progressBarTrack}>
-                          <div
-                            className={styles.progressBarFill}
-                            style={{
-                              width: `${genProgress}%`,
-                              transition: "width 0.8s ease",
-                            }}
-                          />
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "10px",
-                            color: "#9CA3AF",
-                            marginTop: "6px",
-                          }}
-                        >
-                          {genProgress}%
-                        </div>
+                        {/* Idle state */}
+                        {demoStep === "idle" && (
+                          <div className={styles.phoneIdle}>
+                            <div style={{ fontSize: "28px", marginBottom: "6px" }}>✨</div>
+                            <div style={{ fontSize: "11px", fontWeight: 700, color: "#6B7280" }}>
+                              Result will appear here
+                            </div>
+                            <div style={{ fontSize: "9px", color: "#9CA3AF", marginTop: "3px" }}>
+                              Upload photo and click Generate
+                            </div>
+                          </div>
+                        )}
 
-                        {/* Two-card visual like the real popup */}
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0",
-                            position: "relative",
-                            marginTop: "20px",
-                          }}
-                        >
-                          {demoProduct?.image && (
-                            <div
-                              style={{
-                                width: "72px",
-                                height: "90px",
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                border: "2px solid #fff",
-                                boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
-                                transform: "rotate(-4deg) translateX(6px)",
-                                zIndex: 1,
-                              }}
-                            >
-                              <img
-                                src={demoProduct.image}
-                                alt={demoProduct.title}
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
+                        {/* Generating state — spinner + stage text + progress + two-card + checklist */}
+                        {demoStep === "generating" && (
+                          <div className={styles.phoneGenerating}>
+                            {/* Two-card visual */}
+                            <div className={styles.demoCardPair}>
+                              {demoProduct?.image && (
+                                <div className={styles.demoCardProduct}>
+                                  <img src={demoProduct.image} alt={demoProduct.title} />
+                                </div>
+                              )}
+                              <div className={styles.demoCardSync}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12">
+                                  <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+                                  <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                                </svg>
+                              </div>
+                              {userPhoto && (
+                                <div className={styles.demoCardUser}>
+                                  <img src={userPhoto} alt="You" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Stage title + progress */}
+                            <div style={{ textAlign: "center", marginBottom: "8px" }}>
+                              <div style={{ fontSize: "11px", fontWeight: 800, color: "#111827", marginBottom: "3px" }}>
+                                {genStageText}
+                              </div>
+                              <div style={{ fontSize: "9px", color: "#9CA3AF" }}>
+                                AI is working on your try-on
+                              </div>
+                            </div>
+                            <div className={styles.demoProgressTrack}>
+                              <div
+                                className={styles.demoProgressFill}
+                                style={{ width: `${genProgress}%`, transition: "width 0.8s ease" }}
                               />
                             </div>
-                          )}
-                          {userPhoto && (
-                            <div
-                              style={{
-                                width: "72px",
-                                height: "90px",
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                border: "2px solid #008060",
-                                boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
-                                transform: "rotate(3deg) translateX(-6px)",
-                                zIndex: 2,
-                              }}
-                            >
+                            <div style={{ fontSize: "9px", color: "#9CA3AF", textAlign: "center", margin: "4px 0 10px" }}>
+                              {genProgress}%
+                            </div>
+
+                            {/* Checklist (mirrors screen 4 of real popup) */}
+                            <div className={styles.demoChecklist}>
+                              {[
+                                { label: "Lighting matched", desc: "Ambient light blended" },
+                                { label: "Analysing photo", desc: "Folds and weight rendered" },
+                                { label: "Shadow depth set", desc: "Natural shadows added" },
+                                { label: "Identity preserved", desc: "Face unchanged ✓" },
+                              ].map((item, i) => (
+                                <div
+                                  key={i}
+                                  className={`${styles.demoCheckRow} ${checklistDone[i] ? styles.demoCheckDone : styles.demoCheckPending}`}
+                                >
+                                  <div className={styles.demoCheckIcon}>
+                                    {checklistDone[i] ? (
+                                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="10" height="10">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                      </svg>
+                                    ) : (
+                                      <div className={styles.demoCheckDot} />
+                                    )}
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div className={styles.demoCheckLabel}>{item.label}</div>
+                                    <div className={styles.demoCheckDesc}>{item.desc}</div>
+                                  </div>
+                                  {checklistDone[i] && (
+                                    <div className={styles.demoCheckBadge}>done</div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Error state */}
+                        {demoStep === "error" && (
+                          <div className={styles.phoneIdle}>
+                            <div style={{ fontSize: "28px", marginBottom: "6px" }}>😕</div>
+                            <div style={{ fontSize: "11px", fontWeight: 600, color: "#6B7280" }}>
+                              Generation failed
+                            </div>
+                            <div style={{ fontSize: "9px", color: "#DC2626", marginTop: "4px", padding: "0 8px", textAlign: "center" }}>
+                              {demoError}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Done — Screen 5 style inside phone */}
+                        {demoStep === "done" && demoResultImage && (
+                          <div className={styles.phoneResult}>
+                            {/* Dark image area */}
+                            <div className={styles.phoneResultImageArea}>
+                              {/* Gradient header overlay */}
+                              <div className={styles.phoneResultOverlay}>
+                                <div>
+                                  <div style={{ fontSize: "11px", fontWeight: 800, color: "#fff" }}>Your Try-On</div>
+                                  <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.6)" }}>AI generated</div>
+                                </div>
+                                <div style={{ background: "#059669", color: "#fff", fontSize: "8px", fontWeight: 700, padding: "2px 6px", borderRadius: "999px" }}>
+                                  ✓ Ready
+                                </div>
+                              </div>
+                              {/* Result image */}
                               <img
-                                src={userPhoto}
-                                alt="You"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
+                                src={demoResultImage}
+                                alt="AI Try-On Result"
+                                className={styles.phoneResultImg}
                               />
+                              {/* PiP thumbnail */}
+                              {demoProduct?.image && (
+                                <div className={styles.phoneResultPip}>
+                                  <img src={demoProduct.image} alt={demoProduct.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Error state */}
-                    {demoStep === "error" && (
-                      <div className={styles.raEmpty}>
-                        <div style={{ fontSize: "28px", marginBottom: "8px" }}>
-                          😕
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: "#6B7280",
-                          }}
-                        >
-                          Generation failed
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "10px",
-                            color: "#DC2626",
-                            marginTop: "6px",
-                            padding: "0 12px",
-                          }}
-                        >
-                          {demoError}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "10px",
-                            color: "#9CA3AF",
-                            marginTop: "4px",
-                          }}
-                        >
-                          Try again with a clearer photo
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Done state — matches Screen 5 of the real popup */}
-                    {demoStep === "done" && demoResultImage && (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          background: "#111827",
-                          borderRadius: "16px",
-                          overflow: "hidden",
-                        }}
-                      >
-                        {/* Result header */}
-                        <div
-                          style={{
-                            padding: "10px 14px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            background:
-                              "linear-gradient(180deg,rgba(0,0,0,0.5) 0%,transparent 100%)",
-                          }}
-                        >
-                          <div>
-                            <div
-                              style={{
-                                fontSize: "13px",
-                                fontWeight: 800,
-                                color: "#fff",
-                              }}
-                            >
-                              Your Try-On
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "10px",
-                                color: "rgba(255,255,255,0.6)",
-                              }}
-                            >
-                              AI generated
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              background: "#059669",
-                              color: "#fff",
-                              fontSize: "10px",
-                              fontWeight: 700,
-                              padding: "3px 8px",
-                              borderRadius: "999px",
-                            }}
-                          >
-                            ✓ Ready
-                          </div>
-                        </div>
-
-                        {/* Result image */}
-                        <div
-                          style={{
-                            position: "relative",
-                            background:
-                              "linear-gradient(140deg,#1a2840,#0d1a2e)",
-                          }}
-                        >
-                          <img
-                            src={demoResultImage}
-                            alt="AI Try-On Result"
-                            style={{
-                              width: "100%",
-                              maxHeight: "280px",
-                              objectFit: "contain",
-                              display: "block",
-                              animation:
-                                "sbb-demo-reveal 1.5s cubic-bezier(0.25,0,0.2,1) forwards",
-                            }}
-                          />
-                          {/* PiP product thumbnail */}
-                          {demoProduct?.image && (
-                            <div
-                              style={{
-                                position: "absolute",
-                                bottom: "10px",
-                                right: "10px",
-                                width: "48px",
-                                height: "60px",
-                                borderRadius: "10px",
-                                overflow: "hidden",
-                                border: "2px solid rgba(255,255,255,0.2)",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                              }}
-                            >
-                              <img
-                                src={demoProduct.image}
-                                alt={demoProduct.title}
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
+                            {/* White bottom sheet */}
+                            <div className={styles.phoneResultSheet}>
+                              <div className={styles.phoneSheetHandle} />
+                              <div className={styles.phoneSheetProductName}>{demoProduct?.title}</div>
+                              <div style={{ fontSize: "9px", color: "#6B7280", marginBottom: "8px" }}>
+                                This is what your shoppers see ✨
+                              </div>
+                              <button
+                                className={styles.phoneSheetRetry}
+                                onClick={() => {
+                                  setDemoStep("idle");
+                                  setDemoResultImage(null);
+                                  setUserPhoto(null);
+                                  setUserPhotoFile(null);
+                                  setChecklistDone([false, false, false, false]);
                                 }}
-                              />
+                              >
+                                Try another photo
+                              </button>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
 
-                        {/* Bottom sheet */}
-                        <div
-                          style={{
-                            background: "#fff",
-                            borderRadius: "16px 16px 0 0",
-                            padding: "12px 14px 14px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: "32px",
-                              height: "3px",
-                              background: "#E5E7EB",
-                              borderRadius: "3px",
-                              margin: "0 auto 10px",
-                            }}
-                          />
-                          <div
-                            style={{
-                              fontSize: "13px",
-                              fontWeight: 800,
-                              color: "#111827",
-                              marginBottom: "10px",
-                            }}
-                          >
-                            {demoProduct?.title}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: "11px",
-                              color: "#6B7280",
-                              textAlign: "center",
-                              marginBottom: "8px",
-                            }}
-                          >
-                            This is exactly what your shoppers see ✨
-                          </div>
-                          <button
-                            className={styles.btnGhost}
-                            style={{ width: "100%", fontSize: "12px" }}
-                            onClick={() => {
-                              setDemoStep("idle");
-                              setDemoResultImage(null);
-                              setUserPhoto(null);
-                              setUserPhotoFile(null);
-                            }}
-                          >
-                            Try another photo
-                          </button>
-                        </div>
                       </div>
-                    )}
+                      <div className={styles.phoneHomeBar} />
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className={styles.panelFoot}>
                 <button
-                  className={styles.btnGhost}
-                  onClick={() => setCurrentStep(2)}
-                >
-                  ← Back
-                </button>
-                <button
                   className={styles.tealButton}
-                  onClick={() => setCurrentStep(4)}
+                  onClick={() => {
+                    setCurrentStep(4);
+                    setMaxStep((prev) => Math.max(prev, 4));
+                  }}
                   disabled={demoStep !== "done"}
                 >
                   Continue →
@@ -1577,12 +1443,6 @@ export default function DashboardIndex() {
                 </div>
               </div>
               <div className={styles.panelFoot}>
-                <button
-                  className={styles.btnGhost}
-                  onClick={() => setCurrentStep(3)}
-                >
-                  ← Back
-                </button>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <button
                     className={styles.btnGhost}
