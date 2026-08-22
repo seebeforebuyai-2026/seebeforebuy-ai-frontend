@@ -528,65 +528,59 @@ export default function DashboardIndex() {
     reader.readAsDataURL(file);
   };
 
-  // Run Real Demo Generation
+  // Run Real Demo Generation (calls backend directly, same as liquid)
   const runDemoGeneration = async () => {
     if (!userPhotoFile || !demoProduct) return;
     setDemoStep("generating");
     setDemoError(null);
     setDemoResultImage(null);
-    setGenProgress(10);
-    setGenStageText("Reading garment details...");
+    setGenProgress(0);
+    setGenStageText("Analyzing your photo...");
 
-    // Animate progress while waiting for real API
+    // Animate through loading stages while API runs in background
     const stages = [
-      { text: "Mapping body position...", p: 30, delay: 1200 },
-      { text: "Placing product on model...", p: 55, delay: 2400 },
-      { text: "Blending lighting and shadows...", p: 75, delay: 3800 },
-      { text: "Finalizing your try-on preview...", p: 90, delay: 5200 },
+      { text: "Analyzing your photo...", p: 15, delay: 0 },
+      { text: "Mapping body position...", p: 32, delay: 1500 },
+      { text: "Reading product details...", p: 50, delay: 4000 },
+      { text: "Placing it on you...", p: 68, delay: 7500 },
+      { text: "Finalizing the look...", p: 85, delay: 11000 },
     ];
-    let cancelled = false;
     const timers = stages.map(({ text, p, delay }) =>
       setTimeout(() => {
-        if (!cancelled) {
-          setGenStageText(text);
-          setGenProgress(p);
-        }
+        setGenStageText(text);
+        setGenProgress(p);
       }, delay),
     );
 
     try {
       const formData = new FormData();
+      formData.append("userImage", userPhotoFile);
       formData.append("shop_domain", loaderData.shop.domain);
       formData.append("product_name", demoProduct.title);
-      formData.append("product_image_url", demoProduct.image || "");
-      formData.append("session_id", `demo_${Date.now()}`);
-      formData.append("userImage", userPhotoFile);
+      formData.append("product_title", demoProduct.title);
+      formData.append("session_id", `demo_onboarding_${Date.now()}`);
+      if (demoProduct.image) {
+        formData.append("product_image_url", demoProduct.image);
+      }
 
-      // Proxy through the Shopify app route (handles auth + CORS)
-      const res = await fetch("/app/demo-generate", {
+      // Call backend directly — same URL as the liquid file uses
+      const res = await fetch("https://seebeforebuy.in/api/generate-image", {
         method: "POST",
         body: formData,
       });
 
-      cancelled = true;
       timers.forEach(clearTimeout);
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Server error ${res.status}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || data.error || "Image generation failed");
       }
 
-      const data = await res.json();
-      if (data.image_url) {
-        setGenProgress(100);
-        setGenStageText("Done!");
-        setDemoResultImage(data.image_url);
-        setDemoStep("done");
-      } else {
-        throw new Error("No image returned from server");
-      }
+      setGenProgress(100);
+      setGenStageText("Done!");
+      setDemoResultImage(data.generated_image_url);
+      setDemoStep("done");
     } catch (err) {
-      cancelled = true;
       timers.forEach(clearTimeout);
       console.error("Demo generation error:", err);
       setDemoError(err.message || "Generation failed. Please try again.");
@@ -1240,6 +1234,67 @@ export default function DashboardIndex() {
                         >
                           {genProgress}%
                         </div>
+
+                        {/* Two-card visual like the real popup */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "0",
+                            position: "relative",
+                            marginTop: "20px",
+                          }}
+                        >
+                          {demoProduct?.image && (
+                            <div
+                              style={{
+                                width: "72px",
+                                height: "90px",
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                                border: "2px solid #fff",
+                                boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+                                transform: "rotate(-4deg) translateX(6px)",
+                                zIndex: 1,
+                              }}
+                            >
+                              <img
+                                src={demoProduct.image}
+                                alt={demoProduct.title}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </div>
+                          )}
+                          {userPhoto && (
+                            <div
+                              style={{
+                                width: "72px",
+                                height: "90px",
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                                border: "2px solid #008060",
+                                boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+                                transform: "rotate(3deg) translateX(-6px)",
+                                zIndex: 2,
+                              }}
+                            >
+                              <img
+                                src={userPhoto}
+                                alt="You"
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
 
@@ -1258,56 +1313,181 @@ export default function DashboardIndex() {
                         >
                           Generation failed
                         </div>
-                        <div style={{ fontSize: "10px", color: "#9CA3AF" }}>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "#DC2626",
+                            marginTop: "6px",
+                            padding: "0 12px",
+                          }}
+                        >
+                          {demoError}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "#9CA3AF",
+                            marginTop: "4px",
+                          }}
+                        >
                           Try again with a clearer photo
                         </div>
                       </div>
                     )}
 
-                    {/* Done state */}
+                    {/* Done state — matches Screen 5 of the real popup */}
                     {demoStep === "done" && demoResultImage && (
-                      <div style={{ textAlign: "center" }}>
-                        <img
-                          src={demoResultImage}
-                          alt="AI Try-On Result"
-                          className={styles.resultImg}
-                          style={{
-                            borderRadius: "12px",
-                            maxWidth: "100%",
-                            boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-                          }}
-                        />
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          background: "#111827",
+                          borderRadius: "16px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {/* Result header */}
                         <div
                           style={{
-                            fontSize: "13px",
-                            fontWeight: 700,
-                            color: "#008060",
-                            marginTop: "10px",
+                            padding: "10px 14px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            background:
+                              "linear-gradient(180deg,rgba(0,0,0,0.5) 0%,transparent 100%)",
                           }}
                         >
-                          ✓ AI Try-On Generated Successfully!
+                          <div>
+                            <div
+                              style={{
+                                fontSize: "13px",
+                                fontWeight: 800,
+                                color: "#fff",
+                              }}
+                            >
+                              Your Try-On
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "10px",
+                                color: "rgba(255,255,255,0.6)",
+                              }}
+                            >
+                              AI generated
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              background: "#059669",
+                              color: "#fff",
+                              fontSize: "10px",
+                              fontWeight: 700,
+                              padding: "3px 8px",
+                              borderRadius: "999px",
+                            }}
+                          >
+                            ✓ Ready
+                          </div>
                         </div>
+
+                        {/* Result image */}
                         <div
                           style={{
-                            fontSize: "11px",
-                            color: "#6B7280",
-                            marginTop: "4px",
+                            position: "relative",
+                            background:
+                              "linear-gradient(140deg,#1a2840,#0d1a2e)",
                           }}
                         >
-                          This is what your shoppers will see
+                          <img
+                            src={demoResultImage}
+                            alt="AI Try-On Result"
+                            style={{
+                              width: "100%",
+                              maxHeight: "280px",
+                              objectFit: "contain",
+                              display: "block",
+                              animation:
+                                "sbb-demo-reveal 1.5s cubic-bezier(0.25,0,0.2,1) forwards",
+                            }}
+                          />
+                          {/* PiP product thumbnail */}
+                          {demoProduct?.image && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                bottom: "10px",
+                                right: "10px",
+                                width: "48px",
+                                height: "60px",
+                                borderRadius: "10px",
+                                overflow: "hidden",
+                                border: "2px solid rgba(255,255,255,0.2)",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                              }}
+                            >
+                              <img
+                                src={demoProduct.image}
+                                alt={demoProduct.title}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <button
-                          className={styles.btnGhost}
-                          style={{ marginTop: "10px", fontSize: "12px" }}
-                          onClick={() => {
-                            setDemoStep("idle");
-                            setDemoResultImage(null);
-                            setUserPhoto(null);
-                            setUserPhotoFile(null);
+
+                        {/* Bottom sheet */}
+                        <div
+                          style={{
+                            background: "#fff",
+                            borderRadius: "16px 16px 0 0",
+                            padding: "12px 14px 14px",
                           }}
                         >
-                          Try another photo
-                        </button>
+                          <div
+                            style={{
+                              width: "32px",
+                              height: "3px",
+                              background: "#E5E7EB",
+                              borderRadius: "3px",
+                              margin: "0 auto 10px",
+                            }}
+                          />
+                          <div
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: 800,
+                              color: "#111827",
+                              marginBottom: "10px",
+                            }}
+                          >
+                            {demoProduct?.title}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "11px",
+                              color: "#6B7280",
+                              textAlign: "center",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            This is exactly what your shoppers see ✨
+                          </div>
+                          <button
+                            className={styles.btnGhost}
+                            style={{ width: "100%", fontSize: "12px" }}
+                            onClick={() => {
+                              setDemoStep("idle");
+                              setDemoResultImage(null);
+                              setUserPhoto(null);
+                              setUserPhotoFile(null);
+                            }}
+                          >
+                            Try another photo
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>

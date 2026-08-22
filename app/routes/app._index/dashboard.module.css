@@ -703,3 +703,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Demo result image reveal animation (matches real popup screen 5) */
+@keyframes sbb-demo-reveal {
+  0%   { filter: blur(18px); opacity: 0.2; transform: scale(1.04); }
+  50%  { filter: blur(6px);  opacity: 0.7; }
+  100% { filter: blur(0px);  opacity: 1;   transform: scale(1); }
+}
