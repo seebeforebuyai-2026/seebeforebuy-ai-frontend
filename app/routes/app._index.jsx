@@ -71,6 +71,36 @@ export const loader = async ({ request }) => {
     console.error("⚠️ Could not fetch shop details from Shopify:", error);
   }
 
+  // Fetch one real product for the onboarding demo (Step 3)
+  let demoProduct = null;
+  try {
+    const productRes = await admin.graphql(`
+      query {
+        products(first: 1) {
+          nodes {
+            title
+            priceRangeV2 {
+              minVariantPrice { amount currencyCode }
+            }
+            featuredImage { url altText }
+          }
+        }
+      }
+    `);
+    const productData = await productRes.json();
+    const node = productData.data?.products?.nodes?.[0];
+    if (node) {
+      demoProduct = {
+        title: node.title,
+        price: `${node.priceRangeV2.minVariantPrice.currencyCode} ${parseFloat(node.priceRangeV2.minVariantPrice.amount).toFixed(2)}`,
+        image: node.featuredImage?.url || null,
+        imageAlt: node.featuredImage?.altText || node.title,
+      };
+    }
+  } catch (err) {
+    console.warn("⚠️ Could not fetch demo product:", err.message);
+  }
+
   // Check shop status from backend
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
 
@@ -118,6 +148,7 @@ export const loader = async ({ request }) => {
       top_products: data.top_products || [],
       predicted: predicted,
       accountExists: data.accountExists || false,
+      demoProduct,
     };
   } catch (error) {
     console.error("❌ Error checking shop status:", error);
@@ -130,6 +161,7 @@ export const loader = async ({ request }) => {
       top_products: [],
       predicted: null,
       accountExists: false,
+      demoProduct,
     };
   }
 };
@@ -358,19 +390,14 @@ export default function DashboardIndex() {
   const [whatsappNumber, setWhatsappNumber] = useState("");
 
   // Try-on Demo State
-  const sampleProducts = [
-    {
-      name: "White Ringer Tee",
-      price: "₹699",
-      img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300&auto=format&fit=crop",
-    },
-  ];
-  const [selectedProdIdx, setSelectedProdIdx] = useState(0);
+  const demoProduct = loaderData.demoProduct || null;
   const [userPhoto, setUserPhoto] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [userPhotoFile, setUserPhotoFile] = useState(null);
+  const [demoStep, setDemoStep] = useState("idle"); // idle | generating | done | error
   const [genProgress, setGenProgress] = useState(0);
   const [genStageText, setGenStageText] = useState("");
-  const [tryonDone, setTryonDone] = useState(false);
+  const [demoResultImage, setDemoResultImage] = useState(null);
+  const [demoError, setDemoError] = useState(null);
 
   // Date range metrics
   const [selectedDays, setSelectedDays] = useState(30);
@@ -493,6 +520,7 @@ export default function DashboardIndex() {
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUserPhotoFile(file);
     const reader = new FileReader();
     reader.onload = (event) => {
       setUserPhoto(event.target?.result);
@@ -500,32 +528,70 @@ export default function DashboardIndex() {
     reader.readAsDataURL(file);
   };
 
-  // Run Demo Generation Simulation
-  const runDemoGeneration = () => {
-    if (!userPhoto) return;
-    setIsGenerating(true);
+  // Run Real Demo Generation
+  const runDemoGeneration = async () => {
+    if (!userPhotoFile || !demoProduct) return;
+    setDemoStep("generating");
+    setDemoError(null);
+    setDemoResultImage(null);
     setGenProgress(10);
     setGenStageText("Reading garment details...");
 
+    // Animate progress while waiting for real API
     const stages = [
-      { text: "Mapping body position...", p: 35 },
-      { text: "Placing product on model...", p: 65 },
-      { text: "Blending lighting and shadows...", p: 90 },
-      { text: "Finalizing try-on preview...", p: 100 },
+      { text: "Mapping body position...", p: 30, delay: 1200 },
+      { text: "Placing product on model...", p: 55, delay: 2400 },
+      { text: "Blending lighting and shadows...", p: 75, delay: 3800 },
+      { text: "Finalizing your try-on preview...", p: 90, delay: 5200 },
     ];
+    let cancelled = false;
+    const timers = stages.map(({ text, p, delay }) =>
+      setTimeout(() => {
+        if (!cancelled) {
+          setGenStageText(text);
+          setGenProgress(p);
+        }
+      }, delay),
+    );
 
-    let step = 0;
-    const interval = setInterval(() => {
-      if (step < stages.length) {
-        setGenStageText(stages[step].text);
-        setGenProgress(stages[step].p);
-        step++;
-      } else {
-        clearInterval(interval);
-        setIsGenerating(false);
-        setTryonDone(true);
+    try {
+      const formData = new FormData();
+      formData.append("shop_domain", loaderData.shop.domain);
+      formData.append("product_name", demoProduct.title);
+      formData.append("product_image_url", demoProduct.image || "");
+      formData.append("session_id", `demo_${Date.now()}`);
+      formData.append("userImage", userPhotoFile);
+
+      // Proxy through the Shopify app route (handles auth + CORS)
+      const res = await fetch("/app/demo-generate", {
+        method: "POST",
+        body: formData,
+      });
+
+      cancelled = true;
+      timers.forEach(clearTimeout);
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error ${res.status}`);
       }
-    }, 1000);
+
+      const data = await res.json();
+      if (data.image_url) {
+        setGenProgress(100);
+        setGenStageText("Done!");
+        setDemoResultImage(data.image_url);
+        setDemoStep("done");
+      } else {
+        throw new Error("No image returned from server");
+      }
+    } catch (err) {
+      cancelled = true;
+      timers.forEach(clearTimeout);
+      console.error("Demo generation error:", err);
+      setDemoError(err.message || "Generation failed. Please try again.");
+      setDemoStep("error");
+    }
   };
 
   // Time since sync helper
@@ -945,41 +1011,83 @@ export default function DashboardIndex() {
                   See it work on your products
                 </div>
                 <div className={styles.phSub}>
-                  Pick a product → upload a photo → generate. This is exactly
-                  what your shoppers do.
+                  Upload a photo → click Generate → see your shopper wearing
+                  your actual product in seconds.
                 </div>
               </div>
+
               <div className={styles.panelBody}>
                 <div className={styles.tryonGrid}>
-                  {/* Left Column: Product Selection & Photo Upload */}
+                  {/* ── Left Column ── */}
                   <div>
                     <div
                       style={{
-                        gap: "16px",
                         display: "grid",
                         gridTemplateColumns: "1fr 1fr",
+                        gap: "16px",
                       }}
                     >
+                      {/* Product card */}
                       <div>
-                        <div className={styles.tgHead}>1. Your products</div>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "8px",
-                          }}
-                        >
-                          {sampleProducts.map((p, idx) => (
-                            <div
-                              key={idx}
-                              className={`${styles.prodThumb} ${selectedProdIdx === idx ? styles.prodThumbOn : ""}`}
-                              onClick={() => setSelectedProdIdx(idx)}
-                            >
-                              <img src={p.img} alt={p.name} />
-                              <div className={styles.ptName}>{p.name}</div>
+                        <div className={styles.tgHead}>1. Your product</div>
+                        {demoProduct ? (
+                          <div
+                            className={`${styles.prodThumb} ${styles.prodThumbOn}`}
+                            style={{ cursor: "default" }}
+                          >
+                            {demoProduct.image ? (
+                              <img
+                                src={demoProduct.image}
+                                alt={demoProduct.imageAlt}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  width: "100%",
+                                  aspectRatio: "1",
+                                  background: "#F3F4F6",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "32px",
+                                  borderRadius: "8px",
+                                }}
+                              >
+                                🛍️
+                              </div>
+                            )}
+                            <div className={styles.ptName}>
+                              {demoProduct.title}
                             </div>
-                          ))}
-                        </div>
+                            <div
+                              style={{
+                                fontSize: "11px",
+                                color: "#008060",
+                                fontWeight: 700,
+                                marginTop: "2px",
+                              }}
+                            >
+                              {demoProduct.price}
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={styles.prodThumb}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "12px",
+                              color: "#9CA3AF",
+                              minHeight: "120px",
+                            }}
+                          >
+                            No products found
+                          </div>
+                        )}
                       </div>
+
+                      {/* Upload box */}
                       <div>
                         <div className={styles.tgHead}>
                           2. Upload Model Photo
@@ -1020,12 +1128,12 @@ export default function DashboardIndex() {
                                   color: "#4B5563",
                                 }}
                               >
-                                Click to upload photo
+                                Click to upload
                               </div>
                               <div
                                 style={{ fontSize: "10px", color: "#9CA3AF" }}
                               >
-                                Full body / Front facing
+                                Full body · Front facing
                               </div>
                             </div>
                           )}
@@ -1036,19 +1144,41 @@ export default function DashboardIndex() {
                     <button
                       className={styles.tealButton}
                       style={{ width: "100%", marginTop: "16px" }}
-                      disabled={!userPhoto || isGenerating}
+                      disabled={
+                        !userPhoto ||
+                        !demoProduct ||
+                        demoStep === "generating"
+                      }
                       onClick={runDemoGeneration}
                     >
-                      {isGenerating
+                      {demoStep === "generating"
                         ? "Generating..."
                         : "✨ Generate Virtual Try-On"}
                     </button>
+
+                    {demoStep === "error" && (
+                      <div
+                        style={{
+                          marginTop: "12px",
+                          padding: "10px 14px",
+                          background: "#FEF2F2",
+                          border: "1px solid #FECACA",
+                          borderRadius: "8px",
+                          fontSize: "12px",
+                          color: "#DC2626",
+                        }}
+                      >
+                        ⚠️ {demoError}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Right Column: Interactive Generation Progress / Result */}
+                  {/* ── Right Column: Result ── */}
                   <div className={styles.resultArea}>
                     <div className={styles.tgHead}>Try-On Result</div>
-                    {!isGenerating && !tryonDone && (
+
+                    {/* Idle state */}
+                    {demoStep === "idle" && (
                       <div className={styles.raEmpty}>
                         <div style={{ fontSize: "32px", marginBottom: "8px" }}>
                           ✨
@@ -1068,7 +1198,8 @@ export default function DashboardIndex() {
                       </div>
                     )}
 
-                    {isGenerating && (
+                    {/* Generating state */}
+                    {demoStep === "generating" && (
                       <div className={styles.raEmpty}>
                         <div className={styles.spinner} />
                         <div
@@ -1077,42 +1208,113 @@ export default function DashboardIndex() {
                             fontWeight: 700,
                             color: "#111827",
                             marginTop: "12px",
+                            marginBottom: "4px",
                           }}
                         >
                           {genStageText}
                         </div>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "#9CA3AF",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          This is exactly what your shoppers experience
+                        </div>
                         <div className={styles.progressBarTrack}>
                           <div
                             className={styles.progressBarFill}
-                            style={{ width: `${genProgress}%` }}
+                            style={{
+                              width: `${genProgress}%`,
+                              transition: "width 0.8s ease",
+                            }}
                           />
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "#9CA3AF",
+                            marginTop: "6px",
+                          }}
+                        >
+                          {genProgress}%
                         </div>
                       </div>
                     )}
 
-                    {tryonDone && !isGenerating && (
-                      <div style={{ textAlign: "center" }}>
-                        <img
-                          src={sampleProducts[selectedProdIdx].img}
-                          alt="Result"
-                          className={styles.resultImg}
-                        />
+                    {/* Error state */}
+                    {demoStep === "error" && (
+                      <div className={styles.raEmpty}>
+                        <div style={{ fontSize: "28px", marginBottom: "8px" }}>
+                          😕
+                        </div>
                         <div
                           style={{
                             fontSize: "12px",
+                            fontWeight: 600,
+                            color: "#6B7280",
+                          }}
+                        >
+                          Generation failed
+                        </div>
+                        <div style={{ fontSize: "10px", color: "#9CA3AF" }}>
+                          Try again with a clearer photo
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Done state */}
+                    {demoStep === "done" && demoResultImage && (
+                      <div style={{ textAlign: "center" }}>
+                        <img
+                          src={demoResultImage}
+                          alt="AI Try-On Result"
+                          className={styles.resultImg}
+                          style={{
+                            borderRadius: "12px",
+                            maxWidth: "100%",
+                            boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+                          }}
+                        />
+                        <div
+                          style={{
+                            fontSize: "13px",
                             fontWeight: 700,
                             color: "#008060",
-                            marginTop: "8px",
+                            marginTop: "10px",
                           }}
                         >
                           ✓ AI Try-On Generated Successfully!
                         </div>
+                        <div
+                          style={{
+                            fontSize: "11px",
+                            color: "#6B7280",
+                            marginTop: "4px",
+                          }}
+                        >
+                          This is what your shoppers will see
+                        </div>
+                        <button
+                          className={styles.btnGhost}
+                          style={{ marginTop: "10px", fontSize: "12px" }}
+                          onClick={() => {
+                            setDemoStep("idle");
+                            setDemoResultImage(null);
+                            setUserPhoto(null);
+                            setUserPhotoFile(null);
+                          }}
+                        >
+                          Try another photo
+                        </button>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
-              <div class={styles.panelFoot}>
+
+              <div className={styles.panelFoot}>
                 <button
                   className={styles.btnGhost}
                   onClick={() => setCurrentStep(2)}
@@ -1122,7 +1324,7 @@ export default function DashboardIndex() {
                 <button
                   className={styles.tealButton}
                   onClick={() => setCurrentStep(4)}
-                  disabled={!tryonDone}
+                  disabled={demoStep !== "done"}
                 >
                   Continue →
                 </button>
