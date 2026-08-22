@@ -318,7 +318,7 @@
   font-weight: 800;
   line-height: 1.2;
   text-align: center;
-  margin: 4px auto;
+  margin: 14px auto;
   width: 480px;
 }
 
@@ -331,7 +331,7 @@
   color: rgba(255, 255, 255, 0.65);
   line-height: 1.6;
   max-width: 480px;
-  margin: 4px auto;
+  margin: 14px auto;
   text-align: center;
 }
 
