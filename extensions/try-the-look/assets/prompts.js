@@ -35,7 +35,7 @@ const PROMPT_CONFIG = {
           'shrug kurti', 'longline jacket', 'cape set', 'jacket set kurti',
         ],
         prompt: `TASK: Virtual try-on of a Jacket Kurti (2-piece: inner kurti + outer jacket/shrug/cape).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — INNER KURTI: Place the kurti beneath the jacket. Neckline sits correctly at the user's neck. Kurti hem extends below the jacket hem. Reproduce any embroidery/print where visible.
 STEP 2 — OUTER JACKET: Sits OVER the kurti as a separate visible layer. Jacket collar frames the neck and shoulders. Jacket front panels hang open naturally OR closed as per product. Sleeve length matches product (3/4 or full). Cast a slight shadow where the jacket overlaps the kurti — never merge the two layers.
 STEP 3 — FABRIC: Structured blazer-style jacket → firm shoulders, crisp lapels. Cape/shrug → soft flowing fabric. Heavy embroidery → show raised texture and thread dimension. Inner kurti fabric must look distinct from the jacket.
@@ -50,7 +50,7 @@ Output the final image only.`,
           'embroidered gown', 'anarkali gown', 'floor length gown',
         ],
         prompt: `TASK: Virtual try-on of an Indo Western Gown (full-length gown blending Indian and Western elements).
-Image 1 = Product photo. Image 2 = User photo (full body).
+Image 1 = Customer photo (the person wearing the garment). Image 2 = Product photo (the garment to try on). Full body customer photo required.
 STEP 1 — SILHOUETTE: Identify exactly — A-line, fit-and-flare, mermaid, straight/column, or ball gown. Identify neckline: halter, V-neck, sweetheart, round, off-shoulder, or collared. Note sleeve style and Indian element (embroidery, brocade, silk).
 STEP 2 — PLACEMENT: Gown starts at the correct neckline position. Side seams follow the user's body naturally. Waistline falls at the user's natural waist. Hem reaches the correct length (floor-length unless product shows otherwise).
 STEP 3 — INDIAN EMBELLISHMENT: Zari/gold embroidery → reproduce exact placement, raised metallic shine. Sequin/stone work → each element individually catches light — 3D, never flat. Brocade → woven pattern wraps the body three-dimensionally.
@@ -67,7 +67,7 @@ Output the final image only.`,
           'bandhani dress', 'printed midi', 'printed maxi dress',
         ],
         prompt: `TASK: Virtual try-on of a Fusion Dress (Western-cut dress in Indian fabric, or Indian silhouette with Western styling).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — IDENTIFY: Western base (shirt dress, wrap, skater, midi) + Indian elements (block print, bandhani, ajrakh, embroidery). Note length: mini, midi, or maxi.
 STEP 2 — PLACEMENT: Neckline at correct position. Button placket (if present) straight and centered. Belt (if product has one) sits at natural waist — not floating. Hem at correct length proportionate to the user's height.
 STEP 3 — INDIAN PRINT REPRODUCTION: Block print → exact motif, repeat pattern, colour palette — MUST WRAP around the body, never appear flat. Bandhani → pinched dot texture visible. Ikat → feathered blurred edges of the weave visible. Embroidery at collar/cuffs/hem → exact placement and colour.
@@ -82,7 +82,7 @@ Output the final image only.`,
           'dhoti kurti set', 'dhoti salwar',
         ],
         prompt: `TASK: Virtual try-on of a Dhoti Pant outfit (gathered/draped pants + paired top if included).
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — DHOTI DRAPE (MOST CRITICAL): Waistband sits at natural waist or hip as per product. The distinctive dhoti DRAPE between the legs must be reproduced as a gathered fabric fold — NOT a regular trouser crotch seam. The drape has volume and fabric gathering. Fabric is wide and voluminous from waist to thigh. Tapers significantly from calf to ankle.
 STEP 2 — UPPER GARMENT (if paired): Crop top ends above the natural waist — midriff visible. Kurta/long top falls to hip or below, covering the waistband.
 STEP 3 — FABRIC: Crepe/georgette/rayon → soft flowing drape, the gathered drape area shows fabric movement and volume. Cotton → matte, relaxed, natural creases. The drape must NOT look flat or like a regular trouser leg.
@@ -97,7 +97,7 @@ Output the final image only.`,
           'western lehenga', 'modern lehenga', 'lehenga set crop',
         ],
         prompt: `TASK: Virtual try-on of a Crop Top + Lehenga set.
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — CROP TOP PLACEMENT: Top ends ABOVE the natural waist — midriff must be exposed. The gap between the top hem and the skirt waistband is the midriff — reproduce this gap exactly. Off-shoulder: fabric sits across the collarbone. Corset: show the boning structure. Reproduce all embellishments on the top.
 STEP 2 — LEHENGA SKIRT: Waistband sits at the natural waist (NOT the hip). Skirt volume must be full and three-dimensional. Hem touches or is near the floor. Embroidery/zari border at hem must be fully reproduced.
 STEP 3 — MIDRIFF TRANSITION (CRITICAL): The exposed stomach area must look natural. The skin tone in the midriff must exactly match the user's skin tone. Clear visual gap: top ends → skin shows → skirt begins. No blending or merging.
@@ -112,7 +112,7 @@ Output the final image only.`,
           'lehenga with jacket', 'lehenga with cape', 'sheer jacket lehenga',
         ],
         prompt: `TASK: Virtual try-on of a Jacket Lehenga (lehenga + outer jacket/cape, possibly over an inner choli).
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — LAYERING ORDER: Lehenga skirt is the base. Inner choli is under the jacket. Jacket sits OVER the choli — must look like a genuine outer layer. The jacket must cast a slight shadow on the inner garment where it overlaps. Never merge the jacket and choli into one flat garment.
 STEP 2 — JACKET: Shoulders align exactly with the user's shoulder edge. For structured jacket: firm shoulder structure and lapels. For sheer/net cape jacket: reproduce the translucent fabric — inner choli visible through it. The sheer fabric must NOT be rendered as opaque.
 STEP 3 — LEHENGA SKIRT: Waistband visible at natural waist below the jacket hem. Skirt volume must be full and three-dimensional. All embroidery, zari, mirror work must be accurately reproduced. Hem near the floor.
@@ -127,7 +127,7 @@ Output the final image only.`,
           'long kurti jeans', 'tunic jeans', 'kurti over jeans',
         ],
         prompt: `TASK: Virtual try-on of a Kurti with Jeans combination.
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — KURTI PLACEMENT: Neckline at correct position (collar, V-neck, round, mandarin). Body follows the user's torso naturally. Sleeves match the user's arm angle. Side slits at the hem (if present) appear on both sides. Embroidery at neckline/hem/sleeves fully reproduced.
 STEP 2 — JEANS PLACEMENT: Jeans waistband starts where the kurti hem ends (or slightly overlaps). Straight/skinny jeans follow the leg outline closely. Wide leg/bootcut shows appropriate flare from the knee. Denim wash colour matches exactly (light, medium, dark, or black). Denim DIAGONAL TWILL WEAVE texture must be visible — not a flat colour. Distressing (rips, fading) reproduced at exact locations.
 STEP 3 — FUSION JUNCTION: The point where the kurti meets the jeans must look natural. If kurti is worn over jeans: kurti hem sits on top of the denim. The waistband of the jeans is visible below the kurti hem.
@@ -143,7 +143,7 @@ Output the final image only.`,
           'wrap drape dress',
         ],
         prompt: `TASK: Virtual try-on of a Draped Dress (fabric draped, wrapped, or gathered to create the silhouette).
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — IDENTIFY DRAPE STYLE: Saree-style draped dress (pallu over shoulder), one-shoulder draped, wrap draped, or dhoti-draped skirt with blouse.
 STEP 2 — DRAPE PHYSICS (MOST CRITICAL): Draped fabric must obey gravity — folds hang downward, not outward. Show MULTIPLE layers of fabric depth — not a flat surface. Each fold must cast a shadow on the fold beneath it. The fabric edge must hang naturally following gravity.
 STEP 3 — SPECIFIC DRAPE RULES: Saree-style: pallu falls over the LEFT shoulder and hangs down the back. One-shoulder: one shoulder covered, the other completely bare. Wrap: front panels overlap, creating a natural V-neckline at the crossing point.
@@ -156,7 +156,7 @@ Output the final image only.`,
     }, // end indo_western subcategories
 
     defaultPrompt: `TASK: Virtual try-on of an Indo Western garment.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 Instructions: Replace the user's current outfit with the exact garment shown in the product photo. Preserve the garment's exact silhouette, fabric texture, embellishments, and colour. Fit it naturally to the user's body and pose. Reproduce all Indian embellishments (embroidery, zari, prints) with full fidelity — raised thread texture, metallic sheen, pattern wrapping the body three-dimensionally. Keep the user's face, hair, skin tone, and background completely unchanged. No extra jewellery or accessories.
 Output the final image only.`,
   },
@@ -176,7 +176,7 @@ Output the final image only.`,
           'velvet dress', 'mini dress party', 'knee length party',
         ],
         prompt: `TASK: Virtual try-on of a Cocktail Dress (semi-formal to formal short dress).
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — SILHOUETTE: Identify exactly — bodycon, A-line, fit-and-flare, wrap, or structured/peplum. Identify neckline: V-neck, sweetheart, off-shoulder, one-shoulder, halter, or strapless. Identify length: above knee, at knee, or just below knee. Identify embellishment: sequins, lace, satin, velvet, or embroidery.
 STEP 2 — NECKLINE PRECISION: Sweetheart → curved neckline following bust, no gap. Off-shoulder → fabric sits ACROSS the collarbone, both shoulders bare, tube of fabric hugs the chest. Strapless → fabric starts at the chest, show structural boning edge, no straps visible. Halter → fabric falls from neck to bust. V-neck → reproduce exact depth.
 STEP 3 — EMBELLISHMENT REALISM: Full sequin → each sequin individually catches light, scattered sparkle, never a flat shiny surface. Lace overlay → semi-transparent mesh, fabric visible through it, delicate edges. Satin → high contrast, bright specular highlight at fold peaks, deep shadow in valleys. Velvet → directional pile, colour shift, matte surface — no high-gloss shine. Embroidered bodice → raised thread texture, stone/crystal elements catch light as individual points.
@@ -193,7 +193,7 @@ Output the final image only.`,
           'embellished gown', 'crystal gown', 'beaded gown',
         ],
         prompt: `TASK: Virtual try-on of an Evening Gown (full-length formal gown).
-Image 1 = Product photo. Image 2 = Full body user photo (must show full height).
+Image 1 = Customer photo � full body (must show full height). Image 2 = Product photo (the garment to try on).
 STEP 1 — SILHOUETTE: Ball gown → dramatic full skirt from waist, extreme volume, layers of fabric creating depth. Mermaid/Trumpet → skin-tight from chest to mid-thigh, dramatic flare below the knee, train trails naturally if present. A-line → fitted bodice, gradual flare to floor, elegant flow. Column/Sheath → minimal flare, follows body from shoulder to floor. Empire waist → seam just below the bust, fabric flows from there.
 STEP 2 — TRAIN: If present, it must trail behind the user. Train fabric lies on the floor following gravity — not floating. Reproduce train embellishments matching the gown.
 STEP 3 — EMBELLISHMENT REALISM: Beaded/Crystal → each bead individually catches light, different densities at bodice vs skirt, bugle beads show directional reflection, crystal facets show multiple light points per stone. Chiffon → soft layers, slight transparency at hem, fabric floats. Tulle → multiple stiff layers creating volume, not opaque — sheer quality visible. Ruched fabric → each gather ridge visible, tension visible between gathers.
@@ -209,7 +209,7 @@ Output the final image only.`,
           'party wear saree',
         ],
         prompt: `TASK: Virtual try-on of a Party Saree (shimmer/sequin/organza/net saree for parties).
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — IDENTIFY SAREE TYPE: Shimmer/sequin georgette, organza (stiff and slightly sheer), tissue silk (metallic threads woven in), net (sheer base with embroidery on top), or heavily embroidered.
 STEP 2 — DRAPE STRUCTURE (Nivi Style): 5-7 neat pleats at center-front tucked at the navel — pleats must fall straight and even. Main fabric wraps from right to left at waist level. Pallu falls over the LEFT shoulder and drapes down the back — generous length.
 STEP 3 — FABRIC SPECIFICS: Shimmer/sequin → entire saree surface has soft metallic glow, scattered sparkle — NOT a single reflection. Shadow areas still have subtle shimmer — never completely matte. Organza → stiff pleats that hold their shape, slight transparency, dramatic pallu volume. Tissue silk → warm gold metallic glow, intensifies under direct light. Net → sheer base, body visible through it, embroidery floating on the net.
@@ -228,7 +228,7 @@ Output the final image only.`,
           'festive lehenga', 'lehenga skirt',
         ],
         prompt: `TASK: Virtual try-on of a Designer Lehenga (premium heavily embellished lehenga for parties/weddings).
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — IDENTIFY ALL PIECES: Choli/blouse (neckline, sleeve style, embellishment density), lehenga skirt (A-line/circular/panelled/layered), dupatta (if included).
 STEP 2 — CHOLI PLACEMENT: Ends at or just above natural waist — midriff exposure as per product. Neckline exactly as product: Deep V → exact depth. Sweetheart → smooth curved edge, no gaps. Cold shoulder → cutouts at exact shoulder position. Off-shoulder → entire shoulder bare. Reproduce ALL embellishments at full density: Zari → raised gold thread above fabric. Kundan → each stone individually set, gold foil base visible, faceted light — NOT flat dots. 3D floral → dimensional petals casting shadows on fabric beneath.
 STEP 3 — LEHENGA SKIRT: Waistband visible as a distinct band at natural waist. Skirt has FULL VOLUME — never flat. Circular lehenga → maximum volume, fabric radiates outward dramatically. Panelled → show the join lines between panels, each panel with its own embroidery. Hem is floor-length. Hem border is the most embellished area — reproduce in maximum detail.
@@ -242,7 +242,7 @@ Output the final image only.`,
     }, // end party_wear subcategories
 
     defaultPrompt: `TASK: Virtual try-on of a Party Wear garment.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 Instructions: Replace the user's current outfit with the exact party wear garment shown. Preserve the silhouette, embellishments, and premium fabric quality exactly. Sequins, stones, and embellishments must each individually catch light — never render as a flat shiny surface. Fit the garment naturally to the user's body and pose. Keep the user's face, hair, skin tone, and background completely unchanged. No extra jewellery or accessories.
 Output the final image only.`,
   },
@@ -261,7 +261,7 @@ Output the final image only.`,
           'heavy winter jacket', 'down parka',
         ],
         prompt: `TASK: Virtual try-on of a Parka Jacket (long heavy-duty winter jacket with fur-trimmed hood).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — VOLUME (MOST CRITICAL): Parka adds significant volume to the body — do NOT slim-fit it. Jacket must look THICK and INSULATED. Shoulder width wider than user's natural shoulders. Body looks padded and substantial. Arms appear thicker inside the jacket from the insulation.
 STEP 2 — HOOD: Fur trim around the hood → reproduce as individual strands, fluffy and slightly irregular — NEVER a flat strip of colour. If hood is down → bunches at back of neck naturally. If hood is up → frames the face, fur rim visible around the face opening.
 STEP 3 — SHELL MATERIAL: Nylon/polyester → slight sheen, smooth surface, soft broad highlights. Quilted pattern → show stitch lines creating channels, slight puffing of insulation between stitch lines. Waxed canvas → matte waxy surface, canvas texture visible.
@@ -277,7 +277,7 @@ Output the final image only.`,
           'asymmetric zip jacket',
         ],
         prompt: `TASK: Virtual try-on of a Leather/Biker Jacket.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — LEATHER SURFACE: Strong, sharp specular highlight — the brightest point in the image. Shadow side goes very dark — high contrast is the defining quality of leather. Grain texture subtly visible across the surface. At edges (cuffs, collar, pocket seams) the leather shows its thickness.
 STEP 2 — BIKER/MOTO SPECIFICS: Asymmetric zip runs diagonally from lower-left to upper-right — this angle is the defining feature, get it exactly right. Small pointed lapels fold back on each side. Sleeve zips at wrist/upper arm reproduced. Waist belt/buckle at lower hem at correct position.
 STEP 3 — HARDWARE: Zips → show the teeth, slider, and pull tab. Metal zips → hard specular reflection on the slider. Buckles → show the metal frame and pin. Studs (if present) → dome shape with highlight at peak. All hardware looks like METAL — bright specular highlight.
@@ -292,7 +292,7 @@ Output the final image only.`,
           'oversized denim', 'cropped denim jacket',
         ],
         prompt: `TASK: Virtual try-on of a Denim Jacket.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — DENIM TEXTURE (MOST CRITICAL): Denim has a DIAGONAL TWILL WEAVE — weave lines run at a 45-degree angle. This diagonal texture MUST be visible on the jacket surface — not smooth. More visible in lighter washes, subtle in dark washes. At seams: denim layers folded and stitched, show seam thickness. Denim is a HEAVY fabric — holds its shape, resists soft draping.
 STEP 2 — WASH REPRODUCTION: Light wash → pale faded blue, uneven fading, lighter at chest/shoulders/pocket edges. Medium wash → classic blue, slight fading at stress points. Dark/Indigo → deep rich indigo, minimal fading. Black denim → true black, may show slight grey at stress points.
 STEP 3 — DISTRESSING: Reproduce ALL distressing EXACTLY where it appears in the product. Fading at exact positions. Rips → torn edge with frayed threads hanging. Whiskering → horizontal scratch marks at specific positions. Do NOT add or remove distressing.
@@ -307,7 +307,7 @@ Output the final image only.`,
           'padded jacket', 'insulated jacket', 'bubble jacket', 'marshmallow jacket',
         ],
         prompt: `TASK: Virtual try-on of a Puffer Jacket (quilted inflated jacket with horizontal/vertical channels).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — QUILTED CHANNELS (MOST CRITICAL): Each channel is a section of inflated fill separated by a stitch line. BETWEEN stitch lines → fabric PUFFS outward, rounded and three-dimensional. AT the stitch line → fabric is stitched flat, a thin depressed valley. Each channel must look individually inflated — like a row of rounded tubes. Horizontal channels curve slightly to follow the body's shape. For ultra-puff → channels have extreme inflation, almost comically puffy.
 STEP 2 — VOLUME: The jacket adds SIGNIFICANT volume to the body — do NOT slim-fit. Regular puffer → moderate puff. Ultra-puff → extreme inflation, marshmallow-like.
 STEP 3 — SHELL MATERIAL: Nylon/polyester → slight to moderate sheen, smooth surface. Rounded top of each channel has a bright highlight at its peak. Stitch line valleys are dark. Mid-tone on the puff sides.
@@ -322,7 +322,7 @@ Output the final image only.`,
           'oversized sweatshirt', 'cropped sweatshirt', 'printed sweatshirt',
         ],
         prompt: `TASK: Virtual try-on of a Sweatshirt (crew neck or mock neck pullover, no hood).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — FABRIC TEXTURE: Sweatshirt fleece is soft, slightly textured, and COMPLETELY MATTE. No sheen anywhere on the fabric. Slightly fuzzy edge at the garment outline — subtle pile. Natural wrinkle creases at elbow and underarm.
 STEP 2 — GRAPHIC/PRINT REPRODUCTION: If the sweatshirt has a graphic → reproduce EXACTLY. Correct colours, exact design, correct position on the chest. Graphic MUST follow the surface curvature — curving with the chest, not appearing flat. Text → every letter readable and correctly placed. If the graphic has cracking/vintage distress → reproduce that quality.
 STEP 3 — RIBBED DETAILS: Crew neck ribbing → distinct 1-2cm rib knit band at neckline, alternating raised and recessed vertical lines. Cuff ribbing → holds the sleeve end close to the wrist, rib texture visible. Hem ribbing → slightly gathers the hem.
@@ -337,7 +337,7 @@ Output the final image only.`,
           'hooded top', 'kangaroo pocket hoodie', 'oversized hoodie',
         ],
         prompt: `TASK: Virtual try-on of a Hoodie (sweatshirt with attached hood).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — HOOD PLACEMENT (MOST CRITICAL): Hood Down → sits at back of neck/upper back as a bunched pile with volume — does NOT flatten against the back. Drawstrings hang from the hood opening down the front of the chest as separate visible cords with aglets at the tips. Hood Up → frames the face and head, face remains fully visible, hood follows the head's shape.
 STEP 2 — KANGAROO POCKET: Single large pouch pocket at center-front lower abdomen, spanning hip to hip. Opening at the TOP. Reproduce pocket seam line and any branding/text exactly.
 STEP 3 — ZIP-THROUGH (if applicable): Full-length zip from hem to chin, zip pull hanging from the slider. Kangaroo pocket splits into two separate side pockets on zip hoodies.
@@ -354,7 +354,7 @@ Output the final image only.`,
           'wool sweater', 'cashmere sweater', 'ribbed sweater',
         ],
         prompt: `TASK: Virtual try-on of a Sweater/Jumper (knitted top).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — KNIT TEXTURE (MOST CRITICAL): Cable knit → twisted rope-like columns running vertically, each cable twisted above the background stitches, THREE-DIMENSIONAL raised effect, deep shadows between the raised cables. Reproduce the EXACT cable pattern — number of cables, their width. Chunky knit → very large visible individual stitches, thick yarn, bumpy dimensional surface. Fine gauge → small closely spaced stitches, subtle grid. Ribbed → alternating raised and recessed vertical columns, elastic appearance. Fair isle → multi-colour geometric pattern knitted INTO the fabric (not printed), pattern wrapping the body.
 STEP 2 — NECKLINE: Turtleneck → collar folds over itself, BOTH layers of the fold visible, sits at mid-neck. Crew neck → ribbed band at base of neck. V-neck → reproduce exact depth. Cowl → draped loose collar with fabric gathering.
 STEP 3 — MATERIAL: Chunky wool → soft voluminous, adds noticeable bulk, slightly fuzzy edge. Cashmere/fine merino → lightweight, smooth, soft lustre — not shiny but not fully matte. Cotton sweater → heavy drape, matte surface, more structured.
@@ -369,7 +369,7 @@ Output the final image only.`,
           'fringe poncho', 'cape poncho',
         ],
         prompt: `TASK: Virtual try-on of a Poncho (single-piece outer garment with no sleeves or fastening).
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — PONCHO STRUCTURE: A poncho is NOT a jacket — no sleeves, no buttons, no zipper. Falls from the shoulders as a single draped piece. The neck opening sits centered at the user's neck. Sides are open — user's arms emerge from the open sides naturally.
 STEP 2 — DRAPE AND VOLUME: Poncho drapes OVER whatever the user is wearing beneath — inner clothing peeks out at the sides and hem. It must look like it is resting on the shoulders by gravity — not pinned or fitted. Do NOT slim-fit it — it has generous, loose drape. Fabric falls in soft folds from the shoulder line outward.
 STEP 3 — FABRIC TEXTURE: Knitted/chunky knit → KNIT STITCH texture visible — individual stitches on the surface. Cable knit → raised twisted columns reproduced. Woven/blanket → exact geometric or stripe pattern wrapping the body. Fringe at hem → each fringe strand hangs individually following gravity — never flat or merged. Fleece → soft matte surface, completely matte.
@@ -385,7 +385,7 @@ Output the final image only.`,
           'casual jacket', 'zip jacket', 'baseball jacket',
         ],
         prompt: `TASK: Virtual try-on of a Casual/General Jacket.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 STEP 1 — IDENTIFY JACKET TYPE FIRST: Windbreaker (lightweight nylon, bright colours), Varsity/Baseball (wool body + leather sleeves, ribbed collar/cuffs/hem, snap buttons), Track jacket (athletic, stripe detailing on sleeves, zip-through), Utility (multiple cargo pockets, canvas/cotton, structured), Quilted shacket (between shirt and jacket weight, quilted channels), Corduroy (parallel vertical WALE RIDGES running full length), Casual zip jacket (minimal, relaxed fit, zip front).
 STEP 2 — MATERIAL RULES: Windbreaker → slight nylon sheen, crinkles at armpit and elbow, vivid accurate colours. Varsity → wool body (matte, textured) CLEARLY DIFFERENT from leather sleeves (specular highlight, grain texture, flex creases) — material transition must be visible at the seam. Corduroy → WALE RIDGES visible running vertically from shoulder to hem, wider wale = more prominent ridges, colour shifts lighter at ridge peaks and darker in the valleys.
 STEP 3 — ALL SHARED DETAILS: All zips → teeth, slider, and pull tab visible. All buttons → reproduce exact style and colour. Reproduce ALL pockets at their exact positions. Collar style reproduced exactly (standing, flat, ribbed, or shirt collar). Jacket length correctly reproduced.
@@ -396,7 +396,7 @@ Output the final image only.`,
     }, // end winter_wear subcategories
 
     defaultPrompt: `TASK: Virtual try-on of a Winter Wear garment.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 Instructions: Replace the user's current outfit with the exact winter garment shown. The garment must look appropriately warm and substantial — do not slim-fit jackets or coats. Reproduce the fabric texture accurately (knit stitches, leather sheen, denim weave, quilted channels, etc.). Reproduce all structural details (zips, pockets, hardware) exactly. Keep the user's face, hair, skin tone, and background completely unchanged. No extra accessories.
 Output the final image only.`,
   },
@@ -409,14 +409,14 @@ Output the final image only.`,
     label: 'Watches',
     subcategories: {}, // no sub-categories needed for watches
     defaultPrompt: `TASK: Simulate a real photograph of a customer wearing this watch on their wrist.
-Image 1 = Product photo of the watch. Image 2 = Customer's wrist/hand photo.
+Image 1 = Customer wrist/hand photo (the person). Image 2 = Product photo of the watch.
 CORE RULES:
-1. PLACEMENT: Match watch case rotation and tilt to the wrist angle in Image 2. The dial must be foreshortened if the wrist is angled — match perspective exactly.
+1. PLACEMENT: Match watch case rotation and tilt to the wrist angle in Image 1. The dial must be foreshortened if the wrist is angled — match perspective exactly.
 2. STRAP WRAP: The strap band MUST wrap around the wrist cylinder as a 3D object — NOT a flat overlay. Show both sides of the strap meeting the case on each side.
-3. RELIGHT: Match the lighting from Image 2 — direction, harshness, and colour temperature. Apply these to the watch surface.
+3. RELIGHT: Match the lighting from Image 1 — direction, harshness, and colour temperature. Apply these to the watch surface.
 4. MATERIAL REALISM: Case metal → varied tones, bright specular highlight at the highest point, grain or brushing pattern visible. Crystal/glass → lens glare, slight reflection on the surface. Strap → leather grain or metal bracelet links visible.
 5. CONTACT SHADOW: A subtle shadow beneath the watch case where it rests on the wrist skin.
-6. PRESERVE: Everything else in Image 2 remains completely unchanged — skin, hand, background.
+6. PRESERVE: Everything else in Image 1 remains completely unchanged — skin, hand, background.
 Output the final photorealistic image only.`,
   },
 
@@ -429,7 +429,7 @@ Output the final photorealistic image only.`,
       ring: {
         keywords: ['ring', 'solitaire', 'engagement ring', 'cocktail ring', 'band ring', 'finger ring'],
         prompt: `TASK: Virtual try-on of a Ring on the customer's finger.
-Image 1 = Product photo of the ring. Image 2 = Customer's hand photo.
+Image 1 = Customer hand photo (the person). Image 2 = Product photo of the ring to try on.
 RULES:
 1. PLACEMENT: Place the ring on the ring finger (or the finger shown in the product photo), at the base knuckle, flush against the skin.
 2. FIT: The ring band must appear to encircle the finger as a 3D band — NOT a flat image overlay.
@@ -442,7 +442,7 @@ Output the final image only.`,
       necklace: {
         keywords: ['necklace', 'pendant', 'chain necklace', 'choker', 'layered necklace', 'collar necklace'],
         prompt: `TASK: Virtual try-on of a Necklace on the customer.
-Image 1 = Product photo of the necklace. Image 2 = Customer's photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo of the necklace to try on.
 RULES:
 1. PLACEMENT: Drape the necklace along the collarbone following gravity. Pendant centered on the chest at the correct length shown in the product.
 2. DRAPE: The chain must follow the curve of the neck — not floating above or sinking into the skin.
@@ -454,7 +454,7 @@ Output the final image only.`,
       earring: {
         keywords: ['earring', 'earrings', 'jhumka', 'stud earring', 'drop earring', 'hoop earring', 'chandbali'],
         prompt: `TASK: Virtual try-on of Earrings on the customer.
-Image 1 = Product photo of the earrings. Image 2 = Customer's photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo of the earrings to try on.
 RULES:
 1. PLACEMENT: Anchor earrings at the earlobe. Studs sit flush at the earlobe. Drop/dangle earrings hang straight down from the earlobe following gravity. Jhumka → the dome sits at the earlobe, the hanging bell hangs below.
 2. PAIR: Both earrings must be placed — one on each ear at the same position and angle.
@@ -465,7 +465,7 @@ Output the final image only.`,
       },
     },
     defaultPrompt: `TASK: Virtual try-on of a jewellery item on the customer.
-Image 1 = Product photo of the jewellery. Image 2 = Customer's photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo of the jewellery to try on.
 RULES: Identify the jewellery type (ring, necklace, earring, bracelet, bangle). Place it at the correct body position following gravity. The item must appear as a 3D object — NOT a flat overlay. Match the material (metal, stone, enamel) with correct light reflection and specular highlights. Individual stones must show faceted light points, never flat coloured shapes. The item must look physically real — sitting on or wrapped around the body part naturally. Keep everything else in the customer's photo completely unchanged. No extra accessories added.
 Output the final image only.`,
   },
@@ -479,34 +479,34 @@ Output the final image only.`,
       tshirt: {
         keywords: ['t-shirt', 'tshirt', 't shirt', 'tee', 'polo', 'graphic tee', 'crop tee'],
         prompt: `TASK: Virtual try-on of a T-shirt/Polo on the customer.
-Image 1 = Product photo. Image 2 = User photo.
-RULES: Replace the current shirt worn in Image 2 with the exact T-shirt shown. Wrap the crew neck or V-neck collar naturally around the base of the neck. Transfer any graphic prints, pocket details, or chest branding with flat proportional alignment — graphic must follow the chest surface curvature. Render soft natural cotton/jersey fabric folds and shadows. Retain the user's face, expression, hair, hands, arms, posture, and original background exactly.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
+RULES: Replace the current shirt worn in Image 1 with the exact T-shirt shown. Wrap the crew neck or V-neck collar naturally around the base of the neck. Transfer any graphic prints, pocket details, or chest branding with flat proportional alignment — graphic must follow the chest surface curvature. Render soft natural cotton/jersey fabric folds and shadows. Retain the user's face, expression, hair, hands, arms, posture, and original background exactly.
 Output the final image only.`,
       },
       shirt: {
         keywords: ['shirt', 'blouse', 'button-up', 'button-down', 'formal shirt', 'casual shirt', 'oxford shirt'],
         prompt: `TASK: Virtual try-on of a Shirt/Blouse on the customer.
-Image 1 = Product photo. Image 2 = User photo.
-RULES: Replace the upper garment worn in Image 2 with the exact shirt/blouse shown. Render a structured crisp collar wrapping around the neck. Fit the cuffs and sleeve lengths accurately to the user's arm posture. Render structured shoulder seams and premium fabric folds with realistic shadows. Retain the user's face, expression, hair, hands, and background without any modifications.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
+RULES: Replace the upper garment worn in Image 1 with the exact shirt/blouse shown. Render a structured crisp collar wrapping around the neck. Fit the cuffs and sleeve lengths accurately to the user's arm posture. Render structured shoulder seams and premium fabric folds with realistic shadows. Retain the user's face, expression, hair, hands, and background without any modifications.
 Output the final image only.`,
       },
       saree: {
         keywords: ['saree', 'sari', 'cotton saree', 'silk saree', 'daily wear saree', 'casual saree'],
         prompt: `TASK: Virtual try-on of a Saree on the customer.
-Image 1 = Product photo. Image 2 = Full body user photo.
+Image 1 = Customer photo � full body (the person). Image 2 = Product photo (the garment to try on).
 RULES (Nivi drape): 5-7 neat pleats at the center-front tucked into the waist at the navel — falling straight and even. Main fabric wraps from right to left at waist level. Pallu falls over the LEFT shoulder and drapes down the back. Reproduce the exact border motif continuously along the entire hem — never broken. Blouse is visible at the upper body, ending at the natural waist. Reproduce the fabric texture accurately — cotton (matte, relaxed), silk (sheen, structured), georgette (soft drape). Retain the user's face, skin tone, and background completely unchanged. No extra jewellery.
 Output the final image only.`,
       },
       kurti: {
         keywords: ['kurti', 'kurta', 'anarkali', 'salwar kameez', 'tunic', 'kurtis', 'kurtas'],
         prompt: `TASK: Virtual try-on of a Kurti/Kurta on the customer.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 RULES: Replace the current upper garment with the exact kurti/kurta shown. The neckline fits cleanly around the collar bones. Sleeves match the user's arms. Printed patterns, traditional block prints, or embroidery must be rendered with clean detail. Render the fabric with straight elegant drapes and soft vertical folds matching the user's posture. Strictly preserve the user's face, hair, lower body clothing, hands, pose, and original background exactly.
 Output the final image only.`,
       },
     },
     defaultPrompt: `TASK: Virtual try-on of a casual garment.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 Instructions: Replace the user's current outfit with the exact garment shown in the product photo. Fit it naturally to the user's body and pose. Reproduce the fabric texture, colour, and any prints or embellishments accurately. Keep the user's face, hair, skin tone, and background completely unchanged. No extra accessories.
 Output the final image only.`,
   },
@@ -523,8 +523,8 @@ Output the final image only.`,
         'performance tights', 'compression pants',
       ],
       prompt: `TASK: Virtual try-on of Compression Wear (Tights / Compression Leggings).
-Image 1: Product photo of Compression Wear (skin-tight compression leggings/tights).
-Image 2: Full body or 3/4 body photo of the user.
+Image 1: Customer photo (the person). Image 2: Product photo of Compression Wear (skin-tight compression leggings/tights).
+(see Image 1 = customer above)
 Goal: Show the user wearing these exact compression tights naturally.
 
 STEP 1 — IDENTIFY THE PRODUCT:
@@ -587,8 +587,8 @@ Output the final image only.`,
         'gym tank top', 'sleeveless gym top', 'workout tank', 'running tank',
       ],
       prompt: `TASK: Virtual try-on of an Athletic Tank Top.
-Image 1: Product photo of an Athletic Tank Top.
-Image 2: User photo.
+Image 1: Customer photo (the person). Image 2: Product photo of an Athletic Tank Top.
+(see Image 1 = customer above)
 Goal: Show the user wearing this exact tank top naturally.
 
 STEP 1 — IDENTIFY THE TANK TOP STYLE:
@@ -634,8 +634,8 @@ Output the final image only.`,
         'raglan tshirt', 'drop shoulder gym tshirt',
       ],
       prompt: `TASK: Virtual try-on of an Athletic Half Sleeve T-Shirt.
-Image 1: Product photo of an Athletic Half Sleeve T-Shirt.
-Image 2: User photo.
+Image 1: Customer photo (the person). Image 2: Product photo of an Athletic Half Sleeve T-Shirt.
+(see Image 1 = customer above)
 Goal: Show the user wearing this exact athletic t-shirt naturally.
 
 STEP 1 — IDENTIFY THE T-SHIRT:
@@ -673,8 +673,8 @@ Output the final image only.`,
         'gym lower', 'athletic pants', 'slim fit track pant', 'sports lower',
       ],
       prompt: `TASK: Virtual try-on of a Regular Gym Lower / Track Pant.
-Image 1: Product photo of Regular Gym Lower / Track Pant.
-Image 2: Full body or 3/4 body photo of user.
+Image 1: Customer photo (the person). Image 2: Product photo of Regular Gym Lower / Track Pant.
+(see Image 1 = customer above)
 Goal: Show user wearing these exact gym track pants naturally.
 
 STEP 1 — IDENTIFY THE LOWER:
@@ -711,8 +711,8 @@ Output the final image only.`,
         'cargo track pant', 'streetwear lower',
       ],
       prompt: `TASK: Virtual try-on of a Baggy Lower / Parachute Pant.
-Image 1: Product photo of Baggy Lower or Parachute Pant.
-Image 2: Full body or 3/4 body photo of user.
+Image 1: Customer photo (the person). Image 2: Product photo of Baggy Lower or Parachute Pant.
+(see Image 1 = customer above)
 Goal: Show user wearing these exact baggy/parachute pants naturally.
 
 STEP 1 — IDENTIFY TYPE & TEXTURE:
@@ -744,8 +744,8 @@ Output the final image only.`,
         'strappy sports bra', 'cross back sports bra',
       ],
       prompt: `TASK: Virtual try-on of a Sports Bra.
-Image 1: Product photo of a Sports Bra.
-Image 2: User photo (woman).
+Image 1: Customer photo (the person). Image 2: Product photo of a Sports Bra.
+(see Image 1 = customer above)
 Goal: Show the user wearing this exact sports bra naturally.
 
 STEP 1 — IDENTIFY STYLE & BACK DETAIL:
@@ -783,8 +783,8 @@ Output the final image only.`,
         'sweatpants', 'slim joggers',
       ],
       prompt: `TASK: Virtual try-on of Jogger Pants.
-Image 1: Product photo of Jogger Pants.
-Image 2: Full body or 3/4 body photo of user.
+Image 1: Customer photo (the person). Image 2: Product photo of Jogger Pants.
+(see Image 1 = customer above)
 Goal: Show user wearing these exact jogger pants naturally.
 
 STEP 1 — SILHOUETTE & TAPER (CRITICAL):
@@ -820,8 +820,8 @@ Output the final image only.`,
         'women gym shorts', 'mesh gym shorts',
       ],
       prompt: `TASK: Virtual try-on of Gym Shorts / Athletic Shorts.
-Image 1: Product photo of Gym Shorts.
-Image 2: Full body or 3/4 body photo of user.
+Image 1: Customer photo (the person). Image 2: Product photo of Gym Shorts.
+(see Image 1 = customer above)
 Goal: Show user wearing these exact athletic shorts naturally.
 
 STEP 1 — IDENTIFY TYPE & LENGTH:
@@ -853,8 +853,8 @@ Output the final image only.`,
         'gym biker shorts', 'high waist biker shorts', 'women biker shorts',
       ],
       prompt: `TASK: Virtual try-on of Cycling Shorts / Biker Shorts.
-Image 1: Product photo of Cycling / Biker Shorts.
-Image 2: User photo (woman).
+Image 1: Customer photo (the person). Image 2: Product photo of Cycling / Biker Shorts.
+(see Image 1 = customer above)
 Goal: Show user wearing these exact biker shorts naturally.
 
 STEP 1 — IDENTIFY & PLACEMENT:
@@ -884,8 +884,8 @@ Output the final image only.`,
         'athletic set', 'tracksuit set', 'hoodie track set', 'sweat suit',
       ],
       prompt: `TASK: Virtual try-on of an Athletic Tracksuit / Co-ord Set.
-Image 1: Product photo of Tracksuit or Co-ord Set (matching top + bottom).
-Image 2: Full body photo of user.
+Image 1: Customer photo (the person). Image 2: Product photo of Tracksuit or Co-ord Set (matching top + bottom).
+(see Image 1 = customer above)
 Goal: Show user wearing both top and bottom matching set together.
 
 STEP 1 — MATCHING REQUIREMENT (CRITICAL):
@@ -914,8 +914,8 @@ Output the final image only.`,
         'athletic jacket', 'lightweight gym jacket', 'softshell gym jacket',
       ],
       prompt: `TASK: Virtual try-on of a Zip-Up Gym Jacket / Windcheater.
-Image 1: Product photo of Zip-Up Gym Jacket / Windcheater.
-Image 2: User photo.
+Image 1: Customer photo (the person). Image 2: Product photo of Zip-Up Gym Jacket / Windcheater.
+(see Image 1 = customer above)
 Goal: Show user wearing this exact gym jacket naturally.
 
 STEP 1 — IDENTIFY:
@@ -948,8 +948,8 @@ Output the final image only.`,
         'mid compression leggings', 'high waist sports leggings',
       ],
       prompt: `TASK: Virtual try-on of Sports Leggings (Full Length, Mid-Compression).
-Image 1: Product photo of Sports Leggings.
-Image 2: Full body or 3/4 body photo of user.
+Image 1: Customer photo (the person). Image 2: Product photo of Sports Leggings.
+(see Image 1 = customer above)
 Goal: Show user wearing these exact sports leggings naturally.
 
 STEP 1 — FIT LEVEL (MID-COMPRESSION):
@@ -977,7 +977,7 @@ Output the final image only.`,
   }, // end activewear subcategories
 
   defaultPrompt: `TASK: Virtual try-on of Activewear / Gym Wear garment.
-Image 1 = Product photo. Image 2 = User photo.
+Image 1 = Customer photo (the person). Image 2 = Product photo (the garment to try on).
 Instructions: Replace the user's current outfit with the exact athletic activewear garment shown. Ensure proper body-contouring fit, correct technical details (flatlock seams, mesh panels, drawstrings, cuffed hems, zippers, thumb holes), and accurate fabric sheen. Fit the garment naturally to the user's body and pose. Keep the user's face, hair, skin tone, and background completely unchanged. No extra accessories or jewellery.
 Output the final image only.`,
 },
@@ -993,8 +993,8 @@ headwear_caps: {
         'unstructured cap', '6 panel cap', 'cotton twill cap', 'adjustable cap',
       ],
       prompt: `TASK:
-Image 1: Product photo of a Baseball Cap / Dad Cap (curved brim cap)
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of a Baseball Cap / Dad Cap (curved brim cap)
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact curved brim cap naturally on their head.
 
 ══════════════════════════════════════════
@@ -1002,7 +1002,7 @@ ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
-- The user's face in the output must be a pixel-perfect copy of Image 2.
+- The user's face in the output must be a pixel-perfect copy of Image 1.
 - Same skin tone, facial features, facial hair (beard/stubble), expression, eye colour, and skin texture.
 - Do NOT relight, smooth, brighten, or alter the face in any way.
 - Treat the face like a locked layer that cannot be touched.
@@ -1027,9 +1027,9 @@ STEP 1 — CAP TYPE & CROWN STRUCTURE
 ══════════════════════════════════════════
 STEP 2 — BRIM CURVE & FOREHEAD SHADOW
 ══════════════════════════════════════════
-- The brim curves DOWNWARD from the front center — reproduce the exact arc curve radius from Image 1.
+- The brim curves DOWNWARD from the front center — reproduce the exact arc curve radius from Image 2.
 - The brim sits 2-3 fingers above the eyebrows, curving gently across the forehead profile.
-- CRITICAL: The brim MUST cast a natural curved shadow onto the user's forehead and upper face, matching Image 2 lighting direction.
+- CRITICAL: The brim MUST cast a natural curved shadow onto the user's forehead and upper face, matching Image 1 lighting direction.
 - Show the underside of the brim (green, grey, or matching fabric) facing downward toward the forehead.
 
 ══════════════════════════════════════════
@@ -1044,13 +1044,13 @@ STEP 3 — HEAD GEOMETRY & HAIR INTERACTION
 STEP 4 — FABRIC TEXTURE & LIGHTING
 ══════════════════════════════════════════
 - Cotton twill texture: Subtle diagonal weave pattern with matte surface finish.
-- Cap lighting matches Image 2 dominant light direction exactly.
+- Cap lighting matches Image 1 dominant light direction exactly.
 - Highlights on top crown, soft shadows in panel seam lines.
 
 ══════════════════════════════════════════
 STEP 5 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face identical to Image 2 (features, skin tone, beard, expression untouched)?
+[ ] Face identical to Image 1 (features, skin tone, beard, expression untouched)?
 [ ] Cap sitting directly ON the skull conforming to its curvature?
 [ ] Brim curves correctly and casts a curved shadow across the forehead?
 [ ] Front panel embroidery rendered with raised 3D thread texture?
@@ -1067,8 +1067,8 @@ Output the final image only.`,
         'streetwear cap', '5 panel cap', 'fitted cap', 'flat bill cap',
       ],
       prompt: `TASK:
-Image 1: Product photo of a Snapback Cap (flat brim structured cap)
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of a Snapback Cap (flat brim structured cap)
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact snapback cap naturally on their head.
 
 ══════════════════════════════════════════
@@ -1076,14 +1076,14 @@ ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
-- The user's face in the output must be a pixel-perfect copy of Image 2.
+- The user's face in the output must be a pixel-perfect copy of Image 1.
 - Same skin tone, facial features, facial hair, expression, eye colour, and skin texture.
 - Do NOT relight, smooth, brighten, or alter the face in any way.
 
 RULE 2 — FLAT BRIM RULE (NON-NEGOTIABLE):
 - The brim is COMPLETELY FLAT with ZERO downward curve.
 - Geometrically straight brim extending straight forward parallel to the ground.
-- If stickers (hologram or brand stickers) are present on the brim in Image 1, reproduce them EXACTLY on the flat brim surface.
+- If stickers (hologram or brand stickers) are present on the brim in Image 2, reproduce them EXACTLY on the flat brim surface.
 
 RULE 3 — EMBROIDERY & BRAND DETAILS:
 - Front embroidery MUST be high-density, heavily raised 3D thread with tactile depth and sharp edge shadows.
@@ -1101,7 +1101,7 @@ STEP 2 — PLACEMENT & STRAIGHT FOREHEAD SHADOW
 ══════════════════════════════════════════
 - Sits firm and level on the skull, 2-3 fingers above eyebrows.
 - CRITICAL: The flat brim casts a straight-edged shadow horizontally across the user's forehead.
-- Shadow direction matches the dominant light source in Image 2.
+- Shadow direction matches the dominant light source in Image 1.
 
 ══════════════════════════════════════════
 STEP 3 — HAIR INTERACTION & FABRIC TEXTURE
@@ -1112,10 +1112,10 @@ STEP 3 — HAIR INTERACTION & FABRIC TEXTURE
 ══════════════════════════════════════════
 STEP 4 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face completely identical to Image 2?
+[ ] Face completely identical to Image 1?
 [ ] Brim is 100% FLAT with zero downward curve?
 [ ] Straight horizontal shadow cast beneath flat brim onto forehead?
-[ ] Hologram/brand brim stickers reproduced if present in Image 1?
+[ ] Hologram/brand brim stickers reproduced if present in Image 2?
 [ ] Front artwork rendered as raised 3D thread embroidery?
 [ ] High-profile structured crown firm and tall?
 [ ] Plastic snap adjustment visible at the back?
@@ -1129,8 +1129,8 @@ Output the final image only.`,
         'trucker hat', 'snapback trucker', 'mesh snapback',
       ],
       prompt: `TASK:
-Image 1: Product photo of a Trucker Cap (foam front with mesh back)
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of a Trucker Cap (foam front with mesh back)
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact trucker cap naturally on their head.
 
 ══════════════════════════════════════════
@@ -1138,7 +1138,7 @@ ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
-- The user's face in the output must be a pixel-perfect copy of Image 2.
+- The user's face in the output must be a pixel-perfect copy of Image 1.
 - Same skin tone, facial features, facial hair, expression, eye colour, and skin texture.
 - Zero face modification, smoothing, or relighting.
 
@@ -1161,9 +1161,9 @@ STEP 1 — DUAL MATERIAL CONSTRUCTION
 ══════════════════════════════════════════
 STEP 2 — BRIM, PLACEMENT & SHADOW
 ══════════════════════════════════════════
-- Curved or flat brim matching Image 1 exactly.
+- Curved or flat brim matching Image 2 exactly.
 - Cap sits firmly on the head following skull curvature.
-- Brim casts a natural shadow onto the user's forehead matching Image 2 light direction.
+- Brim casts a natural shadow onto the user's forehead matching Image 1 light direction.
 - Rear adjustment: Plastic snapback closure visible at the back.
 
 ══════════════════════════════════════════
@@ -1176,7 +1176,7 @@ STEP 3 — HAIR INTERACTION
 ══════════════════════════════════════════
 STEP 4 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face 100% identical to Image 2?
+[ ] Face 100% identical to Image 1?
 [ ] Back/side mesh panels sheer with user's hair/scalp visible through the grid?
 [ ] Front foam panel structured, smooth, and holding high-profile shape?
 [ ] Distinct seam line visible between front foam and rear mesh?
@@ -1193,8 +1193,8 @@ Output the final image only.`,
         'canvas bucket hat', 'streetwear bucket hat', 'denim bucket hat',
       ],
       prompt: `TASK:
-Image 1: Product photo of a Bucket Hat (soft sloped brim hat)
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of a Bucket Hat (soft sloped brim hat)
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact bucket hat naturally on their head.
 
 ══════════════════════════════════════════
@@ -1202,7 +1202,7 @@ ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
-- The user's face in the output must be a pixel-perfect copy of Image 2.
+- The user's face in the output must be a pixel-perfect copy of Image 1.
 - Same skin tone, facial features, facial hair, expression, and skin texture.
 - Do NOT alter, smooth, or relight the face.
 
@@ -1226,18 +1226,18 @@ STEP 2 — HAIR INTERACTION & SHADOW
 ══════════════════════════════════════════
 - Hair on top of head is completely covered under crown.
 - Hair at sides, back, and temples flows out naturally from under the perimeter drooping brim.
-- CRITICAL: The 360-degree brim casts a soft circular shadow over the upper forehead, eyes, and temple area, consistent with Image 2 lighting.
+- CRITICAL: The 360-degree brim casts a soft circular shadow over the upper forehead, eyes, and temple area, consistent with Image 1 lighting.
 
 ══════════════════════════════════════════
 STEP 3 — FABRIC TEXTURE
 ══════════════════════════════════════════
-- Heavy cotton canvas, denim, twill, or nylon texture matching Image 1.
-- Visible stitching lines along the brim rings if present in Image 1.
+- Heavy cotton canvas, denim, twill, or nylon texture matching Image 2.
+- Visible stitching lines along the brim rings if present in Image 2.
 
 ══════════════════════════════════════════
 STEP 4 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face identical to Image 2?
+[ ] Face identical to Image 1?
 [ ] Soft brim droops downward 360 degrees all around the head?
 [ ] Soft cylindrical crown fits naturally on skull?
 [ ] Soft circular shadow cast over forehead and upper face?
@@ -1253,8 +1253,8 @@ Output the final image only.`,
         'docker hat', 'ribbed beanie', 'cuffed beanie',
       ],
       prompt: `TASK:
-Image 1: Product photo of a Beanie / Skull Cap (knit brimless cap)
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of a Beanie / Skull Cap (knit brimless cap)
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact beanie naturally on their head.
 
 ══════════════════════════════════════════
@@ -1262,17 +1262,17 @@ ABSOLUTE PRIORITY RULES — READ BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE PRESERVATION IS NON-NEGOTIABLE:
-- The user's face must be 100% identical to Image 2.
+- The user's face must be 100% identical to Image 1.
 - Same skin tone — exact match, not approximated.
 - Same facial features — eyes, nose, mouth, jawline, cheekbones unchanged.
 - Same facial hair — beard, moustache, stubble reproduced exactly.
 - Same expression, eye colour, eyebrow shape, lip colour, skin texture.
 - Do NOT relight, smooth, brighten, or alter the face in any way.
-- The face in the output must be a PERFECT COPY of Image 2.
+- The face in the output must be a PERFECT COPY of Image 1.
 
 RULE 2 — BRAND LABEL / PATCH MUST BE REPRODUCED EXACTLY:
 - The brand patch (e.g. Carhartt label, woven tag) MUST appear in the output.
-- Reproduce the patch at the EXACT SIZE shown in Image 1 relative to the beanie.
+- Reproduce the patch at the EXACT SIZE shown in Image 2 relative to the beanie.
 - Reproduce the EXACT position — centered on the front cuff, below the fold line.
 - Reproduce patch background colour, logo, text, and border precisely.
 - The patch sits FLAT on the knit cuff fabric — sewn onto the surface, not floating.
@@ -1288,7 +1288,7 @@ STEP 1 — SKULL PLACEMENT & CUFF CURVE
 - Base cuff sits across forehead approximately 1-2 fingers above eyebrows.
 - The cuff fold follows the CURVE of the forehead — NOT a straight horizontal line. It curves gently at temples.
 - Beanie compresses slightly against the skull with realistic fabric weight.
-- Top of beanie follows the crown of the skull (fitted or slight slouch as shown in Image 1).
+- Top of beanie follows the crown of the skull (fitted or slight slouch as shown in Image 2).
 
 ══════════════════════════════════════════
 STEP 2 — HAIR INTERACTION
@@ -1309,14 +1309,14 @@ STEP 3 — KNIT TEXTURE & CUFF DETAILS
 ══════════════════════════════════════════
 STEP 4 — LIGHTING & THREE-DIMENSIONALITY
 ══════════════════════════════════════════
-- Light direction on beanie matches Image 2 face lighting exactly.
+- Light direction on beanie matches Image 1 face lighting exactly.
 - Raised ribs catch light while recessed stitch channels sit in subtle shadow.
 - Beanie wraps three-dimensionally around the head sphere.
 
 ══════════════════════════════════════════
 STEP 5 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face identical to Image 2 (skin tone, features, beard, expression untouched)?
+[ ] Face identical to Image 1 (skin tone, features, beard, expression untouched)?
 [ ] Beanie sitting ON skull, conforming to head shape?
 [ ] Cuff fold curves naturally with forehead curvature?
 [ ] Brand patch/label centered on front cuff, correct size, flat on fabric?
@@ -1333,8 +1333,8 @@ Output the final image only.`,
         'breathable gym cap', 'athletic cap', 'lightweight sports cap',
       ],
       prompt: `TASK:
-Image 1: Product photo of a Sports / Performance Cap
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of a Sports / Performance Cap
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact performance cap naturally on their head.
 
 ══════════════════════════════════════════
@@ -1342,13 +1342,13 @@ ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
-- The user's face in the output must be a pixel-perfect copy of Image 2.
+- The user's face in the output must be a pixel-perfect copy of Image 1.
 - Same skin tone, facial features, facial hair, expression, and skin texture.
 - Zero face modification, smoothing, or relighting.
 
 RULE 2 — ATHLETIC MATERIAL & DETAILS:
 - Ultra-lightweight performance polyester / dry-fit synthetic fabric with a subtle technical sheen.
-- Laser-cut ventilation perforations, micro-mesh side panels, or breathable seam taping MUST be reproduced if present in Image 1.
+- Laser-cut ventilation perforations, micro-mesh side panels, or breathable seam taping MUST be reproduced if present in Image 2.
 - Reflective brand logos, strips, or brim edge piping MUST catch bright specular light highlights.
 
 RULE 3 — LOW-PROFILE ATHLETIC FIT:
@@ -1372,7 +1372,7 @@ STEP 2 — HAIR INTERACTION
 ══════════════════════════════════════════
 STEP 3 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face completely identical to Image 2?
+[ ] Face completely identical to Image 1?
 [ ] Low-profile performance fit hugging skull tightly?
 [ ] Dry-fit fabric texture with laser-cut holes/mesh panels rendered?
 [ ] Reflective logos/accents catching bright light highlights?
@@ -1385,8 +1385,8 @@ Output the final image only.`,
   }, // end headwear_caps subcategories
 
   defaultPrompt: `TASK:
-Image 1: Product photo of Headwear / Cap
-Image 2: User's photo showing their head and face clearly
+Image 1: Customer photo (the person). Image 2: Product photo of Headwear / Cap
+-- (user photo is Image 1, product is Image 2)
 Goal: Show the user wearing this exact headwear naturally on their head.
 
 ══════════════════════════════════════════
@@ -1394,7 +1394,7 @@ ABSOLUTE PRIORITY RULES — APPLY BEFORE ANYTHING ELSE
 ══════════════════════════════════════════
 
 RULE 1 — FACE IS COMPLETELY UNTOUCHABLE:
-- The user's face in the output must be a pixel-perfect copy of Image 2.
+- The user's face in the output must be a pixel-perfect copy of Image 1.
 - Same skin tone, facial features, facial hair, expression, eye colour, and skin texture.
 - Do NOT relight, smooth, brighten, or alter the face in any way.
 - Treat the face like a locked layer that cannot be touched.
@@ -1427,14 +1427,14 @@ STEP 2 — HAIR INTERACTION & FABRIC TEXTURE
 ══════════════════════════════════════════
 STEP 3 — LIGHTING & 3D DEPTH
 ══════════════════════════════════════════
-- Headwear lighting direction matches Image 2 face lighting exactly.
+- Headwear lighting direction matches Image 1 face lighting exactly.
 - Brim casts forehead shadow at correct angle.
 - Headwear wraps three-dimensionally around the head.
 
 ══════════════════════════════════════════
 STEP 4 — MANDATORY SELF CHECK
 ══════════════════════════════════════════
-[ ] Face identical to Image 2 in every detail?
+[ ] Face identical to Image 1 in every detail?
 [ ] Headwear sits directly ON the skull conforming to its shape?
 [ ] Logos, patches, and embroidery 100% accurately reproduced?
 [ ] Brim shadow cast on forehead (for brimmed styles)?
@@ -1448,8 +1448,8 @@ Output the final image only.`,
   // Used when the shop has NO categories configured at all
   // ─────────────────────────────────────────────
   _fallback: `TASK: Virtual clothing try-on.
-Image 1 = Product photo of the garment. Image 2 = Customer's photo.
-Instructions: Show the customer wearing the exact product from Image 1. Replace their current outfit with the product. Fit the garment naturally to the customer's body, pose, and proportions. Reproduce the fabric texture, colour, silhouette, and any embellishments accurately. Keep the customer's face, hair, skin tone, and background completely unchanged. Do not add any extra jewellery, accessories, or clothing. Output the final photorealistic image only.`,
+Image 1 = Customer photo (the person). Image 2 = Product photo of the garment to try on.
+Instructions: Show the customer wearing the exact product from Image 2. Replace their current outfit with the product. Fit the garment naturally to the customer's body, pose, and proportions. Reproduce the fabric texture, colour, silhouette, and any embellishments accurately. Keep the customer's face, hair, skin tone, and background completely unchanged. Do not add any extra jewellery, accessories, or clothing. Output the final photorealistic image only.`,
 
 }; // end PROMPT_CONFIG
 
