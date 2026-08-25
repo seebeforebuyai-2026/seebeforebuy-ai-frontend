@@ -47,22 +47,22 @@ export const loader = async ({ request }) => {
     }
   }
 
-  // ── CHECK SHOPIFY FOR ACTIVE SUBSCRIPTION ──────────────────────────────────
-  // This runs every time the app loads — the most reliable way to sync plan state.
-  // On reinstall: Shopify has no active subscription → we reset backend to free.
-  // This handles missed webhooks, reinstall scenarios, and cancellations.
+  // ── INSTALL STATUS CHECK ───────────────────────────────────────────────────
+  // DynamoDB has install_status = "installed" | "uninstalled"
+  // Uninstall webhook sets it to "uninstalled" + resets plan to free.
+  // On first open after reinstall: loader detects "uninstalled" status,
+  // forces free plan, then sets it back to "installed".
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
   try {
-    // First: check if the shop was recently uninstalled (flag set by webhook)
-    const shopRecord = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`)
-      .then((r) => r.json())
-      .catch(() => null);
+    const statusRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
+    const statusData = await statusRes.json();
+    const installStatus = statusData?.shopStatus?.install_status;
 
-    const wasUninstalled = shopRecord?.shopStatus?.app_uninstalled === true;
+    if (installStatus === "uninstalled") {
+      // Merchant just reinstalled — enforce free plan
+      console.log(`🔄 Reinstall detected for ${shopDomain} (install_status=uninstalled) → resetting to free`);
 
-    if (wasUninstalled) {
-      // Shop was uninstalled — keep it on free plan, clear the flag
-      console.log(`🔄 Reinstall detected for ${shopDomain} — keeping free plan, clearing flag`);
+      // Reset plan to free in backend
       await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,55 +73,22 @@ export const loader = async ({ request }) => {
           charge_id: null,
           reason: "reinstall_detected",
         }),
-      }).catch(() => {});
-      // Clear the uninstalled flag so future loads don't keep resetting
+      }).catch((e) => console.error("❌ Could not reset plan:", e.message));
+
+      // Set install_status back to "installed"
       await fetch(`${backendUrl}/api/mark-uninstalled`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shop_domain: shopDomain }),
-      }).catch(() => {});
-    } else {
-      // Normal load — query Shopify for active subscription and sync
-      const subRes = await admin.graphql(`
-        query {
-          currentAppInstallation {
-            activeSubscriptions {
-              name
-              status
-            }
-          }
-        }
-      `);
-      const subData = await subRes.json();
-      const activeSubs =
-        subData.data?.currentAppInstallation?.activeSubscriptions || [];
-      const activePaidSub = activeSubs.find((s) => s.status === "ACTIVE");
+      }).catch((e) => console.error("❌ Could not clear install status:", e.message));
 
-      if (activePaidSub) {
-        const planName = (activePaidSub.name || "").toLowerCase();
-        let images_limit = 500;
-        if (planName.includes("scale")) images_limit = 10000;
-        else if (planName.includes("growth")) images_limit = 1000;
-        console.log(`✅ Syncing active plan: "${activePaidSub.name}" for ${shopDomain}`);
-        await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            shop_domain: shopDomain,
-            plan_name: planName,
-            images_limit,
-            charge_id: null,
-            reason: "loader_sync",
-          }),
-        }).catch(() => {});
-      }
-      // If no active sub found on normal load, do nothing — don't reset
-      // (the uninstall webhook + flag handles the reinstall case)
+      console.log(`✅ ${shopDomain} → plan reset to free, install_status=installed`);
     }
+    // If install_status === "installed" or not set → do nothing, plan is correct
   } catch (subErr) {
-    console.warn("⚠️ Could not check subscription status:", subErr.message);
+    console.warn("⚠️ Could not check install status:", subErr.message);
   }
-  // ─────────────────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────────
 
   // Fetch store details from Shopify GraphQL
   let shopEmail = session.email || `${shopDomain.split(".")[0]}@shopify.com`;
