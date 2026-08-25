@@ -48,23 +48,31 @@ export const loader = async ({ request }) => {
   }
 
   // ── BILLING PLAN SYNC ─────────────────────────────────────────────────────
-  // Check install_status flag first (set by merchant-onboarding on reinstall).
-  // If "uninstalled" → keep free, clear flag, done.
-  // Otherwise → query Shopify for active subscription and sync.
+  // ── BILLING PLAN SYNC ─────────────────────────────────────────────────────
+  // Priority order:
+  //   1. If install_status is "uninstalled" or "reinstalled" → the merchant just
+  //      reinstalled. Cancel any lingering Shopify subscription, force plan=free,
+  //      clear the flag. NEVER sync Shopify subscription in this case.
+  //   2. Normal load → query Shopify. Only sync a paid plan if the backend already
+  //      has that shop on a paid plan (plan_type != 'free'). This prevents a
+  //      stale ACTIVE Shopify subscription from re-inflating the plan after reinstall
+  //      when the flag was cleared before this load ran.
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
   try {
     const statusRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
     const statusData = await statusRes.json();
     const installStatus = statusData?.shopStatus?.install_status;
+    const backendPlanType = statusData?.shopStatus?.plan_type || "free";
 
     if (installStatus === "uninstalled" || installStatus === "reinstalled") {
-      // Merchant reinstalled. Reset plan to free AND cancel the Shopify subscription
-      // so future loads don't re-sync back to paid (Shopify keeps subscriptions ACTIVE after uninstall).
-      // "uninstalled" is set by the app/uninstalled webhook.
-      // "reinstalled" is set by merchant-onboarding when the shop already exists (reinstall path).
+      // ── REINSTALL PATH ────────────────────────────────────────────────────
+      // "uninstalled"  → set by app/uninstalled webhook
+      // "reinstalled"  → set by app/installed webhook (shop already existed)
+      // Both mean: merchant no longer has a valid paid subscription.
       console.log(`🔄 Reinstall detected (flag="${installStatus}"): ${shopDomain} → cancelling subscription + forcing free`);
 
-      // Cancel any active Shopify subscription using the live admin session
+      // Cancel any active Shopify subscription using the live admin session.
+      // Shopify keeps subscriptions ACTIVE after uninstall — we must cancel manually.
       try {
         const subRes = await admin.graphql(`
           query { currentAppInstallation { activeSubscriptions { id name status } } }
@@ -73,7 +81,7 @@ export const loader = async ({ request }) => {
         const subs = subData.data?.currentAppInstallation?.activeSubscriptions || [];
         for (const sub of subs) {
           if (sub.status === "ACTIVE") {
-            console.log(`� Cancelling subscription: ${sub.id} (${sub.name})`);
+            console.log(`🚫 Cancelling subscription: ${sub.id} (${sub.name})`);
             await admin.graphql(`
               mutation { appSubscriptionCancel(id: "${sub.id}") {
                 appSubscription { id status }
@@ -86,7 +94,7 @@ export const loader = async ({ request }) => {
         console.warn("⚠️ Could not cancel subscription:", cancelErr.message);
       }
 
-      // Reset plan to free in backend 
+      // Reset plan to free in backend
       await fetch(`${backendUrl}/api/reset-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,7 +104,7 @@ export const loader = async ({ request }) => {
         }),
       }).catch(() => {});
 
-      // Clear the install_status flag
+      // Clear the install_status flag so future loads go to the normal path
       await fetch(`${backendUrl}/api/mark-uninstalled`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -104,27 +112,49 @@ export const loader = async ({ request }) => {
       }).catch(() => {});
 
       console.log(`✅ ${shopDomain} → subscription cancelled, plan=free, flag cleared`);
-    } else {
-      // Normal load — query Shopify for active subscription and sync
-      const subRes = await admin.graphql(`
-        query { currentAppInstallation { activeSubscriptions { name status } } }
-      `);
-      const subData = await subRes.json();
-      const subs = subData.data?.currentAppInstallation?.activeSubscriptions || [];
-      const activeSub = subs.find((s) => s.status === "ACTIVE");
 
-      if (activeSub) {
-        const planName = (activeSub.name || "").toLowerCase();
-        let images_limit = 500;
-        let plan_type = "starter";
-        if (planName.includes("scale")) { images_limit = 10000; plan_type = "pro"; }
-        else if (planName.includes("growth")) { images_limit = 1000; plan_type = "growth"; }
-        console.log(`✅ Active subscription: "${activeSub.name}" → syncing`);
-        await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ shop_domain: shopDomain, plan_name: plan_type, images_limit, reason: "loader_sync" }),
-        }).catch(() => {});
+    } else {
+      // ── NORMAL LOAD PATH ──────────────────────────────────────────────────
+      // Only sync the Shopify subscription if the backend ALREADY has this shop
+      // on a paid plan. This is the critical guard: if the backend says "free",
+      // we trust the backend and do NOT let a stale Shopify ACTIVE subscription
+      // override it. A stale ACTIVE subscription is expected after reinstall
+      // because Shopify does not auto-cancel subscriptions on uninstall.
+      if (backendPlanType === "free") {
+        console.log(`ℹ️  ${shopDomain} is on free plan in backend — skipping Shopify subscription sync`);
+      } else {
+        // Backend has a paid plan — verify it is still active on Shopify's side
+        const subRes = await admin.graphql(`
+          query { currentAppInstallation { activeSubscriptions { name status } } }
+        `);
+        const subData = await subRes.json();
+        const subs = subData.data?.currentAppInstallation?.activeSubscriptions || [];
+        const activeSub = subs.find((s) => s.status === "ACTIVE");
+
+        if (activeSub) {
+          const planName = (activeSub.name || "").toLowerCase();
+          let images_limit = 500;
+          let plan_type = "starter";
+          if (planName.includes("scale")) { images_limit = 10000; plan_type = "pro"; }
+          else if (planName.includes("growth")) { images_limit = 1000; plan_type = "growth"; }
+          console.log(`✅ Active subscription confirmed: "${activeSub.name}" → syncing`);
+          await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ shop_domain: shopDomain, plan_name: plan_type, images_limit, reason: "loader_sync" }),
+          }).catch(() => {});
+        } else {
+          // Backend says paid but Shopify has no active subscription → downgrade to free
+          console.log(`⬇️  ${shopDomain}: backend=${backendPlanType} but no active Shopify subscription → resetting to free`);
+          await fetch(`${backendUrl}/api/reset-plan`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              shop_domain: shopDomain,
+              admin_secret: process.env.ADMIN_SECRET || "sbb-admin-reset-2024",
+            }),
+          }).catch(() => {});
+        }
       }
     }
   } catch (subErr) {

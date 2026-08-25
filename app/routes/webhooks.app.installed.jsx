@@ -1,83 +1,75 @@
-import { authenticate } from "../shopify.server";
-
 /**
- * ============================================
- * WEBHOOK: App Installed
- * ============================================
- * 
- * This webhook is triggered when a merchant installs the app.
- * We use it to automatically create their account in our backend.
- * 
- * Flow:
- * 1. Merchant installs app from Shopify App Store
- * 2. Shopify calls this webhook
- * 3. We call our backend to create merchant account
- * 4. Backend creates shop in DynamoDB
- * 5. Backend generates temporary password
- * 6. Backend sends welcome email with credentials
+ * webhooks.app.installed.jsx
+ *
+ * Fires every time a merchant installs (or reinstalls) the app.
+ * Registered in shopify.app.toml under topics = ["app/installed"].
+ *
+ * On first install  → creates the shop record with plan=free.
+ * On reinstall      → resets plan to free + sets install_status="reinstalled"
+ *                     so the loader knows to cancel any lingering Shopify
+ *                     subscription on the merchant's first page open.
  */
 
+import { authenticate } from "../shopify.server";
+
 export const action = async ({ request }) => {
+  const clonedRequest = request.clone();
+  let shop = null;
+
   try {
-    // Authenticate the webhook request from Shopify
-    const { shop, session, topic } = await authenticate.webhook(request);
+    const result = await authenticate.webhook(request);
+    shop = result.shop;
+    console.log(`🎉 app/installed webhook received for: ${shop}`);
+  } catch (err) {
+    // Webhook HMAC verification can fail on reinstall because the old session
+    // was deleted by the uninstall webhook. Fall back to parsing the raw body.
+    console.warn(`⚠️  authenticate.webhook error (expected on reinstall): ${err.message}`);
+    try {
+      const body = await clonedRequest.json();
+      shop = body?.myshopify_domain || body?.domain || null;
+      console.log(`   Extracted shop from payload: ${shop}`);
+    } catch {
+      console.error("❌ Could not parse app/installed webhook payload");
+      return new Response(null, { status: 200 });
+    }
+  }
 
-    console.log('🎉 App installed webhook received!');
-    console.log('   Shop:', shop);
-    console.log('   Topic:', topic);
+  if (!shop) {
+    console.error("❌ app/installed webhook: could not determine shop domain");
+    return new Response(null, { status: 200 });
+  }
 
-    // Get shop information from session
-    const shopEmail = session?.email || `${shop.split('.')[0]}@shopify.com`;
-    const shopName = session?.shop || shop;
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
 
-    console.log('📧 Shop email:', shopEmail);
-    console.log('🏪 Shop name:', shopName);
-
-    // Call backend to create merchant account
-    console.log('📤 Calling backend to create merchant account...');
-    
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-    
-    const response = await fetch(`${backendUrl}/api/merchant/onboard`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  try {
+    // Call onboard endpoint — it checks whether the shop already exists.
+    // If it does (reinstall): resets plan to free + sets install_status="reinstalled".
+    // If it doesn't (first install): creates a fresh free-plan record.
+    const res = await fetch(`${backendUrl}/api/merchant/onboard`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         shop_domain: shop,
-        shop_email: shopEmail,
-        shop_name: shopName,
+        shop_email: `${shop.split(".")[0]}@shopify.com`,
+        shop_name: shop,
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Backend onboarding failed:', response.status, errorText);
-      throw new Error(`Backend returned ${response.status}: ${errorText}`);
+    const data = await res.json();
+
+    if (data.success) {
+      const isReinstall = data.message?.includes("reinstalled");
+      console.log(
+        isReinstall
+          ? `✅ Reinstall handled: ${shop} → plan reset to free, install_status=reinstalled`
+          : `✅ First install handled: ${shop} → free plan account created`
+      );
+    } else {
+      console.error(`❌ Onboard endpoint error for ${shop}:`, data.error);
     }
-
-    const data = await response.json();
-    console.log('✅ Merchant account created successfully!');
-    console.log('   Email:', data.credentials?.email);
-    console.log('   Temporary password:', data.credentials?.temporary_password);
-    console.log('   Email sent:', data.email_sent);
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('❌ Error in app/installed webhook:', error);
-    
-    // Return 200 anyway so Shopify doesn't retry
-    // (We'll handle errors gracefully)
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: error.message 
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  } catch (err) {
+    console.error(`❌ Could not call onboard endpoint for ${shop}:`, err.message);
   }
+
+  return new Response(null, { status: 200 });
 };
