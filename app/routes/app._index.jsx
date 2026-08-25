@@ -48,43 +48,39 @@ export const loader = async ({ request }) => {
   }
 
   // ── INSTALL STATUS CHECK ───────────────────────────────────────────────────
-  // DynamoDB has install_status = "installed" | "uninstalled"
-  // Uninstall webhook sets it to "uninstalled" + resets plan to free.
-  // On first open after reinstall: loader detects "uninstalled" status,
-  // forces free plan, then sets it back to "installed".
+  // When merchant uninstalls: webhook sets app_uninstalled=true + plan=free in DynamoDB.
+  // On first open after reinstall: loader sees app_uninstalled=true → keeps free plan
+  // and clears the flag so it doesn't reset on subsequent loads.
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
   try {
     const statusRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
     const statusData = await statusRes.json();
-    const installStatus = statusData?.shopStatus?.install_status;
 
-    if (installStatus === "uninstalled") {
-      // Merchant just reinstalled — enforce free plan
-      console.log(`🔄 Reinstall detected for ${shopDomain} (install_status=uninstalled) → resetting to free`);
+    // Check app_uninstalled flag — set by the app/uninstalled webhook
+    const wasUninstalled = statusData?.shopStatus?.app_uninstalled === true;
 
-      // Reset plan to free in backend
-      await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+    if (wasUninstalled) {
+      console.log(`🔄 Reinstall detected for ${shopDomain} (app_uninstalled=true) → enforcing free plan`);
+
+      // Force free plan via the reset endpoint (full reset)
+      await fetch(`${backendUrl}/api/reset-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           shop_domain: shopDomain,
-          plan_name: "free",
-          images_limit: 50,
-          charge_id: null,
-          reason: "reinstall_detected",
+          admin_secret: process.env.ADMIN_SECRET || "sbb-admin-reset-2024",
         }),
       }).catch((e) => console.error("❌ Could not reset plan:", e.message));
 
-      // Set install_status back to "installed"
+      // Clear the app_uninstalled flag so future loads don't reset again
       await fetch(`${backendUrl}/api/mark-uninstalled`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shop_domain: shopDomain }),
-      }).catch((e) => console.error("❌ Could not clear install status:", e.message));
+      }).catch((e) => console.error("❌ Could not clear uninstalled flag:", e.message));
 
-      console.log(`✅ ${shopDomain} → plan reset to free, install_status=installed`);
+      console.log(`✅ ${shopDomain} → plan=free, app_uninstalled flag cleared`);
     }
-    // If install_status === "installed" or not set → do nothing, plan is correct
   } catch (subErr) {
     console.warn("⚠️ Could not check install status:", subErr.message);
   }

@@ -42,6 +42,20 @@ export const action = async ({ request }) => {
     console.log(`📋 Subscription status: ${status} | plan: "${subscription?.name}"`);
 
     if (status === "ACTIVE") {
+      // Before activating, check if the shop was recently uninstalled.
+      // If app_uninstalled=true, the subscription webhook is firing from the OLD
+      // subscription — do not re-activate. The reinstall loader handles the reset.
+      let shopRecord = null;
+      try {
+        const checkRes = await fetch(`${backendUrl}/api/shop-status/${shop}`);
+        shopRecord = await checkRes.json();
+      } catch {}
+      const wasUninstalled = shopRecord?.shopStatus?.app_uninstalled === true;
+      if (wasUninstalled) {
+        console.log(`⏭️  Skipping plan activation — app_uninstalled=true for ${shop}`);
+        return new Response(null, { status: 200 });
+      }
+
       let images_limit = 500;
       let plan_type = "starter";
 
