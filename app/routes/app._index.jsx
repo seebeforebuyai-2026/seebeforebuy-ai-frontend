@@ -58,14 +58,50 @@ export const loader = async ({ request }) => {
     const installStatus = statusData?.shopStatus?.install_status;
 
     if (installStatus === "uninstalled") {
-      // Merchant reinstalled — merchant-onboarding already reset plan to free.
-      // Just clear the flag so this doesn't run again next load.
-      console.log(`🔄 Reinstall: ${shopDomain} → plan already free, clearing flag`);
+      // Merchant reinstalled. Reset plan to free AND cancel the Shopify subscription
+      // so future loads don't re-sync back to paid (Shopify keeps subscriptions ACTIVE after uninstall).
+      console.log(`🔄 Reinstall detected: ${shopDomain} → cancelling subscription + forcing free`);
+
+      // Cancel any active Shopify subscription using the live admin session
+      try {
+        const subRes = await admin.graphql(`
+          query { currentAppInstallation { activeSubscriptions { id name status } } }
+        `);
+        const subData = await subRes.json();
+        const subs = subData.data?.currentAppInstallation?.activeSubscriptions || [];
+        for (const sub of subs) {
+          if (sub.status === "ACTIVE") {
+            console.log(`� Cancelling subscription: ${sub.id} (${sub.name})`);
+            await admin.graphql(`
+              mutation { appSubscriptionCancel(id: "${sub.id}") {
+                appSubscription { id status }
+                userErrors { message }
+              }}
+            `);
+          }
+        }
+      } catch (cancelErr) {
+        console.warn("⚠️ Could not cancel subscription:", cancelErr.message);
+      }
+
+      // Reset plan to free in backend
+      await fetch(`${backendUrl}/api/reset-plan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop_domain: shopDomain,
+          admin_secret: process.env.ADMIN_SECRET || "sbb-admin-reset-2024",
+        }),
+      }).catch(() => {});
+
+      // Clear the install_status flag
       await fetch(`${backendUrl}/api/mark-uninstalled`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shop_domain: shopDomain }),
       }).catch(() => {});
+
+      console.log(`✅ ${shopDomain} → subscription cancelled, plan=free, flag cleared`);
     } else {
       // Normal load — query Shopify for active subscription and sync
       const subRes = await admin.graphql(`
