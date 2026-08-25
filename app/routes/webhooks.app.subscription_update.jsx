@@ -50,7 +50,7 @@ export const action = async ({ request }) => {
         const checkRes = await fetch(`${backendUrl}/api/shop-status/${shop}`);
         shopRecord = await checkRes.json();
       } catch {}
-      const wasUninstalled = shopRecord?.shopStatus?.app_uninstalled === true;
+      const wasUninstalled = shopRecord?.shopStatus?.install_status === "uninstalled";
       if (wasUninstalled) {
         console.log(`⏭️  Skipping plan activation — app_uninstalled=true for ${shop}`);
         return new Response(null, { status: 200 });

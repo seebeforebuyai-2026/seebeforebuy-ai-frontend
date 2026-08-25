@@ -57,7 +57,7 @@ export const loader = async ({ request }) => {
     const statusData = await statusRes.json();
 
     // Check app_uninstalled flag — set by the app/uninstalled webhook
-    const wasUninstalled = statusData?.shopStatus?.app_uninstalled === true;
+    const wasUninstalled = statusData?.shopStatus?.install_status === "uninstalled";
 
     if (wasUninstalled) {
       console.log(`🔄 Reinstall detected for ${shopDomain} (app_uninstalled=true) → enforcing free plan`);
