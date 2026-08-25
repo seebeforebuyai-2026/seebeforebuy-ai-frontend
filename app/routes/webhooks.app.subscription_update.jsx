@@ -42,42 +42,12 @@ export const action = async ({ request }) => {
     console.log(`📋 Subscription status: ${status} | plan: "${subscription?.name}"`);
 
     if (status === "ACTIVE") {
-      // Before activating, check if the shop was recently uninstalled.
-      // If app_uninstalled=true, the subscription webhook is firing from the OLD
-      // subscription — do not re-activate. The reinstall loader handles the reset.
-      let shopRecord = null;
-      try {
-        const checkRes = await fetch(`${backendUrl}/api/shop-status/${shop}`);
-        shopRecord = await checkRes.json();
-      } catch {}
-      const wasUninstalled = shopRecord?.shopStatus?.install_status === "uninstalled";
-      if (wasUninstalled) {
-        console.log(`⏭️  Skipping plan activation — app_uninstalled=true for ${shop}`);
-        return new Response(null, { status: 200 });
-      }
-
-      let images_limit = 500;
-      let plan_type = "starter";
-
-      if (planName.includes("scale")) { images_limit = 10000; plan_type = "pro"; }
-      else if (planName.includes("growth")) { images_limit = 1000; plan_type = "growth"; }
-      else if (planName.includes("standard")) { images_limit = 500; plan_type = "starter"; }
-      else {
-        console.warn(`⚠️  Unrecognized plan name: "${subscription?.name}" — defaulting to Standard`);
-      }
-
-      const res = await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shop_domain: shop,
-          plan_name: planName,
-          images_limit,
-          charge_id: subscription?.admin_graphql_api_id || null,
-        }),
-      });
-      const data = await res.json();
-      console.log(`✅ Plan activated: ${shop} → ${plan_type} (${images_limit} credits)`, data);
+      // DO NOT activate plan from this webhook.
+      // Plan activation is handled by app.billing.jsx loader (ground truth from Shopify session).
+      // This webhook fires unreliably and can re-activate after reinstall.
+      // The app loader syncs the correct plan on every page open.
+      console.log(`ℹ️  app_subscriptions/update ACTIVE received for ${shop} — skipping (handled by loader)`);
+      return new Response(null, { status: 200 });
 
     } else if (status === "CANCELLED" || status === "EXPIRED" || status === "FROZEN") {
       // Subscription cancelled/expired/frozen — reset to free

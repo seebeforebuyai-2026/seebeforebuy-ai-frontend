@@ -47,42 +47,50 @@ export const loader = async ({ request }) => {
     }
   }
 
-  // ── INSTALL STATUS CHECK ───────────────────────────────────────────────────
-  // When merchant uninstalls: webhook sets app_uninstalled=true + plan=free in DynamoDB.
-  // On first open after reinstall: loader sees app_uninstalled=true → keeps free plan
-  // and clears the flag so it doesn't reset on subsequent loads.
+  // ── BILLING PLAN SYNC ─────────────────────────────────────────────────────
+  // Check install_status flag first (set by merchant-onboarding on reinstall).
+  // If "uninstalled" → keep free, clear flag, done.
+  // Otherwise → query Shopify for active subscription and sync.
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
   try {
     const statusRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
     const statusData = await statusRes.json();
+    const installStatus = statusData?.shopStatus?.install_status;
 
-    // Check app_uninstalled flag — set by the app/uninstalled webhook
-    const wasUninstalled = statusData?.shopStatus?.install_status === "uninstalled";
-
-    if (wasUninstalled) {
-      console.log(`🔄 Reinstall detected for ${shopDomain} (app_uninstalled=true) → enforcing free plan`);
-
-      // Force free plan via the reset endpoint (full reset)
-      await fetch(`${backendUrl}/api/reset-plan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shop_domain: shopDomain,
-          admin_secret: process.env.ADMIN_SECRET || "sbb-admin-reset-2024",
-        }),
-      }).catch((e) => console.error("❌ Could not reset plan:", e.message));
-
-      // Clear the app_uninstalled flag so future loads don't reset again
+    if (installStatus === "uninstalled") {
+      // Merchant reinstalled — merchant-onboarding already reset plan to free.
+      // Just clear the flag so this doesn't run again next load.
+      console.log(`🔄 Reinstall: ${shopDomain} → plan already free, clearing flag`);
       await fetch(`${backendUrl}/api/mark-uninstalled`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shop_domain: shopDomain }),
-      }).catch((e) => console.error("❌ Could not clear uninstalled flag:", e.message));
+      }).catch(() => {});
+    } else {
+      // Normal load — query Shopify for active subscription and sync
+      const subRes = await admin.graphql(`
+        query { currentAppInstallation { activeSubscriptions { name status } } }
+      `);
+      const subData = await subRes.json();
+      const subs = subData.data?.currentAppInstallation?.activeSubscriptions || [];
+      const activeSub = subs.find((s) => s.status === "ACTIVE");
 
-      console.log(`✅ ${shopDomain} → plan=free, app_uninstalled flag cleared`);
+      if (activeSub) {
+        const planName = (activeSub.name || "").toLowerCase();
+        let images_limit = 500;
+        let plan_type = "starter";
+        if (planName.includes("scale")) { images_limit = 10000; plan_type = "pro"; }
+        else if (planName.includes("growth")) { images_limit = 1000; plan_type = "growth"; }
+        console.log(`✅ Active subscription: "${activeSub.name}" → syncing`);
+        await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ shop_domain: shopDomain, plan_name: plan_type, images_limit, reason: "loader_sync" }),
+        }).catch(() => {});
+      }
     }
   } catch (subErr) {
-    console.warn("⚠️ Could not check install status:", subErr.message);
+    console.warn("⚠️ Could not sync plan:", subErr.message);
   }
   // ──────────────────────────────────────────────────────────────────────────
 
