@@ -47,6 +47,84 @@ export const loader = async ({ request }) => {
     }
   }
 
+  // ── CHECK SHOPIFY FOR ACTIVE SUBSCRIPTION ──────────────────────────────────
+  // This runs every time the app loads — the most reliable way to sync plan state.
+  // On reinstall: Shopify has no active subscription → we reset backend to free.
+  // This handles missed webhooks, reinstall scenarios, and cancellations.
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+  try {
+    const subRes = await admin.graphql(`
+      query {
+        currentAppInstallation {
+          activeSubscriptions {
+            name
+            status
+            createdAt
+          }
+        }
+      }
+    `);
+    const subData = await subRes.json();
+    const activeSubs =
+      subData.data?.currentAppInstallation?.activeSubscriptions || [];
+
+    // Find any ACTIVE paid subscription from Shopify
+    const activePaidSub = activeSubs.find(
+      (s) => s.status === "ACTIVE",
+    );
+
+    if (!activePaidSub) {
+      // No active subscription on Shopify side — ensure backend is on free plan
+      // This is the key fix for reinstall: Shopify has no subscription, so reset to free
+      console.log(
+        `🔄 No active Shopify subscription for ${shopDomain} — ensuring free plan in backend`,
+      );
+      await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop_domain: shopDomain,
+          plan_name: "free",
+          images_limit: 50,
+          charge_id: null,
+          reason: "no_active_shopify_subscription",
+        }),
+      }).catch((e) =>
+        console.error("❌ Could not reset plan to free:", e.message),
+      );
+    } else {
+      // Active subscription exists — sync the plan name to backend
+      const planName = (activePaidSub.name || "").toLowerCase();
+      console.log(
+        `✅ Active Shopify subscription: "${activePaidSub.name}" for ${shopDomain}`,
+      );
+      // Determine credits
+      let images_limit = 500;
+      if (planName.includes("scale")) images_limit = 10000;
+      else if (planName.includes("growth")) images_limit = 1000;
+      // Sync to backend (idempotent — safe to call every load)
+      await fetch(`${backendUrl}/api/shopify-subscription-activated`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop_domain: shopDomain,
+          plan_name: planName,
+          images_limit,
+          charge_id: null,
+          reason: "loader_sync",
+        }),
+      }).catch((e) =>
+        console.error("❌ Could not sync active plan:", e.message),
+      );
+    }
+  } catch (subErr) {
+    console.warn(
+      "⚠️ Could not check Shopify subscription status:",
+      subErr.message,
+    );
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // Fetch store details from Shopify GraphQL
   let shopEmail = session.email || `${shopDomain.split(".")[0]}@shopify.com`;
   let shopName = session.shop || shopDomain;
@@ -102,8 +180,6 @@ export const loader = async ({ request }) => {
   }
 
   // Check shop status from backend
-  const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
-
   try {
     const response = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
     const data = await response.json();
