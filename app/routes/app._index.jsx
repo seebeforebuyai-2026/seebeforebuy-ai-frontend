@@ -57,10 +57,12 @@ export const loader = async ({ request }) => {
     const statusData = await statusRes.json();
     const installStatus = statusData?.shopStatus?.install_status;
 
-    if (installStatus === "uninstalled") {
+    if (installStatus === "uninstalled" || installStatus === "reinstalled") {
       // Merchant reinstalled. Reset plan to free AND cancel the Shopify subscription
       // so future loads don't re-sync back to paid (Shopify keeps subscriptions ACTIVE after uninstall).
-      console.log(`🔄 Reinstall detected: ${shopDomain} → cancelling subscription + forcing free`);
+      // "uninstalled" is set by the app/uninstalled webhook.
+      // "reinstalled" is set by merchant-onboarding when the shop already exists (reinstall path).
+      console.log(`🔄 Reinstall detected (flag="${installStatus}"): ${shopDomain} → cancelling subscription + forcing free`);
 
       // Cancel any active Shopify subscription using the live admin session
       try {
@@ -84,7 +86,7 @@ export const loader = async ({ request }) => {
         console.warn("⚠️ Could not cancel subscription:", cancelErr.message);
       }
 
-      // Reset plan to free in backend
+      // Reset plan to free in backend 
       await fetch(`${backendUrl}/api/reset-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
