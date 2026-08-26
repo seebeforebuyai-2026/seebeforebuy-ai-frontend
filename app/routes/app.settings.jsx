@@ -959,7 +959,9 @@ export default function Settings() {
                   </div>
                   <div className={styles.ppBody}>
                     <div className={styles.entryPopupCard}>
-                      <div className={styles.epHeader} style={{ background: s.entry_popup.bg_color }}>
+                      <div className={styles.epHeader} style={{
+                        background: `linear-gradient(135deg, ${s.entry_popup.bg_color} 0%, ${s.entry_popup.bg_color} 58%, #000000 140%)`,
+                      }}>
                         <button className={styles.epClose}>✕</button>
                         <div className={styles.epCards}>
                           <div className={styles.epCardProduct}>
