@@ -2012,7 +2012,13 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                               src={userPhoto}
                               alt="Uploaded"
                               className={styles.uploadPreviewImg}
-                                style={{ borderRadius: "12px" }}
+                              style={{
+                                display: "block",
+                                width: "100%",
+                                height: "196px",
+                                objectFit: "contain",
+                                borderRadius: "12px",
+                              }}
                             />
                           ) : (
                             <div>
