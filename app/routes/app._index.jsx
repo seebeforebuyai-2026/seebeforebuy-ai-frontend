@@ -1165,20 +1165,80 @@ export default function DashboardIndex() {
                         display: "grid",
                         gridTemplateColumns: "1fr 1fr",
                         gap: "16px",
+                        alignItems: "stretch",
                       }}
                     >
                       {/* Product card */}
                       <div>
-                        <div className={styles.tgHead}>1. Your product</div>
+                        <div
+                          className={styles.tgHead}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "7px",
+                            marginBottom: "9px",
+                            fontSize: "11px",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: "22px",
+                              height: "22px",
+                              borderRadius: "7px",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "#E6F7F2",
+                              color: "#008060",
+                              fontSize: "11px",
+                              fontWeight: 800,
+                            }}
+                          >
+                            1
+                          </span>
+                          Your product
+                        </div>
                         {demoProduct ? (
                           <div
                             className={`${styles.prodThumb} ${styles.prodThumbOn}`}
-                            style={{ cursor: "default" }}
+                            style={{
+                              cursor: "default",
+                              height: "244px",
+                              padding: "10px",
+                              borderRadius: "14px",
+                              border: "1px solid #D7EEE8",
+                              background: "linear-gradient(145deg, #FFFFFF 0%, #F3FBF9 100%)",
+                              boxShadow: "0 8px 22px rgba(0, 128, 96, 0.08)",
+                              position: "relative",
+                            }}
                           >
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "10px",
+                                left: "10px",
+                                zIndex: 1,
+                                padding: "4px 7px",
+                                borderRadius: "999px",
+                                background: "#E6F7F2",
+                                color: "#007A5A",
+                                fontSize: "9px",
+                                fontWeight: 800,
+                              }}
+                            >
+                              SELECTED
+                            </div>
                             {demoProduct.image ? (
                               <img
                                 src={demoProduct.image}
                                 alt={demoProduct.imageAlt}
+                                style={{
+                                  width: "100%",
+                                  height: "172px",
+                                  objectFit: "contain",
+                                  borderRadius: "10px",
+                                }}
                               />
                             ) : (
                               <div
@@ -1219,7 +1279,10 @@ export default function DashboardIndex() {
                               justifyContent: "center",
                               fontSize: "12px",
                               color: "#9CA3AF",
-                              minHeight: "120px",
+                              height: "244px",
+                              borderRadius: "14px",
+                              border: "1px dashed #D1D5DB",
+                              background: "#FAFAFA",
                             }}
                           >
                             No products found
@@ -1229,8 +1292,34 @@ export default function DashboardIndex() {
 
                       {/* Upload box */}
                       <div>
-                        <div className={styles.tgHead}>
-                          2. Upload Model Photo
+                        <div
+                          className={styles.tgHead}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "7px",
+                            marginBottom: "9px",
+                            fontSize: "11px",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: "22px",
+                              height: "22px",
+                              borderRadius: "7px",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "#EEF2FF",
+                              color: "#4F46E5",
+                              fontSize: "11px",
+                              fontWeight: 800,
+                            }}
+                          >
+                            2
+                          </span>
+                          Upload model photo
                         </div>
                         <div
                           className={`${styles.uploadBox} ${userPhoto ? styles.uploadBoxHas : ""}`}
@@ -1250,13 +1339,21 @@ export default function DashboardIndex() {
                               src={userPhoto}
                               alt="Uploaded"
                               className={styles.uploadPreviewImg}
+                                style={{ borderRadius: "12px" }}
                             />
                           ) : (
                             <div>
                               <div
                                 style={{
-                                  fontSize: "24px",
-                                  marginBottom: "4px",
+                                  width: "48px",
+                                  height: "48px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  margin: "0 auto 12px",
+                                  borderRadius: "14px",
+                                  background: "linear-gradient(135deg, #EEF2FF, #E0E7FF)",
+                                  fontSize: "23px",
                                 }}
                               >
                                 📸
@@ -1271,7 +1368,11 @@ export default function DashboardIndex() {
                                 Click to upload
                               </div>
                               <div
-                                style={{ fontSize: "10px", color: "#9CA3AF" }}
+                                style={{
+                                  fontSize: "10px",
+                                  color: "#9CA3AF",
+                                  marginTop: "5px",
+                                }}
                               >
                                 Full body · Front facing
                               </div>
@@ -1283,7 +1384,14 @@ export default function DashboardIndex() {
 
                     <button
                       className={styles.tealButton}
-                      style={{ width: "100%", marginTop: "16px" }}
+                      style={{
+                        width: "100%",
+                        marginTop: "18px",
+                        minHeight: "46px",
+                        borderRadius: "11px",
+                        fontWeight: 800,
+                        boxShadow: "0 8px 18px rgba(0, 128, 96, 0.18)",
+                      }}
                       disabled={
                         !userPhoto || !demoProduct || demoStep === "generating"
                       }
