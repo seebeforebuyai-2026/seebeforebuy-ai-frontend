@@ -1924,6 +1924,7 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                                 color: "#008060",
                                 fontWeight: 800,
                                 marginTop: "6px",
+                                marginLeft: "8px",
                               }}
                             >
                               {demoProduct.price}
