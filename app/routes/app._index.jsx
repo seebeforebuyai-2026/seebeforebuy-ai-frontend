@@ -47,16 +47,7 @@ export const loader = async ({ request }) => {
     }
   }
 
-  // ── BILLING PLAN SYNC ─────────────────────────────────────────────────────
-  // ── BILLING PLAN SYNC ─────────────────────────────────────────────────────
-  // Priority order:
-  //   1. If install_status is "uninstalled" or "reinstalled" → the merchant just
-  //      reinstalled. Cancel any lingering Shopify subscription, force plan=free,
-  //      clear the flag. NEVER sync Shopify subscription in this case.
-  //   2. Normal load → query Shopify. Only sync a paid plan if the backend already
-  //      has that shop on a paid plan (plan_type != 'free'). This prevents a
-  //      stale ACTIVE Shopify subscription from re-inflating the plan after reinstall
-  //      when the flag was cleared before this load ran.
+
   const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
   try {
     const statusRes = await fetch(`${backendUrl}/api/shop-status/${shopDomain}`);
@@ -332,6 +323,16 @@ export const action = async ({ request }) => {
     const phoneNumber = formData.get("phone_number");
     const whatsappNumber = formData.get("whatsapp_number");
 
+    // Keep validation server-side as well; client-side restrictions can be bypassed.
+    const phoneDigits = String(phoneNumber || "").replace(/\D/g, "");
+    const whatsappDigits = String(whatsappNumber || "").replace(/\D/g, "");
+    if (!/^\d{10}$/.test(phoneDigits) || !/^\d{10}$/.test(whatsappDigits)) {
+      return {
+        success: false,
+        error: "Phone and WhatsApp numbers must each contain exactly 10 digits",
+      };
+    }
+
     const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
     try {
       const response = await fetch(`${backendUrl}/api/merchant/save-phone`, {
@@ -339,8 +340,8 @@ export const action = async ({ request }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           shop_domain: shopDomain,
-          phone_number: phoneNumber,
-          whatsapp_number: whatsappNumber,
+          phone_number: phoneDigits,
+          whatsapp_number: whatsappDigits,
         }),
       });
       const data = await response.json();
@@ -487,6 +488,10 @@ export default function DashboardIndex() {
     if (hasAccount) return 1;
     return 0;
   });
+
+  const [phonePrefix, setPhonePrefix] = useState("+91");
+const [sameAsPhone, setSameAsPhone] = useState(true);
+const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
   // Once the dashboard has been opened, the completed setup steps stay locked.
   const [dashboardLocked, setDashboardLocked] = useState(isActive);
   // Track the highest step reached — can't go back once you pass a step
@@ -599,8 +604,8 @@ export default function DashboardIndex() {
 
   // Submit Phone Numbers
   const handleSavePhone = () => {
-    if (!phoneNumber.trim() || !whatsappNumber.trim()) {
-      shopify.toast.show("Please enter both phone and WhatsApp numbers", {
+    if (!/^\d{10}$/.test(phoneNumber) || !/^\d{10}$/.test(whatsappNumber)) {
+      shopify.toast.show("Enter exactly 10 digits for both numbers", {
         isError: true,
       });
       return;
@@ -609,8 +614,8 @@ export default function DashboardIndex() {
       {
         actionType: "savePhoneNumbers",
         shop_domain: loaderData.shop.domain,
-        phone_number: phoneNumber.trim(),
-        whatsapp_number: whatsappNumber.trim(),
+        phone_number: phoneNumber,
+        whatsapp_number: whatsappNumber,
       },
       { method: "POST" },
     );
@@ -1016,130 +1021,782 @@ export default function DashboardIndex() {
           {/* ════ SCREEN 2: PHONE & WHATSAPP ════ */}
 
           {currentStep === 2 && (
-            <div className={styles.panel}>
-              <div className={styles.panelHead}>
-                <div className={styles.phEyebrow}>Step 2 of 4</div>
-                <div className={styles.phTitle}>Get alerts on WhatsApp</div>
-                <div className={styles.phSub}>
-                  Know the moment a shopper tries on your product.
-                </div>
-              </div>
-              <div className={styles.panelBody}>
-                <div style={{ maxWidth: "580px", margin: "0 auto" }}>
-                  <div className={styles.waAlertBanner}>
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        color: "rgba(255,255,255,0.7)",
-                        textTransform: "uppercase",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      Alerts you'll receive
-                    </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.25)",
-                        padding: "5px 12px",
-                        borderRadius: "8px",
-                        color: "#ffffff",
-                        fontSize: "12px",
-                      }}
-                    >
-                      <p> First try-on on your store!</p>
-                      <p
-                        style={{
-                          fontSize: "10px",
-                          color: "#ffffff",
-                          marginTop: "4px",
-                        }}
-                      >
-                        We'll send you a WhatsApp message when a shopper tries
-                        on your product.
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.25)",
-                        padding: "5px 12px",
-                        borderRadius: "8px",
-                        color: "#ffffff",
-                        fontSize: "12px",
-                        marginTop: "12px",
-                      }}
-                    >
-                      <p>80% of credits used</p>
-                      <p
-                        style={{
-                          fontSize: "10px",
-                          color: "#ffffff",
-                          marginTop: "4px",
-                        }}
-                      >
-                        Upgrade to keep your button live all month
-                      </p>
-                    </div>
-                  </div>
+  <div className="sbb-wa-container">
+    {/* Scoped CSS styles to prevent overlapping with any app styles */}
+    <style>{`
+      .sbb-wa-container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      .sbb-wa-main {
+        display: flex;
+        flex-direction: row;
+        min-height: 560px;
+      }
+      @media (max-width: 860px) {
+        .sbb-wa-main {
+          flex-direction: column;
+        }
+      }
+      /* Left Form Side */
+      .sbb-wa-form-side {
+        flex: 1;
+        padding: 28px 32px;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+      }
+      .sbb-wa-eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #008060;
+        margin-bottom: 6px;
+      }
+      .sbb-wa-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.025em;
+        margin-bottom: 5px;
+      }
+      .sbb-wa-sub {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 24px;
+      }
+      .sbb-wa-divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0;
+      }
+      .sbb-wa-divider-line {
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+      }
+      .sbb-wa-divider-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #64748b;
+      }
+      .sbb-wa-field {
+        margin-bottom: 16px;
+      }
+      .sbb-wa-field-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .sbb-wa-field-label .req {
+        color: #ef4444;
+      }
+      .sbb-wa-phone-row {
+        display: flex;
+        gap: 8px;
+      }
+      .sbb-wa-phone-prefix {
+        background: #f1f5f9;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 9px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #0f172a;
+        font-weight: 600;
+        outline: none;
+        width: 82px;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      .sbb-wa-field-input {
+        width: 100%;
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 9px;
+        padding: 10px 14px;
+        font-size: 14px;
+        color: #0f172a;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .sbb-wa-field-input:focus {
+        border-color: #008060;
+        box-shadow: 0 0 0 3px rgba(0, 128, 96, 0.08);
+      }
+      .sbb-wa-field-hint {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 5px;
+      }
+      /* Toggle Checkbox */
+      .sbb-wa-same-number {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 12px 14px;
+        cursor: pointer;
+        margin-bottom: 16px;
+        user-select: none;
+        transition: all 0.15s ease;
+      }
+      .sbb-wa-same-number:hover {
+        background: #f1f5f9;
+      }
+      .sbb-wa-same-number.checked {
+        border-color: #008060;
+        background: #ecfdf5;
+      }
+      .sbb-wa-checkbox {
+        width: 18px;
+        height: 18px;
+        border-radius: 5px;
+        border: 2px solid #cbd5e1;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: #ffffff;
+        flex-shrink: 0;
+        margin-top: 1px;
+        transition: all 0.15s;
+      }
+      .sbb-wa-same-number.checked .sbb-wa-checkbox {
+        background: #008060;
+        border-color: #008060;
+      }
+      .sbb-wa-sn-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .sbb-wa-sn-sub {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+      /* Alert Trigger Cards */
+      .sbb-wa-alert-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 13px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .sbb-wa-alert-card:hover, .sbb-wa-alert-card.active {
+        border-color: #008060;
+        background: #ecfdf5;
+      }
+      .sbb-wa-privacy-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 11px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-top: 8px;
+        margin-bottom: 20px;
+      }
+      .sbb-wa-form-foot {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+      }
+      .sbb-wa-btn-save {
+        background: #25D366;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 10px rgba(37, 211, 102, 0.25);
+      }
+      .sbb-wa-btn-save:hover:not(:disabled) {
+        background: #128C7E;
+        transform: translateY(-1px);
+      }
+      .sbb-wa-btn-save:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+      /* Right WhatsApp Preview Side */
+      .sbb-wa-preview-side {
+        width: 340px;
+        flex-shrink: 0;
+        background: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-left: 1px solid #e2e8f0;
+      }
+      .sbb-wa-preview-label {
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        padding: 6px 14px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.75);
+        text-align: center;
+      }
+      .sbb-wa-header {
+        background: #075E54;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+      }
+      .sbb-wa-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #25D366;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .sbb-wa-info { flex: 1; }
+      .sbb-wa-name { font-size: 13px; font-weight: 700; color: #ffffff; }
+      .sbb-wa-status { font-size: 11px; color: rgba(255, 255, 255, 0.65); }
+      .sbb-wa-tabs {
+        display: flex;
+        background: #075E54;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      }
+      .sbb-wa-tab {
+        flex: 1;
+        padding: 8px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.45);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+      }
+      .sbb-wa-tab.on {
+        color: #ffffff;
+        border-bottom-color: #25D366;
+      }
+      .sbb-wa-body {
+        flex: 1;
+        overflow-y: auto;
+        background-color: #ECE5DD;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4b8a8' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        padding: 12px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .sbb-wa-date-badge {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(4px);
+        border-radius: 100px;
+        padding: 3px 10px;
+        font-size: 11px;
+        color: #075E54;
+        font-weight: 600;
+        text-align: center;
+        align-self: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      .sbb-wa-bubble {
+        max-width: 88%;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 12px 6px;
+        position: relative;
+        align-self: flex-start;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .sbb-wa-bubble::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -7px;
+        border: 6px solid transparent;
+        border-top-color: #ffffff;
+        border-right-color: #ffffff;
+      }
+      .sbb-wa-app-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 128, 96, 0.06);
+        border-radius: 6px;
+        padding: 7px 9px;
+        margin-bottom: 8px;
+      }
+      .sbb-wa-app-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 5px;
+        background: #008060;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .sbb-wa-app-name { font-size: 11px; font-weight: 700; color: #008060; }
+      .sbb-wa-app-sub { font-size: 10px; color: #64748b; }
+      .sbb-wa-alert-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(37, 211, 102, 0.12);
+        border: 1px solid rgba(37, 211, 102, 0.25);
+        border-radius: 4px;
+        padding: 2px 7px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #0f8c44;
+        margin-bottom: 7px;
+      }
+      .sbb-wa-msg-text {
+        font-size: 12.5px;
+        color: #111111;
+        line-height: 1.5;
+        margin-bottom: 6px;
+      }
+      .sbb-wa-msg-text b { color: #075E54; }
+      .sbb-wa-highlight {
+        display: inline-block;
+        background: rgba(37, 211, 102, 0.12);
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-weight: 700;
+        color: #075E54;
+      }
+      .sbb-wa-product-preview {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 8px;
+        background: #ffffff;
+      }
+      .sbb-wa-bubble-cta {
+        border-top: 1px solid #e8e8e8;
+        margin: 0 -12px -6px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #128C7E;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .sbb-wa-timestamp {
+        font-size: 10px;
+        color: #999999;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 3px;
+      }
+      .sbb-wa-tick { color: #53bdeb; font-size: 12px; }
+      .sbb-wa-typing {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 8px 12px;
+        align-self: flex-start;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .sbb-wa-typing-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #999999;
+        animation: sbbWaTyping 1.2s infinite;
+      }
+      .sbb-wa-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+      .sbb-wa-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes sbbWaTyping {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+        30% { transform: translateY(-4px); opacity: 1; }
+      }
+      .sbb-wa-input-bar {
+        background: #075E54;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .sbb-wa-input-field {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.12);
+        border: none;
+        border-radius: 20px;
+        padding: 7px 12px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        outline: none;
+      }
+      .sbb-wa-send {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #25D366;
+        border: none;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+    `}</style>
 
-                  <div style={{ marginBottom: "20px" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        marginBottom: "6px",
-                      }}
-                    >
-                      Phone Number <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      className={styles.textInput}
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="+91 98765 43210"
-                    />
-                  </div>
+    <div className="sbb-wa-main">
+      {/* ── LEFT: FORM SIDE ── */}
+      <div className="sbb-wa-form-side">
+        <div className="sbb-wa-eyebrow">Step 2 of 4</div>
+        <div className="sbb-wa-title">Get alerts on WhatsApp</div>
+        <div className="sbb-wa-sub">
+          We'll message you directly when shoppers try on your products — see exactly what the messages look like on the right.
+        </div>
 
-                  <div style={{ marginBottom: "24px" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        marginBottom: "6px",
-                      }}
-                    >
-                      WhatsApp Number{" "}
-                      <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      className={styles.textInput}
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value)}
-                      placeholder="+91 98765 43210"
-                    />
+        {/* Section: Contact Details */}
+        <div className="sbb-wa-divider">
+          <div className="sbb-wa-divider-line"></div>
+          <div className="sbb-wa-divider-label">Your contact details</div>
+          <div className="sbb-wa-divider-line"></div>
+        </div>
+
+        {/* Phone Number Field */}
+        <div className="sbb-wa-field">
+          <div className="sbb-wa-field-label">
+            Phone Number <span className="req">*</span>
+          </div>
+          <div className="sbb-wa-phone-row">
+            <select
+              className="sbb-wa-phone-prefix"
+              value={phonePrefix}
+              onChange={(e) => setPhonePrefix(e.target.value)}
+            >
+              <option value="+91">+91</option>
+              <option value="+1">+1</option>
+              <option value="+44">+44</option>
+              <option value="+971">+971</option>
+              <option value="+65">+65</option>
+            </select>
+            <input
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]{10}"
+              maxLength={10}
+              className="sbb-wa-field-input"
+              value={phoneNumber}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                setPhoneNumber(val);
+                if (sameAsPhone) {
+                  setWhatsappNumber(val);
+                }
+              }}
+              placeholder="98765 43210"
+            />
+          </div>
+          <div className="sbb-wa-field-hint">This is the number we'll use for WhatsApp alerts</div>
+        </div>
+
+        {/* Same number toggle */}
+        <div
+          className={`sbb-wa-same-number ${sameAsPhone ? "checked" : ""}`}
+          onClick={() => {
+            const nextVal = !sameAsPhone;
+            setSameAsPhone(nextVal);
+            if (nextVal) {
+              setWhatsappNumber(phoneNumber);
+            }
+          }}
+        >
+          <div className="sbb-wa-checkbox">{sameAsPhone ? "✓" : ""}</div>
+          <div>
+            <div className="sbb-wa-sn-label">WhatsApp number is the same as phone number</div>
+            <div className="sbb-wa-sn-sub">Uncheck if your WhatsApp is on a different number</div>
+          </div>
+        </div>
+
+        {/* WhatsApp number field (shown when sameAsPhone is unchecked) */}
+        {!sameAsPhone && (
+          <div className="sbb-wa-field">
+            <div className="sbb-wa-field-label">
+              WhatsApp Number <span className="req">*</span>
+            </div>
+            <div className="sbb-wa-phone-row">
+              <select className="sbb-wa-phone-prefix" value={phonePrefix} onChange={(e) => setPhonePrefix(e.target.value)}>
+                <option value="+91">+91</option>
+                <option value="+1">+1</option>
+                <option value="+44">+44</option>
+              </select>
+              <input
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]{10}"
+                maxLength={10}
+                className="sbb-wa-field-input"
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                placeholder="98765 43210"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Section: What you'll receive */}
+        <div className="sbb-wa-divider" style={{ marginTop: "4px" }}>
+          <div className="sbb-wa-divider-line"></div>
+          <div className="sbb-wa-divider-label">What you'll receive</div>
+          <div className="sbb-wa-divider-line"></div>
+        </div>
+
+        {/* Alert type triggers */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+          <div
+            className={`sbb-wa-alert-card ${previewTab === "first" ? "active" : ""}`}
+            onClick={() => setPreviewTab("first")}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
+              <span style={{ fontSize: "16px" }}>🎉</span>
+              <div>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#0f172a" }}>First try-on alert</div>
+                <div style={{ fontSize: "11px", color: "#64748b" }}>When a shopper generates their first try-on</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "11px", color: "#008060", fontWeight: 700 }}>Preview →</span>
+              <div style={{ width: "28px", height: "16px", borderRadius: "100px", background: "#008060", position: "relative" }}>
+                <div style={{ position: "absolute", top: "2px", left: "14px", width: "12px", height: "12px", borderRadius: "50%", background: "#fff" }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`sbb-wa-alert-card ${previewTab === "credits" ? "active" : ""}`}
+            onClick={() => setPreviewTab("credits")}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
+              <span style={{ fontSize: "16px" }}>⚡</span>
+              <div>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#0f172a" }}>80% credits used</div>
+                <div style={{ fontSize: "11px", color: "#64748b" }}>Before your button goes dark this month</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "11px", color: "#008060", fontWeight: 700 }}>Preview →</span>
+              <div style={{ width: "28px", height: "16px", borderRadius: "100px", background: "#008060", position: "relative" }}>
+                <div style={{ position: "absolute", top: "2px", left: "14px", width: "12px", height: "12px", borderRadius: "50%", background: "#fff" }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Privacy Note */}
+        <div className="sbb-wa-privacy-note">
+          <span style={{ fontSize: "13px", flexShrink: 0 }}>🔒</span>
+          Only try-on alerts and important account notifications. No marketing, ever. Unsubscribe anytime from Settings.
+        </div>
+
+        {/* Footer Save Button */}
+        <div className="sbb-wa-form-foot">
+          <button
+            className="sbb-wa-btn-save"
+            onClick={handleSavePhone}
+            disabled={
+              isSubmitting ||
+              !/^\d{10}$/.test(phoneNumber) ||
+              !/^\d{10}$/.test(whatsappNumber)
+            }
+          >
+            <span>💬</span> {isSubmitting ? "Saving..." : "Save & Continue →"}
+          </button>
+        </div>
+      </div>
+
+      {/* ── RIGHT: WHATSAPP PREVIEW ── */}
+      <div className="sbb-wa-preview-side">
+        <div className="sbb-wa-preview-label">Live preview — exactly how it looks on your phone</div>
+
+        {/* WA Header */}
+        <div className="sbb-wa-header">
+          <div style={{ fontSize: "16px", color: "rgba(255,255,255,0.7)", cursor: "pointer" }}>‹</div>
+          <div className="sbb-wa-avatar">🤖</div>
+          <div className="sbb-wa-info">
+            <div className="sbb-wa-name">See Before Buy</div>
+            <div className="sbb-wa-status">Business Account · Usually replies instantly</div>
+          </div>
+          <div style={{ display: "flex", gap: "12px", color: "rgba(255,255,255,0.7)" }}>
+            <span>📞</span>
+            <span>⋮</span>
+          </div>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="sbb-wa-tabs">
+          <div
+            className={`sbb-wa-tab ${previewTab === "first" ? "on" : ""}`}
+            onClick={() => setPreviewTab("first")}
+          >
+            🎉 First try-on
+          </div>
+          <div
+            className={`sbb-wa-tab ${previewTab === "credits" ? "on" : ""}`}
+            onClick={() => setPreviewTab("credits")}
+          >
+            ⚡ Credits alert
+          </div>
+        </div>
+
+        {/* WA Body */}
+        <div className="sbb-wa-body">
+          <div className="sbb-wa-date-badge">Today</div>
+
+          {/* MSG SET 1: First Try-On */}
+          {previewTab === "first" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="sbb-wa-bubble">
+                <div className="sbb-wa-app-row">
+                  <div className="sbb-wa-app-icon">SB</div>
+                  <div>
+                    <div className="sbb-wa-app-name">See Before Buy</div>
+                    <div className="sbb-wa-app-sub">Your Store</div>
                   </div>
                 </div>
+
+                <div className="sbb-wa-alert-badge">🎉 First Try-On!</div>
+
+                <div className="sbb-wa-msg-text">
+                  Someone just tried on a product on your store for the first time!<br /><br />
+                  <b>Product:</b> <span className="sbb-wa-highlight">White Ringer Tee</span><br />
+                  <b>Time:</b> Just now<br />
+                  <b>Credits left:</b> 49 of 50
+                </div>
+
+                <div className="sbb-wa-product-preview">
+                  <div style={{ background: "linear-gradient(135deg,#f8fafc,#ecfdf5)", height: "54px", display: "flex", alignItems: "center", gap: "10px", padding: "0 10px" }}>
+                    <span style={{ fontSize: "26px" }}>👕</span>
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#0f172a" }}>White Ringer Tee</div>
+                      <div style={{ fontSize: "10px", color: "#64748b" }}>PoolHouseKora · ₹699</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sbb-wa-bubble-cta">🔗 View on dashboard</div>
+                <div className="sbb-wa-timestamp">12:34 PM <span className="sbb-wa-tick">✓✓</span></div>
               </div>
-              <div className={styles.panelFoot}>
-                <button
-                  className={styles.tealButton}
-                  onClick={handleSavePhone}
-                  disabled={
-                    isSubmitting ||
-                    !phoneNumber.trim() ||
-                    !whatsappNumber.trim()
-                  }
-                >
-                  {isSubmitting ? "Saving..." : "Save & Continue →"}
-                </button>
+
+              <div className="sbb-wa-typing">
+                <div className="sbb-wa-typing-dot"></div>
+                <div className="sbb-wa-typing-dot"></div>
+                <div className="sbb-wa-typing-dot"></div>
               </div>
             </div>
           )}
 
+          {/* MSG SET 2: Credits Alert */}
+          {previewTab === "credits" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="sbb-wa-bubble">
+                <div className="sbb-wa-app-row">
+                  <div className="sbb-wa-app-icon">SB</div>
+                  <div>
+                    <div className="sbb-wa-app-name">See Before Buy</div>
+                    <div className="sbb-wa-app-sub">Your Store</div>
+                  </div>
+                </div>
+
+                <div
+                  className="sbb-wa-alert-badge"
+                  style={{ background: "rgba(245,158,11,0.12)", borderColor: "rgba(245,158,11,0.25)", color: "#b45309" }}
+                >
+                  ⚡ Credits Running Low
+                </div>
+
+                <div className="sbb-wa-msg-text">
+                  You've used <span className="sbb-wa-highlight" style={{ background: "rgba(245,158,11,0.12)", color: "#b45309" }}>40 of 50 try-ons</span> this month.<br /><br />
+                  Your "Try The Look" button will go dark when credits run out. Upgrade now to keep it live all month.<br /><br />
+                  <b>Plan:</b> Starter (50 try-ons/month)<br />
+                  <b>Used:</b> 40 · <b>Remaining:</b> 10
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderTop: "1px solid #e8e8e8", margin: "0 -12px -6px" }}>
+                  <div style={{ padding: "8px 10px", fontSize: "12px", fontWeight: 700, color: "#64748b", borderRight: "1px solid #e8e8e8", textAlign: "center", cursor: "pointer" }}>Later</div>
+                  <div style={{ padding: "8px 10px", fontSize: "12px", fontWeight: 700, color: "#128C7E", textAlign: "center", cursor: "pointer" }}>⬆ Upgrade now</div>
+                </div>
+
+                <div className="sbb-wa-timestamp" style={{ marginTop: "8px" }}>Yesterday, 11:15 AM <span className="sbb-wa-tick">✓✓</span></div>
+              </div>
+
+              <div className="sbb-wa-typing">
+                <div className="sbb-wa-typing-dot"></div>
+                <div className="sbb-wa-typing-dot"></div>
+                <div className="sbb-wa-typing-dot"></div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* WA Input bar */}
+        <div className="sbb-wa-input-bar">
+          <span style={{ fontSize: "16px", color: "rgba(255,255,255,0.5)" }}>☺</span>
+          <input className="sbb-wa-input-field" placeholder="Message" readOnly />
+          <span style={{ fontSize: "16px", color: "rgba(255,255,255,0.5)" }}>📎</span>
+          <button className="sbb-wa-send">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           {/* ════ SCREEN 3: VIRTUAL TRY-ON DEMO ════ */}
           {currentStep === 3 && (
             <div className={styles.panel}>
