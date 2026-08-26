@@ -1820,8 +1820,8 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "16px",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                        gap: "20px",
                         alignItems: "stretch",
                       }}
                     >
@@ -1832,23 +1832,25 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "7px",
-                            marginBottom: "9px",
-                            fontSize: "11px",
-                            letterSpacing: "0.02em",
+                            gap: "9px",
+                            marginBottom: "12px",
+                            fontSize: "13px",
+                            fontWeight: 800,
+                            color: "#1F2937",
+                            letterSpacing: "-0.01em",
                           }}
                         >
                           <span
                             style={{
-                              width: "22px",
-                              height: "22px",
-                              borderRadius: "7px",
+                              width: "26px",
+                              height: "26px",
+                              borderRadius: "8px",
                               display: "inline-flex",
                               alignItems: "center",
                               justifyContent: "center",
                               background: "#E6F7F2",
                               color: "#008060",
-                              fontSize: "11px",
+                              fontSize: "12px",
                               fontWeight: 800,
                             }}
                           >
@@ -1861,26 +1863,26 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                             className={`${styles.prodThumb} ${styles.prodThumbOn}`}
                             style={{
                               cursor: "default",
-                              height: "244px",
-                              padding: "10px",
-                              borderRadius: "14px",
-                              border: "1px solid #D7EEE8",
-                              background: "linear-gradient(145deg, #FFFFFF 0%, #F3FBF9 100%)",
-                              boxShadow: "0 8px 22px rgba(0, 128, 96, 0.08)",
+                              height: "286px",
+                              padding: "14px",
+                              borderRadius: "18px",
+                              border: "1px solid #D5EDE7",
+                              background: "linear-gradient(145deg, #FFFFFF 0%, #F4FBF9 100%)",
+                              boxShadow: "0 10px 26px rgba(0, 128, 96, 0.10)",
                               position: "relative",
                             }}
                           >
                             <div
                               style={{
                                 position: "absolute",
-                                top: "10px",
-                                left: "10px",
+                                top: "14px",
+                                left: "14px",
                                 zIndex: 1,
-                                padding: "4px 7px",
+                                padding: "5px 8px",
                                 borderRadius: "999px",
                                 background: "#E6F7F2",
                                 color: "#007A5A",
-                                fontSize: "9px",
+                                fontSize: "10px",
                                 fontWeight: 800,
                               }}
                             >
@@ -1892,9 +1894,9 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                                 alt={demoProduct.imageAlt}
                                 style={{
                                   width: "100%",
-                                  height: "172px",
+                                  height: "196px",
                                   objectFit: "contain",
-                                  borderRadius: "10px",
+                                  borderRadius: "12px",
                                 }}
                               />
                             ) : (
@@ -1918,10 +1920,10 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                             </div>
                             <div
                               style={{
-                                fontSize: "11px",
+                                fontSize: "15px",
                                 color: "#008060",
-                                fontWeight: 700,
-                                marginTop: "2px",
+                                fontWeight: 800,
+                                marginTop: "6px",
                               }}
                             >
                               {demoProduct.price}
@@ -1934,10 +1936,10 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              fontSize: "12px",
+                              fontSize: "13px",
                               color: "#9CA3AF",
-                              height: "244px",
-                              borderRadius: "14px",
+                              height: "286px",
+                              borderRadius: "18px",
                               border: "1px dashed #D1D5DB",
                               background: "#FAFAFA",
                             }}
@@ -1954,23 +1956,25 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "7px",
-                            marginBottom: "9px",
-                            fontSize: "11px",
-                            letterSpacing: "0.02em",
+                            gap: "9px",
+                            marginBottom: "12px",
+                            fontSize: "13px",
+                            fontWeight: 800,
+                            color: "#1F2937",
+                            letterSpacing: "-0.01em",
                           }}
                         >
                           <span
                             style={{
-                              width: "22px",
-                              height: "22px",
-                              borderRadius: "7px",
+                              width: "26px",
+                              height: "26px",
+                              borderRadius: "8px",
                               display: "inline-flex",
                               alignItems: "center",
                               justifyContent: "center",
                               background: "#EEF2FF",
                               color: "#4F46E5",
-                              fontSize: "11px",
+                              fontSize: "12px",
                               fontWeight: 800,
                             }}
                           >
@@ -1980,6 +1984,18 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                         </div>
                         <div
                           className={`${styles.uploadBox} ${userPhoto ? styles.uploadBoxHas : ""}`}
+                          style={{
+                            height: "286px",
+                            minHeight: "286px",
+                            borderRadius: "18px",
+                            border: "1px dashed #C7D2FE",
+                            background: "linear-gradient(145deg, #FFFFFF 0%, #F8F9FF 100%)",
+                            boxShadow: "0 10px 26px rgba(79, 70, 229, 0.08)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            overflow: "hidden",
+                          }}
                           onClick={() =>
                             document.getElementById("demo-file-input").click()
                           }
@@ -2002,22 +2018,22 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                             <div>
                               <div
                                 style={{
-                                  width: "48px",
-                                  height: "48px",
+                                  width: "58px",
+                                  height: "58px",
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
-                                  margin: "0 auto 12px",
-                                  borderRadius: "14px",
+                                  margin: "0 auto 15px",
+                                  borderRadius: "17px",
                                   background: "linear-gradient(135deg, #EEF2FF, #E0E7FF)",
-                                  fontSize: "23px",
+                                  fontSize: "27px",
                                 }}
                               >
                                 📸
                               </div>
                               <div
                                 style={{
-                                  fontSize: "12px",
+                                  fontSize: "13px",
                                   fontWeight: 600,
                                   color: "#4B5563",
                                 }}
@@ -2028,7 +2044,7 @@ const [previewTab, setPreviewTab] = useState("first"); // 'first' | 'credits'
                                 style={{
                                   fontSize: "10px",
                                   color: "#9CA3AF",
-                                  marginTop: "5px",
+                                  marginTop: "7px",
                                 }}
                               >
                                 Full body · Front facing
