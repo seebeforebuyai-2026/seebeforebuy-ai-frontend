@@ -16,7 +16,6 @@
 .appContainer {
   display: flex;
   min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
   background: #f0f2f5;
   color: var(--navy);
   -webkit-font-smoothing: antialiased;
@@ -94,7 +93,6 @@
   gap: 10px;
   padding: 10px 12px;
   border-radius: 10px;
-  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -176,7 +174,6 @@
   border-radius: 7px;
   border: none;
   background: transparent;
-  font-family: 'Poppins', sans-serif;
   transition: all .15s;
 }
 
@@ -264,7 +261,6 @@
   border-radius: 6px;
   padding: 5px 7px;
   width: 72px;
-  font-family: monospace;
 }
 
 .presets {
@@ -359,7 +355,6 @@
   border: 1.5px solid var(--border);
   cursor: pointer;
   background: #fff;
-  font-family: 'Poppins', sans-serif;
   font-size: 9px;
   font-weight: 600;
   color: var(--muted);
@@ -416,7 +411,6 @@
   border: 1.5px solid var(--border);
   border-radius: 8px;
   padding: 8px 10px;
-  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   color: var(--navy);
   outline: none;
@@ -429,7 +423,6 @@
   border: 1.5px solid var(--border);
   border-radius: 8px;
   padding: 8px 10px;
-  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   color: var(--navy);
   outline: none;
@@ -481,7 +474,6 @@
   border: none;
   border-radius: 9px;
   padding: 11px;
-  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -557,7 +549,6 @@
 .vtBtn {
   padding: 5px 11px;
   border-radius: 6px;
-  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -726,7 +717,6 @@
   width: 100%;
   border: none;
   padding: 10px;
-  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 600;
   margin-bottom: 7px;
@@ -737,7 +727,6 @@
   width: 100%;
   border: none;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 700;
   display: flex;
@@ -888,7 +877,6 @@
   width: 100%;
   border: none;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 700;
   display: flex;
@@ -1172,7 +1160,6 @@
   width: 100%;
   border: none;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 700;
   padding: 10px;
@@ -1183,7 +1170,6 @@
   width: 100%;
   background: none;
   border: none;
-  font-family: 'Poppins', sans-serif;
   font-size: 10px;
   color: var(--muted);
   cursor: pointer;
